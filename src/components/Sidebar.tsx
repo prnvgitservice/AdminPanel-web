@@ -21,7 +21,8 @@ import {
   ChevronRight,
   Users,
   UserCheck,
-  User
+  User,
+  Building2
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -41,11 +42,23 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
     { id: 'payments', label: 'Payments', icon: CreditCard, section: 'Services', isSubItem: true },
     { id: 'work-gallery', label: 'All Work Gallery', icon: Image, section: 'Services', isSubItem: true },
     { id: 'video-gallery', label: 'All Video Gallery', icon: Video, section: 'Services', isSubItem: true },
+    { id: 'advertisements', label: 'Advertisements Posts', icon: Image, section: 'Advertisements', hasSubmenu: true },
+    { id: 'pincodes', label: 'Pincodes', icon: MapPin, section: 'Advertisements', hasSubmenu: true },
+    { id: 'areas', label: 'Areas', icon: Map, section: 'Advertisements', hasSubmenu: true },
+    { id: 'service-area', label: 'Service area', icon: Settings, section: 'Advertisements', hasSubmenu: true },
+    { id: 'categories', label: 'Categories', icon: Tag, section: 'Advertisements', hasSubmenu: true },
+    { id: 'reviews', label: 'Reviews', icon: Star, section: 'Advertisements', hasSubmenu: true },
+    { id: 'booking-list', label: 'Booking List', icon: Calendar, section: 'Booking' },
+    { id: 'call-bookings', label: 'Call Bookings', icon: Phone, section: 'Booking' },
+    { id: 'promocodes', label: 'Promocodes', icon: Tag, section: 'Booking', hasSubmenu: true },
+    { id: 'payout', label: 'Payout', icon: DollarSign, section: 'Booking', hasSubmenu: true },
     { id: 'manage-users', label: 'Manage Users', icon: Users, section: 'User Management', hasSubmenu: true },
     { id: 'admin-users', label: 'Admin Users', icon: UserCheck, section: 'User Management', isSubItem: true },
     { id: 'admin', label: 'Admin', icon: User, section: 'User Management', isSubItem: true },
     { id: 'providers', label: 'Providers', icon: UserCheck, section: 'User Management', isSubItem: true },
     { id: 'users', label: 'Users', icon: Users, section: 'User Management', isSubItem: true },
+    { id: 'bda', label: 'BDA', icon: Building2, section: 'User Management', isSubItem: true },
+    { id: 'providers-details', label: 'Providers Details', icon: List, section: 'User Management', isSubItem: true },
   ];
 
   const groupedItems = menuItems.reduce((acc, item) => {
@@ -60,7 +73,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
     <div className="w-64 bg-white shadow-lg h-screen overflow-y-auto">
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center space-x-2">
-          <div className="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center shadow-lg">
             <span className="text-white font-bold text-lg">P</span>
           </div>
           <span className="text-xl font-bold text-gray-800">PRNV Services</span>
@@ -78,9 +91,9 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange }) => {
               <div key={item.id}>
                 <button
                   onClick={() => onPageChange(item.id)}
-                  className={`w-full flex items-center px-6 py-3 text-sm font-medium transition-colors duration-200 ${
+                  className={`w-full flex items-center px-6 py-3 text-sm font-medium transition-all duration-200 ${
                     currentPage === item.id
-                      ? 'bg-red-500 text-white border-r-4 border-red-600'
+                      ? 'bg-gradient-to-r from-red-500 to-red-600 text-white border-r-4 border-red-700 shadow-lg'
                       : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   } ${item.isSubItem ? 'pl-12' : ''}`}
                 >

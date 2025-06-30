@@ -16,6 +16,9 @@ import AddAdminUser from './components/AddAdminUser';
 import Providers from './components/Providers';
 import AddProvider from './components/AddProvider';
 import Users from './components/Users';
+import AddUser from './components/AddUser';
+import BusinessAssociates from './components/BusinessAssociates';
+import ProvidersDetails from './components/ProvidersDetails';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -64,7 +67,13 @@ function App() {
       case 'add-provider':
         return <AddProvider onBack={() => setCurrentPage('providers')} />;
       case 'users':
-        return <Users />;
+        return <Users onAddUser={() => setCurrentPage('add-user')} />;
+      case 'add-user':
+        return <AddUser onBack={() => setCurrentPage('users')} />;
+      case 'bda':
+        return <BusinessAssociates />;
+      case 'providers-details':
+        return <ProvidersDetails />;
       default:
         return <Dashboard />;
     }
