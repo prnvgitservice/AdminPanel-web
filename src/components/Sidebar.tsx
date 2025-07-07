@@ -65,24 +65,6 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange, onClose })
     { id: 'pending-services', label: 'Pending Services', icon: Clock, section: 'Services', isSubItem: true },
     { id: 'deleted-services', label: 'Deleted Services', icon: Trash2, section: 'Services', isSubItem: true },
     { id: 'inactive-services', label: 'Inactive Services', icon: XCircle, section: 'Services', isSubItem: true },
-    { id: 'payments', label: 'Payments', icon: CreditCard, section: 'Services', isSubItem: true },
-    { id: 'work-gallery', label: 'Work Gallery', icon: Image, section: 'Services', isSubItem: true },
-    { id: 'video-gallery', label: 'Video Gallery', icon: Video, section: 'Services', isSubItem: true },
-    
-    // Advertisements Section
-    { id: 'advertisements', label: 'Advertisement Posts', icon: Image, section: 'Advertisements', hasSubmenu: true },
-    { id: 'pincodes', label: 'Pincodes', icon: MapPin, section: 'Advertisements', hasSubmenu: true },
-    { id: 'areas', label: 'Areas', icon: Map, section: 'Advertisements', hasSubmenu: true },
-    { id: 'service-area', label: 'Service Area', icon: Settings, section: 'Advertisements', hasSubmenu: true },
-    { id: 'categories', label: 'Categories', icon: Tag, section: 'Advertisements', hasSubmenu: true },
-    { id: 'reviews', label: 'Reviews', icon: Star, section: 'Advertisements', hasSubmenu: true },
-    
-    // Booking Section
-    { id: 'booking-list', label: 'Booking List', icon: Calendar, section: 'Booking' },
-    { id: 'call-bookings', label: 'Call Bookings', icon: Phone, section: 'Booking' },
-    { id: 'promocodes', label: 'Promocodes', icon: Tag, section: 'Booking', hasSubmenu: true },
-    { id: 'payout', label: 'Payout', icon: DollarSign, section: 'Booking', hasSubmenu: true },
-    
     // User Management Section
     { id: 'manage-users', label: 'Manage Users', icon: Users, section: 'User Management', hasSubmenu: true },
     { id: 'admin-users', label: 'Admin Users', icon: UserCheck, section: 'User Management', isSubItem: true },
