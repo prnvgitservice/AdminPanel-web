@@ -273,7 +273,6 @@ const CategoriesList: React.FC<CategoriesListProps> = ({ onAddCategory, onEdit }
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
-                  <button className="px-4 py-2 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 transition-colors duration-200">
                   <button className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg">
                     View Services
                   </button>
