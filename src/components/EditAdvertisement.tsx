@@ -154,6 +154,7 @@ const EditAdvertisement: React.FC<EditAdvertisementProps> = ({ onBack }) => {
         </div>
       </form>
     </div>
+  )
   );
 };
 
