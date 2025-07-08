@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, RotateCcw, Filter, Edit, Eye, Trash2, Calendar } from 'lucide-react';
+import { Plus, RotateCcw, Filter, Edit, Eye, Trash2, Calendar, Wrench } from 'lucide-react';
 
 interface CategoriesListProps {
   onAddCategory: () => void;
