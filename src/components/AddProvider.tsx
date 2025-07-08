@@ -53,7 +53,7 @@ const AddProvider: React.FC<AddProviderProps> = ({ onBack }) => {
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
@@ -69,7 +69,7 @@ const AddProvider: React.FC<AddProviderProps> = ({ onBack }) => {
                   name="mobileNumber"
                   value={formData.mobileNumber}
                   onChange={handleInputChange}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 />
               </div>
@@ -82,7 +82,7 @@ const AddProvider: React.FC<AddProviderProps> = ({ onBack }) => {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
@@ -146,7 +146,7 @@ const AddProvider: React.FC<AddProviderProps> = ({ onBack }) => {
             />
             <label
               htmlFor="service-image"
-              className="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 cursor-pointer"
+              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-md hover:from-blue-600 hover:to-blue-700 cursor-pointer"
             >
               Choose File
             </label>
@@ -161,7 +161,7 @@ const AddProvider: React.FC<AddProviderProps> = ({ onBack }) => {
                 name="bdaName"
                 value={formData.bdaName}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Select BDA Name</option>
                 <option value="bda1">BDA 1</option>
@@ -176,7 +176,7 @@ const AddProvider: React.FC<AddProviderProps> = ({ onBack }) => {
                 name="videoLink"
                 value={formData.videoLink}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="https://..."
               />
             </div>
@@ -193,7 +193,7 @@ const AddProvider: React.FC<AddProviderProps> = ({ onBack }) => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+            className="px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-md hover:from-blue-600 hover:to-blue-700"
           >
             Submit
           </button>

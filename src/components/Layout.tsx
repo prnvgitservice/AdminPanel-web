@@ -35,39 +35,43 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
       
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
+        <header className="bg-white/80 backdrop-blur-md shadow-lg border-b border-slate-200/50 sticky top-0 z-30">
           <div className="flex items-center justify-between px-4 sm:px-6 py-4">
             <div className="flex items-center">
               <button 
-                className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                className="lg:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all duration-200"
                 onClick={() => setSidebarOpen(true)}
               >
                 <Menu className="h-6 w-6" />
               </button>
-              <h1 className="ml-2 lg:ml-0 text-lg sm:text-xl font-semibold text-gray-900 truncate">
+              <h1 className="ml-2 lg:ml-0 text-lg sm:text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent truncate">
                 PRNV Services Admin
               </h1>
             </div>
             
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors hidden sm:block">
-                <Eye className="h-5 w-5 text-gray-600" />
+              <button 
+                onClick={() => window.open('https://prnv-services.netlify.app/', '_blank')}
+                className="p-2 hover:bg-slate-100 rounded-lg transition-all duration-200 hidden sm:block group"
+              >
+                <Eye className="h-5 w-5 text-slate-600 group-hover:text-blue-600" />
               </button>
-              <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                <Bell className="h-5 w-5 text-gray-600" />
+              <button className="p-2 hover:bg-slate-100 rounded-lg transition-all duration-200 group relative">
+                <Bell className="h-5 w-5 text-slate-600 group-hover:text-blue-600" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
-              <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors hidden sm:block">
-                <MessageCircle className="h-5 w-5 text-gray-600" />
+              <button className="p-2 hover:bg-slate-100 rounded-lg transition-all duration-200 hidden sm:block group">
+                <MessageCircle className="h-5 w-5 text-slate-600 group-hover:text-blue-600" />
               </button>
-              <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                <User className="h-5 w-5 text-gray-600" />
+              <button className="p-2 hover:bg-slate-100 rounded-lg transition-all duration-200 group">
+                <User className="h-5 w-5 text-slate-600 group-hover:text-blue-600" />
               </button>
             </div>
           </div>
         </header>
         
         {/* Main content */}
-        <main className="flex-1 p-4 sm:p-6 overflow-auto">
+        <main className="flex-1 overflow-auto">
           {children}
         </main>
       </div>

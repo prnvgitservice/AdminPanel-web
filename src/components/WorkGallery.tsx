@@ -69,7 +69,7 @@ const WorkGallery: React.FC = () => {
         <h1 className="text-2xl font-bold text-gray-900">Work Gallery</h1>
         <button 
           onClick={handleRefresh}
-          className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+          className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
         >
           <RotateCcw className="h-4 w-4 mr-2" />
           Refresh

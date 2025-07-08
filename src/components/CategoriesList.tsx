@@ -109,7 +109,7 @@ const CategoriesList: React.FC<CategoriesListProps> = ({ onAddCategory, onEdit }
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-500 rounded-lg">
+            <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
               <Wrench className="h-6 w-6 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Categories</h1>
@@ -117,21 +117,21 @@ const CategoriesList: React.FC<CategoriesListProps> = ({ onAddCategory, onEdit }
           <div className="flex flex-wrap items-center gap-2">
             <button 
               onClick={handleRefresh}
-              className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <RotateCcw className="h-4 w-4 mr-2" />
               Refresh
             </button>
             <button 
               onClick={() => setShowFilter(!showFilter)}
-              className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <Filter className="h-4 w-4 mr-2" />
               Filter
             </button>
             <button 
               onClick={onAddCategory}
-              className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Category
@@ -148,7 +148,7 @@ const CategoriesList: React.FC<CategoriesListProps> = ({ onAddCategory, onEdit }
                 <select
                   value={filters.categoryName}
                   onChange={(e) => handleFilterChange('categoryName', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">Select category</option>
                   <option value="ac-repair">AC Repair & Services</option>
@@ -165,7 +165,7 @@ const CategoriesList: React.FC<CategoriesListProps> = ({ onAddCategory, onEdit }
                 <select
                   value={filters.status}
                   onChange={(e) => handleFilterChange('status', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">All Status</option>
                   <option value="active">Active</option>
@@ -180,7 +180,7 @@ const CategoriesList: React.FC<CategoriesListProps> = ({ onAddCategory, onEdit }
                     type="date"
                     value={filters.fromDate}
                     onChange={(e) => handleFilterChange('fromDate', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                   <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-gray-400 pointer-events-none" />
                 </div>
@@ -193,7 +193,7 @@ const CategoriesList: React.FC<CategoriesListProps> = ({ onAddCategory, onEdit }
                     type="date"
                     value={filters.toDate}
                     onChange={(e) => handleFilterChange('toDate', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                   <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-gray-400 pointer-events-none" />
                 </div>
@@ -203,7 +203,7 @@ const CategoriesList: React.FC<CategoriesListProps> = ({ onAddCategory, onEdit }
             <div className="flex justify-center">
               <button
                 onClick={handleFilterSubmit}
-                className="px-8 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200"
+                className="px-8 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 Submit
               </button>
@@ -273,7 +273,7 @@ const CategoriesList: React.FC<CategoriesListProps> = ({ onAddCategory, onEdit }
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
-                  <button className="px-4 py-2 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 transition-colors duration-200">
+                  <button className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg">
                     View Services
                   </button>
                 </div>
@@ -284,7 +284,7 @@ const CategoriesList: React.FC<CategoriesListProps> = ({ onAddCategory, onEdit }
 
         {/* Table View */}
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-          <div className="bg-gradient-to-r from-red-500 to-red-600 px-6 py-4">
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
             <h2 className="text-lg font-semibold text-white">Categories Overview</h2>
           </div>
           

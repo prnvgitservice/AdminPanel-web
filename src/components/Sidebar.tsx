@@ -59,11 +59,11 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange, onClose })
     { id: 'dashboard', label: 'Dashboard', icon: Home, section: 'Main' },
     
     // Services Section
-    { id: 'services', label: 'Categories', icon: Wrench, section: 'Services', hasSubmenu: true },
-    { id: 'all-services', label: 'All Services', icon: List, section: 'Services', isSubItem: true },
-    { id: 'pending-services', label: 'Pending Services', icon: Clock, section: 'Services', isSubItem: true },
-    { id: 'deleted-services', label: 'Deleted Services', icon: Trash2, section: 'Services', isSubItem: true },
-    { id: 'inactive-services', label: 'Inactive Services', icon: XCircle, section: 'Services', isSubItem: true },
+    { id: 'services', label: 'Categories', icon: Wrench, section: 'Categories', hasSubmenu: true },
+    { id: 'all-services', label: 'All Categories', icon: List, section: 'Categories', isSubItem: true },
+    { id: 'pending-services', label: 'Pending Categories', icon: Clock, section: 'Categories', isSubItem: true },
+    { id: 'deleted-services', label: 'Deleted Categories', icon: Trash2, section: 'Categories', isSubItem: true },
+    { id: 'inactive-services', label: 'Inactive Categories', icon: XCircle, section: 'Categories', isSubItem: true },
     // User Management Section
     { id: 'manage-users', label: 'Manage Users', icon: Users, section: 'User Management', hasSubmenu: true },
     { id: 'admin-users', label: 'Admin Users', icon: UserCheck, section: 'User Management', isSubItem: true },
@@ -83,13 +83,13 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange, onClose })
   }, {} as Record<string, typeof menuItems>);
 
   return (
-    <div className="w-64 bg-white shadow-xl h-full overflow-y-auto">
+    <div className="w-64 bg-white/95 backdrop-blur-md shadow-2xl h-full overflow-y-auto border-r border-slate-200/50">
       {/* Header */}
-      <div className="p-4 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-red-500 to-red-600">
+      <div className="p-4 sm:p-6 border-b border-slate-200/50 bg-gradient-to-r from-slate-800 to-slate-700">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-lg flex items-center justify-center shadow-lg">
-              <span className="text-red-500 font-bold text-sm sm:text-lg">P</span>
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-sm sm:text-lg">P</span>
             </div>
             <div className="text-white">
               <h1 className="text-sm sm:text-lg font-bold leading-tight">PRNV</h1>
@@ -114,7 +114,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange, onClose })
             {section !== 'Main' && (
               <button
                 onClick={() => toggleSection(section)}
-                className="w-full flex items-center justify-between px-4 sm:px-6 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider hover:text-gray-600 transition-colors"
+                className="w-full flex items-center justify-between px-4 sm:px-6 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider hover:text-slate-600 transition-all duration-200"
               >
                 <span className="truncate">{section}</span>
                 {expandedSections[section] ? (
@@ -133,8 +133,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange, onClose })
                       onClick={() => handlePageChange(item.id)}
                       className={`w-full flex items-center px-4 sm:px-6 py-2.5 sm:py-3 text-sm font-medium transition-all duration-200 ${
                         currentPage === item.id
-                          ? 'bg-gradient-to-r from-red-500 to-red-600 text-white border-r-4 border-red-700 shadow-lg'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-r-4 border-blue-700 shadow-lg transform translate-x-1'
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 hover:translate-x-1'
                       } ${item.isSubItem ? 'pl-8 sm:pl-12' : ''}`}
                     >
                       <item.icon className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 flex-shrink-0" />

@@ -52,7 +52,7 @@ const AddAdminUser: React.FC<AddAdminUserProps> = ({ onBack }) => {
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
@@ -64,7 +64,7 @@ const AddAdminUser: React.FC<AddAdminUserProps> = ({ onBack }) => {
                 name="username"
                 value={formData.username}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
@@ -76,7 +76,7 @@ const AddAdminUser: React.FC<AddAdminUserProps> = ({ onBack }) => {
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
@@ -88,7 +88,7 @@ const AddAdminUser: React.FC<AddAdminUserProps> = ({ onBack }) => {
                 name="emailId"
                 value={formData.emailId}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
@@ -99,7 +99,7 @@ const AddAdminUser: React.FC<AddAdminUserProps> = ({ onBack }) => {
                 name="rolesPermissions"
                 value={formData.rolesPermissions}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               >
                 <option value="">Select any Role</option>
@@ -136,7 +136,7 @@ const AddAdminUser: React.FC<AddAdminUserProps> = ({ onBack }) => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+            className="px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-md hover:from-blue-600 hover:to-blue-700"
           >
             Submit
           </button>

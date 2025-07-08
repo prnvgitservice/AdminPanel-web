@@ -113,14 +113,14 @@ const InactiveServices: React.FC = () => {
         <div className="flex items-center space-x-2">
           <button 
             onClick={handleRefresh}
-            className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+            className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             <RotateCcw className="h-4 w-4 mr-2" />
             Refresh
           </button>
           <button 
             onClick={() => setShowFilter(!showFilter)}
-            className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+            className="flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             <Filter className="h-4 w-4 mr-2" />
             Filter
@@ -213,7 +213,7 @@ const InactiveServices: React.FC = () => {
           <div className="flex justify-center">
             <button
               onClick={handleFilterSubmit}
-              className="px-8 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+              className="px-8 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               Submit
             </button>
@@ -279,7 +279,7 @@ const InactiveServices: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" className="sr-only peer" defaultChecked={service.status} />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
                     </label>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

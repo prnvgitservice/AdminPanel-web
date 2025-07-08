@@ -29,7 +29,7 @@ const Payments: React.FC = () => {
         <div className="flex items-center space-x-2">
           <button 
             onClick={() => setShowFilter(!showFilter)}
-            className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+            className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             <Filter className="h-4 w-4 mr-2" />
             Filter
@@ -117,7 +117,7 @@ const Payments: React.FC = () => {
           <div className="flex justify-center">
             <button
               onClick={handleFilterSubmit}
-              className="px-8 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+              className="px-8 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               Submit
             </button>
