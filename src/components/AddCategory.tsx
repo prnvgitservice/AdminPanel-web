@@ -234,5 +234,3 @@ const AddCategory: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
 };
 
 export default AddCategory;
-
-export default AddCategory
