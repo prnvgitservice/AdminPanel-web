@@ -147,7 +147,7 @@ const AdvertisementPosts: React.FC<AdvertisementPostsProps> = ({ onEdit }) => {
                         checked={post.status}
                         onChange={() => handleStatusToggle(post.id)}
                       />
-                      <div className={`w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all ${post.status ? 'peer-checked:bg-green-500' : 'peer-checked:bg-red-500'}`}></div>
+                      <div className={`w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all ${post.status ? 'peer-checked:bg-green-500' : 'peer-checked:bg-blue-500'}`}></div>
                     </label>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -177,7 +177,7 @@ const AdvertisementPosts: React.FC<AdvertisementPostsProps> = ({ onEdit }) => {
             <span className="text-sm text-gray-600">Showing 1 to 7 of 7 entries</span>
             <div className="flex items-center space-x-2">
               <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">Previous</button>
-              <button className="px-3 py-1 text-sm bg-red-500 text-white rounded">1</button>
+              <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded">1</button>
               <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">Next</button>
             </div>
           </div>

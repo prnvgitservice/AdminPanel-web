@@ -109,7 +109,7 @@ const CategoriesList: React.FC<CategoriesListProps> = ({ onAddCategory, onEdit }
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-500 rounded-lg">
+            <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
               <Wrench className="h-6 w-6 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Categories</h1>
@@ -284,7 +284,7 @@ const CategoriesList: React.FC<CategoriesListProps> = ({ onAddCategory, onEdit }
 
         {/* Table View */}
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-          <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4">
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
             <h2 className="text-lg font-semibold text-white">Categories Overview</h2>
           </div>
           

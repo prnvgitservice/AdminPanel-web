@@ -34,7 +34,7 @@ const AddUser: React.FC<AddUserProps> = ({ onBack }) => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-500 rounded-lg">
+            <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
               <User className="h-6 w-6 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Add User</h1>
@@ -66,7 +66,7 @@ const AddUser: React.FC<AddUserProps> = ({ onBack }) => {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter full name"
                     required
                   />
@@ -85,7 +85,7 @@ const AddUser: React.FC<AddUserProps> = ({ onBack }) => {
                       name="mobileNumber"
                       value={formData.mobileNumber}
                       onChange={handleInputChange}
-                      className="flex-1 px-4 py-3 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                     className="flex-1 px-4 py-3 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                       placeholder="Enter mobile number"
                       required
                     />
@@ -102,7 +102,7 @@ const AddUser: React.FC<AddUserProps> = ({ onBack }) => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter email address"
                   required
                 />
@@ -192,7 +192,7 @@ const AddUser: React.FC<AddUserProps> = ({ onBack }) => {
             </button>
             <button
               type="submit"
-              className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               Create User
             </button>

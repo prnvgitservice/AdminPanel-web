@@ -48,7 +48,7 @@ const ProvidersDetails: React.FC = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Providers Details</h1>
-          <button className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 shadow-lg hover:shadow-xl">
+          <button className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl">
             <Filter className="h-4 w-4 mr-2" />
             Filter
           </button>
@@ -154,7 +154,7 @@ const ProvidersDetails: React.FC = () => {
           <div className="flex justify-center">
             <button
               onClick={handleFilterSubmit}
-              className="px-8 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200"
+              className="px-8 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-colors duration-200"
             >
               Submit
             </button>
@@ -165,7 +165,7 @@ const ProvidersDetails: React.FC = () => {
         <div className="mb-6">
           <button
             onClick={handleDownloadExcel}
-            className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+            className="flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             <Download className="h-4 w-4 mr-2" />
             Download Excel
@@ -227,7 +227,7 @@ const ProvidersDetails: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{provider.amountBalance}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{provider.nextRenewalDate}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <button className="px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition-colors duration-150">
+                      <button className="px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs rounded hover:from-blue-600 hover:to-blue-700 transition-colors duration-150">
                         Renew Plan
                       </button>
                     </td>

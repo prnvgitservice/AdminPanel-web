@@ -38,7 +38,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-500 rounded-lg">
+            <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
               <Wrench className="h-6 w-6 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
@@ -57,7 +57,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Category Information */}
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-            <div className="bg-gradient-to-r from-red-500 to-red-600 px-6 py-4">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
               <h2 className="text-lg font-semibold text-white">Category Information</h2>
             </div>
             
@@ -72,7 +72,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
                     name="categoryName"
                     value={formData.categoryName}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter category name"
                     required
                   />
@@ -132,7 +132,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
                   value={formData.categoryDescription}
                   onChange={handleInputChange}
                   rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter category description..."
                 />
               </div>
@@ -141,14 +141,14 @@ const AddCategory: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
 
           {/* Category Image */}
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-            <div className="bg-gradient-to-r from-red-500 to-red-600 px-6 py-4">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
               <h2 className="text-lg font-semibold text-white">Category Image</h2>
             </div>
             
             <div className="p-6">
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-red-400 transition-colors duration-200">
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors duration-200">
                 <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600 mb-2">Upload category image <span className="text-red-500">*</span></p>
+                <p className="text-gray-600 mb-2">Upload category image <span className="text-blue-500">*</span></p>
                 <p className="text-sm text-gray-500 mb-4">PNG, JPG, GIF up to 10MB</p>
                 <input
                   type="file"
@@ -158,7 +158,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
                 />
                 <label
                   htmlFor="category-image"
-                  className="inline-flex items-center px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 cursor-pointer transition-colors duration-200 shadow-lg hover:shadow-xl"
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 cursor-pointer transition-colors duration-200 shadow-lg hover:shadow-xl"
                 >
                   Choose File
                 </label>
@@ -168,7 +168,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
 
           {/* Meta Information */}
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-            <div className="bg-gradient-to-r from-red-500 to-red-600 px-6 py-4">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
               <h2 className="text-lg font-semibold text-white">Meta Information</h2>
             </div>
             
@@ -180,7 +180,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
                   name="metaTitle"
                   value={formData.metaTitle}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter meta title"
                 />
               </div>
@@ -192,7 +192,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
                   value={formData.metaDescription}
                   onChange={handleInputChange}
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter meta description"
                 />
               </div>
@@ -204,7 +204,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
                   name="metaKeywords"
                   value={formData.metaKeywords}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter keywords separated by commas"
                 />
               </div>
@@ -222,7 +222,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
             </button>
             <button
               type="submit"
-              className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               {isEdit ? 'Update Category' : 'Create Category'}
             </button>

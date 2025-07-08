@@ -142,14 +142,14 @@ const Users: React.FC<UsersProps> = ({ onAddUser }) => {
           <div className="flex flex-wrap items-center gap-2">
             <button 
               onClick={() => setShowFilter(!showFilter)}
-              className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               <Filter className="h-4 w-4 mr-2" />
               Filter
             </button>
             <button 
               onClick={onAddUser}
-              className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add
@@ -219,7 +219,7 @@ const Users: React.FC<UsersProps> = ({ onAddUser }) => {
             <div className="flex justify-center">
               <button
                 onClick={handleFilterSubmit}
-                className="px-8 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200"
+                className="px-8 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-colors duration-200"
               >
                 Submit
               </button>

@@ -54,14 +54,14 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ onAddUser }) => {
         <div className="flex items-center space-x-2">
           <button 
             onClick={() => setShowFilter(!showFilter)}
-            className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+            className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             <Filter className="h-4 w-4 mr-2" />
             Filter
           </button>
           <button 
             onClick={onAddUser}
-            className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+            className="flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             <Plus className="h-4 w-4 mr-2" />
             Add
@@ -91,7 +91,7 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ onAddUser }) => {
           <div className="flex justify-center">
             <button
               onClick={handleFilterSubmit}
-              className="px-8 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+              className="px-8 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               Submit
             </button>
@@ -165,7 +165,7 @@ const AdminUsers: React.FC<AdminUsersProps> = ({ onAddUser }) => {
             <span className="text-sm text-gray-600">Showing 1 to 3 of 3 entries</span>
             <div className="flex items-center space-x-2">
               <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">Previous</button>
-              <button className="px-3 py-1 text-sm bg-red-500 text-white rounded">1</button>
+              <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded">1</button>
               <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">Next</button>
             </div>
           </div>

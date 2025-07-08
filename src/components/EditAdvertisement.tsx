@@ -44,7 +44,7 @@ const EditAdvertisement: React.FC<EditAdvertisementProps> = ({ onBack }) => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-6">Advertisement Information</h2>
           
-          <div>
+              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-md hover:from-blue-600 hover:to-blue-700 cursor-pointer"
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Advertisement Name <span className="text-red-500">*</span>
             </label>
@@ -106,7 +106,7 @@ const EditAdvertisement: React.FC<EditAdvertisementProps> = ({ onBack }) => {
                 accept="image/*"
                 className="hidden"
                 id="advertisement-image"
-              />
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               <label
                 htmlFor="advertisement-image"
                 className="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 cursor-pointer"
@@ -131,7 +131,7 @@ const EditAdvertisement: React.FC<EditAdvertisementProps> = ({ onBack }) => {
         <div className="flex items-center justify-between">
           <button
             type="button"
-            onClick={onBack}
+            className="px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-md hover:from-blue-600 hover:to-blue-700"
             className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
           >
             Back

@@ -100,14 +100,14 @@ const BusinessAssociates: React.FC = () => {
           <div className="flex flex-wrap items-center gap-2">
             <button 
               onClick={() => setShowFilter(!showFilter)}
-              className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               <Filter className="h-4 w-4 mr-2" />
               Filter
             </button>
             <button 
               onClick={() => setShowModal(true)}
-              className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add
@@ -176,7 +176,7 @@ const BusinessAssociates: React.FC = () => {
             <div className="flex justify-center">
               <button
                 onClick={handleFilterSubmit}
-                className="px-8 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200"
+                className="px-8 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-colors duration-200"
               >
                 Submit
               </button>
@@ -252,7 +252,7 @@ const BusinessAssociates: React.FC = () => {
               <span className="text-sm text-gray-600">Showing 1 to 10 of 37 entries</span>
               <div className="flex items-center space-x-2">
                 <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">Previous</button>
-                <button className="px-3 py-1 text-sm bg-red-500 text-white rounded">1</button>
+                <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded">1</button>
                 <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">2</button>
                 <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">3</button>
                 <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">4</button>
@@ -285,7 +285,7 @@ const BusinessAssociates: React.FC = () => {
                       name="name"
                       value={modalData.name}
                       onChange={handleModalInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                   <div>
@@ -295,7 +295,7 @@ const BusinessAssociates: React.FC = () => {
                       name="username"
                       value={modalData.username}
                       onChange={handleModalInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                 </div>
@@ -308,7 +308,7 @@ const BusinessAssociates: React.FC = () => {
                       name="emailId"
                       value={modalData.emailId}
                       onChange={handleModalInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                   <div>
@@ -318,7 +318,7 @@ const BusinessAssociates: React.FC = () => {
                       name="mobileNumber"
                       value={modalData.mobileNumber}
                       onChange={handleModalInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                 </div>
@@ -334,7 +334,7 @@ const BusinessAssociates: React.FC = () => {
                         name="accountHolderName"
                         value={modalData.accountHolderName}
                         onChange={handleModalInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -344,7 +344,7 @@ const BusinessAssociates: React.FC = () => {
                         name="accountNumber"
                         value={modalData.accountNumber}
                         onChange={handleModalInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                   </div>
@@ -357,7 +357,7 @@ const BusinessAssociates: React.FC = () => {
                         name="bankName"
                         value={modalData.bankName}
                         onChange={handleModalInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -367,7 +367,7 @@ const BusinessAssociates: React.FC = () => {
                         name="bankIfscCode"
                         value={modalData.bankIfscCode}
                         onChange={handleModalInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                   </div>
@@ -379,7 +379,7 @@ const BusinessAssociates: React.FC = () => {
                         name="status"
                         value={modalData.status}
                         onChange={handleModalInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       >
                         <option value="ACTIVE">ACTIVE</option>
                         <option value="INACTIVE">INACTIVE</option>
@@ -391,7 +391,7 @@ const BusinessAssociates: React.FC = () => {
                         name="isOnline"
                         value={modalData.isOnline}
                         onChange={handleModalInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       >
                         <option value="YES">YES</option>
                         <option value="NO">NO</option>
@@ -410,7 +410,7 @@ const BusinessAssociates: React.FC = () => {
                 </button>
                 <button
                   onClick={handleModalSubmit}
-                  className="w-full sm:w-auto px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200"
+                  className="w-full sm:w-auto px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-colors duration-200"
                 >
                   SAVE
                 </button>
