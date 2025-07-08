@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Layout from './components/Layout';
 import Dashboard from './components/Dashboard';
-import ServicesList from './components/ServicesList';
-import AddService from './components/AddService';
+import CategoriesList from './components/CategoriesList';
+import AddCategory from './components/AddCategory';
 import PendingServices from './components/PendingServices';
 import DeletedServices from './components/DeletedServices';
 import InactiveServices from './components/InactiveServices';
@@ -23,10 +23,12 @@ import ProvidersDetails from './components/ProvidersDetails';
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [editingAdvertisement, setEditingAdvertisement] = useState<number | null>(null);
+  const [editingCategory, setEditingCategory] = useState<number | null>(null);
 
   const handlePageChange = (page: string) => {
     setCurrentPage(page);
     setEditingAdvertisement(null);
+    setEditingCategory(null);
   };
 
   const handleEditAdvertisement = (id: number) => {
@@ -34,14 +36,22 @@ function App() {
     setCurrentPage('edit-advertisement');
   };
 
+  const handleEditCategory = (id: number) => {
+    setEditingCategory(id);
+    setCurrentPage('edit-category');
+  };
+
   const renderContent = () => {
     switch (currentPage) {
       case 'dashboard':
         return <Dashboard />;
+      case 'services':
       case 'all-services':
-        return <ServicesList onAddService={() => setCurrentPage('add-service')} />;
-      case 'add-service':
-        return <AddService onBack={() => setCurrentPage('all-services')} />;
+        return <CategoriesList onAddCategory={() => setCurrentPage('add-category')} onEdit={handleEditCategory} />;
+      case 'add-category':
+        return <AddCategory onBack={() => setCurrentPage('all-services')} />;
+      case 'edit-category':
+        return <AddCategory onBack={() => setCurrentPage('all-services')} isEdit={true} categoryId={editingCategory} />;
       case 'pending-services':
         return <PendingServices />;
       case 'deleted-services':

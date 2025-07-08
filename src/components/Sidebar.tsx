@@ -59,8 +59,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange, onClose })
     { id: 'dashboard', label: 'Dashboard', icon: Home, section: 'Main' },
     
     // Services Section
-    { id: 'services', label: 'Services', icon: Wrench, section: 'Services', hasSubmenu: true },
-    { id: 'add-service', label: 'Add Services', icon: Plus, section: 'Services', isSubItem: true },
+    { id: 'services', label: 'Categories', icon: Wrench, section: 'Services', hasSubmenu: true },
     { id: 'all-services', label: 'All Services', icon: List, section: 'Services', isSubItem: true },
     { id: 'pending-services', label: 'Pending Services', icon: Clock, section: 'Services', isSubItem: true },
     { id: 'deleted-services', label: 'Deleted Services', icon: Trash2, section: 'Services', isSubItem: true },
