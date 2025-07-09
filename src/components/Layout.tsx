@@ -12,7 +12,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div 
@@ -23,7 +23,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
       
       {/* Sidebar */}
       <div className={`
-        fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0
+        fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 h-full
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <Sidebar 
@@ -33,9 +33,9 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
         />
       </div>
       
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         {/* Header */}
-        <header className="bg-white/80 backdrop-blur-md shadow-lg border-b border-slate-200/50 sticky top-0 z-30">
+        <header className="flex-shrink-0 bg-white/80 backdrop-blur-md shadow-lg border-b border-slate-200/50 z-30">
           <div className="flex items-center justify-between px-4 sm:px-6 py-4">
             <div className="flex items-center">
               <button 
@@ -71,7 +71,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
         </header>
         
         {/* Main content */}
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-y-auto bg-gradient-to-br from-gray-50 to-gray-100">
           {children}
         </main>
       </div>
