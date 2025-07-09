@@ -1,22 +1,22 @@
 import React from 'react';
-import { Users, UserCheck, Wrench, CreditCard, TrendingUp, MapPin, Eye, ExternalLink, Building2 } from 'lucide-react';
+import { Users, UserCheck, Wrench, CreditCard, TrendingUp, MapPin, Eye, ExternalLink, Building2, UserCog } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 
 const Dashboard: React.FC = () => {
   const stats = [
-    { label: 'Total Technicians', value: '87', icon: UserCheck, color: 'bg-gradient-to-r from-blue-500 to-blue-600', change: '+8%' },
+    { label: 'Total Technicians', value: '87', icon: UserCog, color: 'bg-gradient-to-r from-blue-500 to-blue-600', change: '+8%' },
     { label: 'Total Users', value: '38', icon: Users, color: 'bg-gradient-to-r from-emerald-500 to-emerald-600', change: '+12%' },
     { label: 'Total Categories', value: '226', icon: Wrench, color: 'bg-gradient-to-r from-purple-500 to-purple-600', change: '+15%' },
-    { label: 'Total Revenue', value: '₹333,957', icon: CreditCard, color: 'bg-gradient-to-r from-amber-500 to-amber-600', change: '+23%' },
-    { label: 'Total Franchise Count', value: '15', icon: Building2, color: 'bg-gradient-to-r from-indigo-500 to-indigo-600', change: '+5%' },
+    { label: 'Revenue', value: '₹333,957', icon: CreditCard, color: 'bg-gradient-to-r from-amber-500 to-amber-600', change: '+23%' },
+    { label: 'Total Franchise', value: '15', icon: Building2, color: 'bg-gradient-to-r from-indigo-500 to-indigo-600', change: '+5%' },
   ];
 
   const recentBookings = [
-    { id: 1, name: 'MOKILA SHANKER YADHAV', date: '05 Aug 2024', service: 'Hardware Service', status: 'Pending', price: '₹0' },
-    { id: 2, name: 'Surla Raju', date: '05 Aug 2024', service: 'AC Service', status: 'Pending', price: '₹0' },
-    { id: 3, name: 'INDRA RAM', date: '03 Aug 2024', service: 'Repair Service', status: 'Cancelled by User', price: '₹0' },
-    { id: 4, name: 'Pujari Chandan', date: '02 Aug 2024', service: 'Plumbing Service', status: 'Pending', price: '₹0' },
-    { id: 5, name: 'JAMES GANDHALA', date: '10 Jul 2024', service: 'Electrical Service', status: 'Pending', price: '₹0' },
+    { id: 1, name: 'MOKILA SHANKER YADHAV', date: '05 Aug 2024', service: 'Hardware Service', status: 'Completed', price: '₹1500' },
+    { id: 2, name: 'Surla Raju', date: '05 Aug 2024', service: 'AC Service', status: 'In Progress', price: '₹2500' },
+    { id: 3, name: 'INDRA RAM', date: '03 Aug 2024', service: 'Repair Service', status: 'Cancelled', price: '₹0' },
+    { id: 4, name: 'Pujari Chandan', date: '02 Aug 2024', service: 'Plumbing Service', status: 'Completed', price: '₹800' },
+    { id: 5, name: 'JAMES GANDHALA', date: '10 Jul 2024', service: 'Electrical Service', status: 'Pending', price: '₹1200' },
   ];
 
   // Sample data for charts
@@ -268,8 +268,12 @@ const Dashboard: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{booking.service}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                          booking.status === 'Pending' 
-                            ? 'bg-amber-100 text-amber-800' 
+                          booking.status === 'Completed' 
+                            ? 'bg-green-100 text-green-800' 
+                            : booking.status === 'In Progress'
+                            ? 'bg-blue-100 text-blue-800'
+                            : booking.status === 'Pending'
+                            ? 'bg-amber-100 text-amber-800'
                             : 'bg-red-100 text-red-800'
                         }`}>
                           {booking.status}
@@ -285,25 +289,25 @@ const Dashboard: React.FC = () => {
           {/* Quick Actions */}
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
             <h2 className="text-xl font-bold text-slate-800 mb-6">Quick Actions</h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <button className="p-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                <Users className="h-6 w-6 mx-auto mb-2" />
-                <span className="text-sm font-medium">Add User</span>
+                <UserCog className="h-6 w-6 mx-auto mb-2" />
+                <span className="text-sm font-medium">Manage Users</span>
               </button>
               <button className="p-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                 <UserCheck className="h-6 w-6 mx-auto mb-2" />
-                <span className="text-sm font-medium">Add Technician</span>
+                <span className="text-sm font-medium">Manage Technicians</span>
               </button>
               <button className="p-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                 <Wrench className="h-6 w-6 mx-auto mb-2" />
-                <span className="text-sm font-medium">Add Category</span>
+                <span className="text-sm font-medium">Manage Categories</span>
               </button>
               <button 
                 onClick={handleViewWebsite}
                 className="p-4 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-xl hover:from-indigo-600 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
-                <Eye className="h-6 w-6 mx-auto mb-2" />
-                <span className="text-sm font-medium">View Site</span>
+                <Building2 className="h-6 w-6 mx-auto mb-2" />
+                <span className="text-sm font-medium">Manage Franchise</span>
               </button>
             </div>
           </div>
