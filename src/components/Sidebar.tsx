@@ -24,7 +24,10 @@ import {
   UserCheck,
   User,
   Building2,
-  X
+  X,
+  Edit,
+  CheckCircle,
+  Package
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -35,10 +38,13 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange, onClose }) => {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    'Services': true,
-    'User Management': true,
-    'Advertisements': false,
-    'Booking': false
+    'Categories': true,
+    'Subscription': false,
+    'Management': false,
+    'Areas': false,
+    'Bookings': false,
+    'Reviews': false,
+    'Advertisements': false
   });
 
   const toggleSection = (section: string) => {
@@ -58,20 +64,70 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange, onClose })
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home, section: 'Main' },
     
-    // Services Section
-    { id: 'services', label: 'Categories', icon: Wrench, section: 'Categories', hasSubmenu: true },
-    { id: 'all-services', label: 'All Categories', icon: List, section: 'Categories', isSubItem: true },
-    { id: 'pending-services', label: 'Pending Categories', icon: Clock, section: 'Categories', isSubItem: true },
-    { id: 'deleted-services', label: 'Deleted Categories', icon: Trash2, section: 'Categories', isSubItem: true },
-    { id: 'inactive-services', label: 'Inactive Categories', icon: XCircle, section: 'Categories', isSubItem: true },
-    // User Management Section
-    { id: 'manage-users', label: 'Manage Users', icon: Users, section: 'User Management', hasSubmenu: true },
-    { id: 'admin-users', label: 'Admin Users', icon: UserCheck, section: 'User Management', isSubItem: true },
-    { id: 'admin', label: 'Admin', icon: User, section: 'User Management', isSubItem: true },
-    { id: 'providers', label: 'Providers', icon: UserCheck, section: 'User Management', isSubItem: true },
-    { id: 'users', label: 'Users', icon: Users, section: 'User Management', isSubItem: true },
-    { id: 'bda', label: 'BDA', icon: Building2, section: 'User Management', isSubItem: true },
-    { id: 'providers-details', label: 'Providers Details', icon: List, section: 'User Management', isSubItem: true },
+    // Categories Section
+    { id: 'categories', label: 'Categories', icon: Wrench, section: 'Categories', hasSubmenu: true },
+    { id: 'all-categories', label: 'All Categories', icon: List, section: 'Categories', isSubItem: true },
+    { id: 'add-category', label: 'Add Category', icon: Plus, section: 'Categories', isSubItem: true },
+    { id: 'active-categories', label: 'Active Categories', icon: CheckCircle, section: 'Categories', isSubItem: true },
+    { id: 'inactive-categories', label: 'Inactive Categories', icon: XCircle, section: 'Categories', isSubItem: true },
+    { id: 'deleted-categories', label: 'Deleted Categories', icon: Trash2, section: 'Categories', isSubItem: true },
+
+    // Subscription Section
+    { id: 'subscription', label: 'Subscription', icon: Package, section: 'Subscription', hasSubmenu: true },
+    { id: 'all-subscriptions', label: 'All Subscriptions', icon: List, section: 'Subscription', isSubItem: true },
+    { id: 'add-subscription', label: 'Add Subscription', icon: Plus, section: 'Subscription', isSubItem: true },
+    { id: 'edit-subscription', label: 'Edit Subscription', icon: Edit, section: 'Subscription', isSubItem: true },
+    { id: 'deleted-subscriptions', label: 'Deleted Subscriptions', icon: Trash2, section: 'Subscription', isSubItem: true },
+
+    // Management Section
+    { id: 'management', label: 'Management', icon: Settings, section: 'Management', hasSubmenu: true },
+    
+    // Manage Users
+    { id: 'manage-users', label: 'Manage Users', icon: Users, section: 'Management', hasSubmenu: true, isSubItem: true },
+    { id: 'all-users', label: 'All Users', icon: List, section: 'Management', isSubItem: true, parentId: 'manage-users' },
+    { id: 'add-user', label: 'Add User', icon: Plus, section: 'Management', isSubItem: true, parentId: 'manage-users' },
+    { id: 'edit-user', label: 'Edit User', icon: Edit, section: 'Management', isSubItem: true, parentId: 'manage-users' },
+    { id: 'delete-user', label: 'Delete User', icon: Trash2, section: 'Management', isSubItem: true, parentId: 'manage-users' },
+    { id: 'admin-created-users', label: 'Admin Created Users', icon: UserCheck, section: 'Management', isSubItem: true, parentId: 'manage-users' },
+
+    // Manage Technicians
+    { id: 'manage-technicians', label: 'Manage Technicians', icon: UserCheck, section: 'Management', hasSubmenu: true, isSubItem: true },
+    { id: 'all-technicians', label: 'All Technicians', icon: List, section: 'Management', isSubItem: true, parentId: 'manage-technicians' },
+    { id: 'add-technician', label: 'Add Technician', icon: Plus, section: 'Management', isSubItem: true, parentId: 'manage-technicians' },
+    { id: 'edit-technician', label: 'Edit Technician', icon: Edit, section: 'Management', isSubItem: true, parentId: 'manage-technicians' },
+    { id: 'delete-technician', label: 'Delete Technician', icon: Trash2, section: 'Management', isSubItem: true, parentId: 'manage-technicians' },
+    { id: 'admin-created-technicians', label: 'Admin Created Technicians', icon: UserCheck, section: 'Management', isSubItem: true, parentId: 'manage-technicians' },
+
+    // Manage Franchises
+    { id: 'manage-franchises', label: 'Manage Franchises', icon: Building2, section: 'Management', hasSubmenu: true, isSubItem: true },
+    { id: 'all-franchises', label: 'All Franchises', icon: List, section: 'Management', isSubItem: true, parentId: 'manage-franchises' },
+    { id: 'add-franchise', label: 'Add Franchise', icon: Plus, section: 'Management', isSubItem: true, parentId: 'manage-franchises' },
+    { id: 'edit-franchise', label: 'Edit Franchise', icon: Edit, section: 'Management', isSubItem: true, parentId: 'manage-franchises' },
+    { id: 'delete-franchise', label: 'Delete Franchise', icon: Trash2, section: 'Management', isSubItem: true, parentId: 'manage-franchises' },
+    { id: 'admin-created-franchises', label: 'Admin Created Franchises', icon: Building2, section: 'Management', isSubItem: true, parentId: 'manage-franchises' },
+
+    // Areas Section
+    { id: 'areas', label: 'Areas', icon: MapPin, section: 'Areas', hasSubmenu: true },
+    { id: 'all-areas', label: 'All Areas', icon: List, section: 'Areas', isSubItem: true },
+    { id: 'add-area', label: 'Add Area', icon: Plus, section: 'Areas', isSubItem: true },
+    { id: 'edit-area', label: 'Edit Area', icon: Edit, section: 'Areas', isSubItem: true },
+    { id: 'delete-area', label: 'Delete Area', icon: Trash2, section: 'Areas', isSubItem: true },
+
+    // Bookings Section
+    { id: 'bookings', label: 'Bookings', icon: Calendar, section: 'Bookings', hasSubmenu: true },
+    { id: 'all-bookings', label: 'All Bookings', icon: List, section: 'Bookings', isSubItem: true },
+    { id: 'guest-bookings', label: 'Guest Bookings', icon: Users, section: 'Bookings', isSubItem: true },
+
+    // Reviews Section
+    { id: 'reviews', label: 'Reviews', icon: Star, section: 'Reviews', hasSubmenu: true },
+    { id: 'all-reviews', label: 'All Reviews', icon: List, section: 'Reviews', isSubItem: true },
+
+    // Advertisements Section
+    { id: 'advertisements', label: 'Advertisements', icon: Image, section: 'Advertisements', hasSubmenu: true },
+    { id: 'all-advertisements', label: 'All Advertisements', icon: List, section: 'Advertisements', isSubItem: true },
+    { id: 'add-advertisement', label: 'Add Advertisement', icon: Plus, section: 'Advertisements', isSubItem: true },
+    { id: 'edit-advertisement', label: 'Edit Advertisement', icon: Edit, section: 'Advertisements', isSubItem: true },
+    { id: 'delete-advertisement', label: 'Delete Advertisement', icon: Trash2, section: 'Advertisements', isSubItem: true },
   ];
 
   const groupedItems = menuItems.reduce((acc, item) => {
@@ -135,7 +191,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange, onClose })
                         currentPage === item.id
                           ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-r-4 border-blue-700 shadow-lg transform translate-x-1'
                           : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 hover:translate-x-1'
-                      } ${item.isSubItem ? 'pl-8 sm:pl-12' : ''}`}
+                      } ${item.isSubItem ? (item.parentId ? 'pl-12 sm:pl-16' : 'pl-8 sm:pl-12') : ''}`}
                     >
                       <item.icon className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 flex-shrink-0" />
                       <span className="flex-1 text-left truncate text-xs sm:text-sm">{item.label}</span>

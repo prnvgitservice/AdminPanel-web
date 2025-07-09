@@ -1,13 +1,14 @@
 import React from 'react';
-import { Users, UserCheck, Wrench, CreditCard, TrendingUp, MapPin, Eye, ExternalLink } from 'lucide-react';
+import { Users, UserCheck, Wrench, CreditCard, TrendingUp, MapPin, Eye, ExternalLink, Building2 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 
 const Dashboard: React.FC = () => {
   const stats = [
-    { label: 'Users', value: '38', icon: Users, color: 'bg-gradient-to-r from-blue-500 to-blue-600', change: '+12%' },
-    { label: 'Providers', value: '87', icon: UserCheck, color: 'bg-gradient-to-r from-emerald-500 to-emerald-600', change: '+8%' },
-    { label: 'Services', value: '226', icon: Wrench, color: 'bg-gradient-to-r from-purple-500 to-purple-600', change: '+15%' },
-    { label: 'Revenue', value: '₹333,957', icon: CreditCard, color: 'bg-gradient-to-r from-amber-500 to-amber-600', change: '+23%' },
+    { label: 'Total Technicians', value: '87', icon: UserCheck, color: 'bg-gradient-to-r from-blue-500 to-blue-600', change: '+8%' },
+    { label: 'Total Users', value: '38', icon: Users, color: 'bg-gradient-to-r from-emerald-500 to-emerald-600', change: '+12%' },
+    { label: 'Total Categories', value: '226', icon: Wrench, color: 'bg-gradient-to-r from-purple-500 to-purple-600', change: '+15%' },
+    { label: 'Total Revenue', value: '₹333,957', icon: CreditCard, color: 'bg-gradient-to-r from-amber-500 to-amber-600', change: '+23%' },
+    { label: 'Total Franchise Count', value: '15', icon: Building2, color: 'bg-gradient-to-r from-indigo-500 to-indigo-600', change: '+5%' },
   ];
 
   const recentBookings = [
@@ -62,7 +63,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           {stats.map((stat, index) => (
             <div key={index} className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
               <div className="flex items-center justify-between">
@@ -291,7 +292,7 @@ const Dashboard: React.FC = () => {
               </button>
               <button className="p-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                 <UserCheck className="h-6 w-6 mx-auto mb-2" />
-                <span className="text-sm font-medium">Add Provider</span>
+                <span className="text-sm font-medium">Add Technician</span>
               </button>
               <button className="p-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                 <Wrench className="h-6 w-6 mx-auto mb-2" />
