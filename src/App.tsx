@@ -1,24 +1,25 @@
 import React, { useState } from 'react';
-import Layout from './components/Layout';
-import Dashboard from './components/Dashboard';
-import AllCategories from './components/AllCategories';
-import AddCategory from './components/AddCategory';
-import PendingServices from './components/PendingServices';
-import DeletedServices from './components/DeletedServices';
-import InactiveServices from './components/InactiveServices';
-import Payments from './components/Payments';
-import WorkGallery from './components/WorkGallery';
-import VideoGallery from './components/VideoGallery';
-import AdvertisementPosts from './components/AdvertisementPosts';
-import EditAdvertisement from './components/EditAdvertisement';
-import AdminUsers from './components/AdminUsers';
-import AddAdminUser from './components/AddAdminUser';
-import Providers from './components/Providers';
-import AddProvider from './components/AddProvider';
-import Users from './components/Users';
-import AddUser from './components/AddUser';
-import BusinessAssociates from './components/BusinessAssociates';
-import ProvidersDetails from './components/ProvidersDetails';
+import Dashboard from './pages/Dashboard';
+import AllCategories from './components/category/AllCategories';
+import AddCategory from './components/category/AddCategory';
+import PendingServices from './pages/PendingServices';
+import DeletedServices from './components/category/DeletedCategories';
+import InactiveServices from './components/category/InactiveCategories';
+import Payments from './components/bookings/Payments';
+import WorkGallery from './pages/WorkGallery';
+import VideoGallery from './pages/VideoGallery';
+import AdvertisementPosts from './components/advertisements/AdvertisementPosts';
+import EditAdvertisement from './components/advertisements/EditAdvertisement';
+import AdminUsers from './components/manageUsers/AdminUsers';
+import AddAdminUser from './pages/AddAdminUser';
+import Providers from './components/manageTechnicians/Technicians';
+import AddProvider from './components/manageTechnicians/AddTechnician';
+import Users from './components/manageUsers/Users';
+import BusinessAssociates from './components/manageFranchise/Franchises';
+import ProvidersDetails from './pages/ProvidersDetails';
+import ActiveCategories from './components/category/ActiveCategories';
+import AddUser from './components/manageUsers/AddUser';
+import Layout from './pages/Layout';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -55,7 +56,7 @@ function App() {
       case 'edit-category':
         return <AddCategory onBack={() => setCurrentPage('all-categories')} isEdit={true} categoryId={editingCategory} />;
       case 'active-categories':
-        return <AllCategories onAddCategory={() => setCurrentPage('add-category')} onEdit={handleEditCategory} />;
+        return <ActiveCategories onAddCategory={() => setCurrentPage('add-category')} onEdit={handleEditCategory} />;
       case 'inactive-categories':
         return <InactiveServices />;
       case 'deleted-categories':

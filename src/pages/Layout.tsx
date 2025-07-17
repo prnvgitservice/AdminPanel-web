@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Menu, Eye, Bell, MessageCircle, User, X } from 'lucide-react';
 import Sidebar from './Sidebar';
 
+
 interface LayoutProps {
   children: React.ReactNode;
   currentPage: string;
@@ -26,7 +27,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
         fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 h-full
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
-        <Sidebar 
+        <Sidebar
           currentPage={currentPage} 
           onPageChange={onPageChange}
           onClose={() => setSidebarOpen(false)}

@@ -26,7 +26,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); 
     console.log('Category data:', formData);
     alert(`Category ${isEdit ? 'updated' : 'created'} successfully!`);
     onBack();
@@ -197,7 +197,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
                 />
               </div>
               
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">Meta Keywords</label>
                 <input
                   type="text"
@@ -207,7 +207,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter keywords separated by commas"
                 />
-              </div>
+              </div> */}
             </div>
           </div>
 

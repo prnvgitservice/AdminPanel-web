@@ -115,21 +115,21 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">All Categories</h1>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <button 
+            <button
               onClick={handleRefresh}
               className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <RotateCcw className="h-4 w-4 mr-2" />
               Refresh
             </button>
-            <button 
+            <button
               onClick={() => setShowFilter(!showFilter)}
               className="flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <Filter className="h-4 w-4 mr-2" />
               Filter
             </button>
-            <button 
+            <button
               onClick={onAddCategory}
               className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
@@ -141,7 +141,7 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
 
         {/* Filter Panel */}
         {showFilter && (
-          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8 animate-in slide-in-from-top duration-300">
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8 animate-in slide-in-from-top duration-300 flex">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Category Name</label>
@@ -159,7 +159,7 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
                   <option value="photography">Photography & Videography</option>
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
                 <select
@@ -172,8 +172,7 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
                   <option value="inactive">Inactive</option>
                 </select>
               </div>
-              
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">From Date</label>
                 <div className="relative">
                   <input
@@ -184,9 +183,9 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
                   />
                   <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-gray-400 pointer-events-none" />
                 </div>
-              </div>
-              
-              <div>
+              </div> */}
+
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">To Date</label>
                 <div className="relative">
                   <input
@@ -197,17 +196,17 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
                   />
                   <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-gray-400 pointer-events-none" />
                 </div>
+              </div> */}
+            </div>
+
+<div className="flex justify-center items-center">
+                <button
+                  onClick={handleFilterSubmit}
+                  className="px-8 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  Search
+                </button>
               </div>
-            </div>
-            
-            <div className="flex justify-center">
-              <button
-                onClick={handleFilterSubmit}
-                className="px-8 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
-              >
-                Submit
-              </button>
-            </div>
           </div>
         )}
 
@@ -216,16 +215,16 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
           {categories.map((category) => (
             <div key={category.id} className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <div className="relative">
-                <img 
-                  src={category.image} 
+                <img
+                  src={category.image}
                   alt={category.name}
                   className="w-full h-48 object-cover"
                 />
                 <div className="absolute top-4 right-4">
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      className="sr-only peer" 
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
                       checked={category.status}
                       onChange={() => handleStatusToggle(category.id)}
                     />
@@ -233,31 +232,30 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
                   </label>
                 </div>
               </div>
-              
+
               <div className="p-6">
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{category.name}</h3>
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                    category.status 
-                      ? 'bg-green-100 text-green-800' 
+                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${category.status
+                      ? 'bg-green-100 text-green-800'
                       : 'bg-red-100 text-red-800'
-                  }`}>
+                    }`}>
                     {category.status ? 'Active' : 'Inactive'}
                   </span>
                 </div>
-                
+
                 <p className="text-gray-600 text-sm mb-4 line-clamp-2">{category.description}</p>
-                
+
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-sm text-gray-500">
-                    <span className="font-medium">{category.servicesCount}</span> services
+                    <span className="font-medium">{category.servicesCount}</span> Technicians
                   </div>
                   <div className="text-sm text-gray-500">{category.date}</div>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <button 
+                    <button
                       onClick={() => onEdit(category.id)}
                       className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all duration-200"
                     >
@@ -266,7 +264,7 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
                     <button className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-all duration-200">
                       <Eye className="h-4 w-4" />
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleDelete(category.id)}
                       className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all duration-200"
                     >
@@ -274,7 +272,7 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
                     </button>
                   </div>
                   <button className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg">
-                    View Services
+                    View Technicians
                   </button>
                 </div>
               </div>
@@ -283,7 +281,7 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
         </div>
 
         {/* Table View */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        {/* <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
           <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
             <h2 className="text-lg font-semibold text-white">Categories Overview</h2>
           </div>
@@ -390,7 +388,7 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
