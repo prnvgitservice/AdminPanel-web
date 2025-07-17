@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import {
   Home, Wrench, Plus, List, XCircle, Settings, Star,
   Calendar, MapPin, ChevronRight, ChevronDown, Users,
-  UserCheck, Building2, X, CheckCircle, Package, Image, LucideIcon
+  UserCheck, Building2, X, CheckCircle, Package, Image, LucideIcon,
+  BookOpen
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -38,6 +39,7 @@ const SectionToggle: React.FC<SectionToggleProps> = ({ section, expanded, onTogg
 // Section to Icon mapping
 const sectionMeta: Record<string, { icon: LucideIcon }> = {
   Categories: { icon: Wrench },
+  MetaInfo: { icon: BookOpen },
   Subscription: { icon: Package },
   Management: { icon: Settings },
   Areas: { icon: MapPin },
@@ -49,6 +51,7 @@ const sectionMeta: Record<string, { icon: LucideIcon }> = {
 const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange, onClose }) => {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     Categories: true,
+    MetaInfo: false,
     Subscription: false,
     Management: false,
     Areas: false,
@@ -77,6 +80,10 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange, onClose })
     { id: 'active-categories', label: 'Active Categories', icon: CheckCircle, section: 'Categories', isSubItem: true },
     { id: 'inactive-categories', label: 'Inactive Categories', icon: XCircle, section: 'Categories', isSubItem: true },
     { id: 'deleted-categories', label: 'Deleted Categories', icon: XCircle, section: 'Categories', isSubItem: true },
+
+    { id: 'meta-info', label: 'Meta Info', icon: BookOpen, section: 'MetaInfo', hasSubmenu: true },
+    { id: 'all-meta-info', label: 'All Meta Info', icon: List, section: 'MetaInfo', isSubItem: true },
+    { id: 'add-meta-info', label: 'Add Meta Info', icon: Plus, section: 'MetaInfo', isSubItem: true },
 
     { id: 'subscription', label: 'Subscription', icon: Package, section: 'Subscription', hasSubmenu: true },
     { id: 'all-subscriptions', label: 'All Subscriptions', icon: List, section: 'Subscription', isSubItem: true },

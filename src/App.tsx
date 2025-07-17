@@ -20,6 +20,8 @@ import ProvidersDetails from './pages/ProvidersDetails';
 import ActiveCategories from './components/category/ActiveCategories';
 import AddUser from './components/manageUsers/AddUser';
 import Layout from './pages/Layout';
+import AllMetaInfo from './components/metaInfo/AllMetaInfo';
+import AddMetaInfo from './components/metaInfo/AddMetaInfo';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -61,6 +63,12 @@ function App() {
         return <InactiveServices />;
       case 'deleted-categories':
         return <DeletedServices />;
+
+         case 'metaInfo':
+      case 'all-meta-info':
+        return <AllMetaInfo/>;
+      case 'add-meta-info':
+        return <AddMetaInfo onBack={() => setCurrentPage('all-meta-info')} />;
 
       // Subscription
       case 'subscription':
