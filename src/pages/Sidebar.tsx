@@ -79,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange, onClose })
     { id: 'add-category', label: 'Add Category', icon: Plus, section: 'Categories', isSubItem: true },
     { id: 'active-categories', label: 'Active Categories', icon: CheckCircle, section: 'Categories', isSubItem: true },
     { id: 'inactive-categories', label: 'Inactive Categories', icon: XCircle, section: 'Categories', isSubItem: true },
-    { id: 'deleted-categories', label: 'Deleted Categories', icon: XCircle, section: 'Categories', isSubItem: true },
+    // { id: 'deleted-categories', label: 'Deleted Categories', icon: XCircle, section: 'Categories', isSubItem: true },
 
     { id: 'meta-info', label: 'Meta Info', icon: BookOpen, section: 'MetaInfo', hasSubmenu: true },
     { id: 'all-meta-info', label: 'All Meta Info', icon: List, section: 'MetaInfo', isSubItem: true },
@@ -88,7 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, onPageChange, onClose })
     { id: 'subscription', label: 'Subscription', icon: Package, section: 'Subscription', hasSubmenu: true },
     { id: 'all-subscriptions', label: 'All Subscriptions', icon: List, section: 'Subscription', isSubItem: true },
     { id: 'add-subscription', label: 'Add Subscription', icon: Plus, section: 'Subscription', isSubItem: true },
-    { id: 'deleted-subscriptions', label: 'Deleted Subscriptions', icon: XCircle, section: 'Subscription', isSubItem: true },
+    // { id: 'deleted-subscriptions', label: 'Deleted Subscriptions', icon: XCircle, section: 'Subscription', isSubItem: true },
 
     { id: 'management', label: 'Management', icon: Settings, section: 'Management', hasSubmenu: true },
     { id: 'manage-users', label: 'Manage Users', icon: Users, section: 'Management', hasSubmenu: true, isSubItem: true },
