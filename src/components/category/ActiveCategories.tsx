@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, RotateCcw, Filter, Edit, Eye, Trash2, Calendar, Wrench } from 'lucide-react';
+import { useCategoryContext } from '../Context/CategoryContext';
 
 interface AllCategoriesProps {
   onAddCategory: () => void;
@@ -7,70 +8,12 @@ interface AllCategoriesProps {
 }
 
 const ActiveCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) => {
+    const { categories, setCategories, loading, error } = useCategoryContext();
   const [showFilter, setShowFilter] = useState(false);
   const [filters, setFilters] = useState({
     categoryName: '',
     status: '',
-    fromDate: '',
-    toDate: ''
   });
-
-  const categories = [
-    {
-      id: 1,
-      name: 'AC Repair & Services',
-      description: 'Professional AC repair and maintenance services',
-      status: true,
-      date: '25 Oct 2023',
-      servicesCount: 15,
-      image: 'https://images.pexels.com/photos/3768911/pexels-photo-3768911.jpeg?auto=compress&cs=tinysrgb&w=400'
-    },
-    {
-      id: 2,
-      name: 'Computer/Laptop Repair & Services',
-      description: 'Expert computer and laptop repair services',
-      status: true,
-      date: '20 Oct 2023',
-      servicesCount: 12,
-      image: 'https://images.pexels.com/photos/3735781/pexels-photo-3735781.jpeg?auto=compress&cs=tinysrgb&w=400'
-    },
-    {
-      id: 3,
-      name: 'Plumbing Services',
-      description: 'Complete plumbing solutions for homes and offices',
-      status: true,
-      date: '18 Oct 2023',
-      servicesCount: 20,
-      image: 'https://images.pexels.com/photos/3768911/pexels-photo-3768911.jpeg?auto=compress&cs=tinysrgb&w=400'
-    },
-    {
-      id: 4,
-      name: 'Electrical Services',
-      description: 'Professional electrical installation and repair',
-      status: false,
-      date: '15 Oct 2023',
-      servicesCount: 8,
-      image: 'https://images.pexels.com/photos/3735781/pexels-photo-3735781.jpeg?auto=compress&cs=tinysrgb&w=400'
-    },
-    {
-      id: 5,
-      name: 'Cleaning Services',
-      description: 'Deep cleaning and maintenance services',
-      status: true,
-      date: '12 Oct 2023',
-      servicesCount: 18,
-      image: 'https://images.pexels.com/photos/3768911/pexels-photo-3768911.jpeg?auto=compress&cs=tinysrgb&w=400'
-    },
-    {
-      id: 6,
-      name: 'Photography & Videography',
-      description: 'Professional photography and videography services',
-      status: true,
-      date: '10 Oct 2023',
-      servicesCount: 6,
-      image: 'https://images.pexels.com/photos/3735781/pexels-photo-3735781.jpeg?auto=compress&cs=tinysrgb&w=400'
-    }
-  ];
 
   const handleFilterChange = (field: string, value: string) => {
     setFilters(prev => ({
@@ -84,8 +27,6 @@ const ActiveCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit 
     setFilters({
       categoryName: '',
       status: '',
-      fromDate: '',
-      toDate: ''
     });
   };
 
@@ -145,12 +86,7 @@ const ActiveCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit 
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">Select category</option>
-                  <option value="ac-repair">AC Repair & Services</option>
-                  <option value="computer-repair">Computer/Laptop Repair & Services</option>
-                  <option value="plumbing">Plumbing Services</option>
-                  <option value="electrical">Electrical Services</option>
-                  <option value="cleaning">Cleaning Services</option>
-                  <option value="photography">Photography & Videography</option>
+
                 </select>
               </div>
             </div>
@@ -168,12 +104,14 @@ const ActiveCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit 
 
         {/* Categories Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {categories.map((category) => (
-            <div key={category.id} className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+          {categories
+          .filter(c => c.status === 1)
+          .map((category) => (
+            <div key={category._id} className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <div className="relative">
                 <img
-                  src={category.image}
-                  alt={category.name}
+                  src={category.category_image}
+                  alt={category.category_name}
                   className="w-full h-48 object-cover"
                 />
                 <div className="absolute top-4 right-4">
@@ -181,8 +119,8 @@ const ActiveCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit 
                     <input
                       type="checkbox"
                       className="sr-only peer"
-                      checked={category.status}
-                      onChange={() => handleStatusToggle(category.id)}
+                      checked={category.status === 1}
+                      onChange={() => handleStatusToggle(category?._id)}
                     />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
                   </label>
@@ -191,8 +129,8 @@ const ActiveCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit 
 
               <div className="p-6">
                 <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{category.name}</h3>
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${category.status
+                  <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{category.category_name}</h3>
+                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${category.status === 1
                       ? 'bg-green-100 text-green-800'
                       : 'bg-red-100 text-red-800'
                     }`}>
@@ -200,7 +138,7 @@ const ActiveCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit 
                   </span>
                 </div>
 
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{category.description}</p>
+                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{category.meta_title}</p>
 
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-sm text-gray-500">
@@ -212,7 +150,7 @@ const ActiveCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => onEdit(category.id)}
+                      onClick={() => onEdit(category._id)}
                       className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all duration-200"
                     >
                       <Edit className="h-4 w-4" />
@@ -221,7 +159,7 @@ const ActiveCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit 
                       <Eye className="h-4 w-4" />
                     </button>
                     <button
-                      onClick={() => handleDelete(category.id)}
+                      onClick={() => handleDelete(category._id)}
                       className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all duration-200"
                     >
                       <Trash2 className="h-4 w-4" />
