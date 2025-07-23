@@ -61,8 +61,8 @@ function App() {
         return <ActiveCategories onAddCategory={() => setCurrentPage('add-category')} onEdit={handleEditCategory} />;
       case 'inactive-categories':
         return <InactiveServices />;
-      case 'deleted-categories':
-        return <DeletedServices />;
+      // case 'deleted-categories':
+      //   return <DeletedServices />;
 
          case 'metaInfo':
       case 'all-meta-info':
@@ -78,8 +78,8 @@ function App() {
         return <div className="p-8"><h1 className="text-2xl font-bold">Add Subscription</h1><p>Add subscription form coming soon...</p></div>;
       case 'edit-subscription':
         return <div className="p-8"><h1 className="text-2xl font-bold">Edit Subscription</h1><p>Edit subscription form coming soon...</p></div>;
-      case 'deleted-subscriptions':
-        return <div className="p-8"><h1 className="text-2xl font-bold">Deleted Subscriptions</h1><p>Deleted subscriptions list coming soon...</p></div>;
+      // case 'deleted-subscriptions':
+        // return <div className="p-8"><h1 className="text-2xl font-bold">Deleted Subscriptions</h1><p>Deleted subscriptions list coming soon...</p></div>;
 
       // Management - Users
       case 'management':
