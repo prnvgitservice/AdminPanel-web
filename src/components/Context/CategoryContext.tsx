@@ -8,6 +8,7 @@ interface Category {
   meta_title: string,
   status: number;
   category_image: string;
+  createdAt: string;
 }
 
 interface CategoryContextType {

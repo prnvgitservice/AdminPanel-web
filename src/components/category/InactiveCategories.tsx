@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Plus,
   RotateCcw,
@@ -24,8 +24,17 @@ const InactiveCategories: React.FC<AllCategoriesProps> = ({
   const [showFilter, setShowFilter] = useState(false);
   const [filters, setFilters] = useState({
     categoryName: "",
-    status: "",
+    status: "inactive",
   });
+
+  const filteredCategories = useMemo(() => {
+        return categories?.filter((category)=>{
+        const matchesName = filters.categoryName ? category.category_name.toLowerCase().includes(filters.categoryName.toLowerCase()) : true;
+        const matchesStatus = filters.status ? category.status === 0 === (filters.status === 'inactive') : true;
+        return matchesName && matchesStatus;
+            
+        })
+    }, [categories, filters]);
 
   const handleFilterChange = (field: string, value: string) => {
     setFilters((prev) => ({
@@ -38,7 +47,7 @@ const InactiveCategories: React.FC<AllCategoriesProps> = ({
     setShowFilter(false);
     setFilters({
       categoryName: "",
-      status: "",
+      status: "inactive",
     });
   };
 
@@ -55,6 +64,14 @@ const InactiveCategories: React.FC<AllCategoriesProps> = ({
       console.log("Delete category:", id);
     }
   };
+
+  if (loading) {
+    return <div className="text-center py-8">Loading categories...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-8 text-red-600">{error}</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
@@ -103,14 +120,12 @@ const InactiveCategories: React.FC<AllCategoriesProps> = ({
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">Select category</option>
-                  <option value="ac-repair">AC Repair & Services</option>
-                  <option value="computer-repair">
-                    Computer/Laptop Repair & Services
-                  </option>
-                  <option value="plumbing">Plumbing Services</option>
-                  <option value="electrical">Electrical Services</option>
-                  <option value="cleaning">Cleaning Services</option>
-                  <option value="photography">Photography & Videography</option>
+                  {categories
+                  .filter(c => c.status === 0).map((category) => (
+                    <option key={category?._id} value={category.category_name}>
+                      {category.category_name}
+                    </option>
+                  ))}{" "}
                 </select>
               </div>
             </div>
@@ -128,8 +143,7 @@ const InactiveCategories: React.FC<AllCategoriesProps> = ({
 
         {/* Categories Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {categories
-            .filter((c) => c.status === 0)
+          {filteredCategories
             .map((category) => (
               <div
                 key={category._id}

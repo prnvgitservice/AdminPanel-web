@@ -188,9 +188,9 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
 
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-sm text-gray-500">
-                    <span className="font-medium">{category.servicesCount}</span> Technicians
+                    <span className="font-medium">{category?.servicesCount}</span> Technicians
                   </div>
-                  <div className="text-sm text-gray-500">{category.date}</div>
+                  <div className="text-sm text-gray-500">{new Date(category?.createdAt).toLocaleDateString('en-GB')}</div>
                 </div>
 
                 <div className="flex items-center justify-between">
