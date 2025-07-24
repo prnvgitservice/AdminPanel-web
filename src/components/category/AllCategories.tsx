@@ -1,69 +1,102 @@
-import React, { useState, useMemo } from 'react';
-import { Plus, RotateCcw, Filter, Edit, Eye, Trash2, Calendar, Wrench } from 'lucide-react';
-import { useCategoryContext } from '../Context/CategoryContext';
-import { deleteCategory } from '../../api/apiMethods';
+import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Plus,
+  RotateCcw,
+  Filter,
+  Edit,
+  Eye,
+  Trash2,
+  Wrench,
+} from "lucide-react";
+import { useCategoryContext } from "../Context/CategoryContext";
+import { deleteCategory } from "../../api/apiMethods";
 
-interface AllCategoriesProps {
-  onAddCategory: () => void;
-  onEdit: (id: string) => void;
+interface Category {
+  _id: string;
+  category_name: string;
+  category_image: string;
+  status: number;
+  meta_title: string;
+  meta_description: string;
+  servicesCount: number;
+  createdAt: string;
 }
 
-const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) => {
+const AllCategories: React.FC = () => {
   const { categories, setCategories, loading, error } = useCategoryContext();
+  const navigate = useNavigate();
   const [showFilter, setShowFilter] = useState(false);
   const [filters, setFilters] = useState({
-    categoryName: '',
-    status: ''
+    categoryName: "",
+    status: "",
   });
 
   const filteredCategories = useMemo(() => {
-      return categories?.filter((category)=>{
-      const matchesName = filters.categoryName ? category.category_name.toLowerCase().includes(filters.categoryName.toLowerCase()) : true;
-      const matchesStatus = filters.status ? category.status === 1 === (filters.status === 'active') : true;
+    return categories?.filter((category) => {
+      const matchesName = filters.categoryName
+        ? category.category_name
+            .toLowerCase()
+            .includes(filters.categoryName.toLowerCase())
+        : true;
+      const matchesStatus = filters.status
+        ? (category.status === 1) === (filters.status === "active")
+        : true;
       return matchesName && matchesStatus;
-          
-      })
+    });
   }, [categories, filters]);
 
   const handleFilterChange = (field: string, value: string) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       [field]: value,
     }));
   };
-  
-    const handleFilterSubmit = () => {
-      console.log('Applying filters:', filters);
-    };
+
+  const handleFilterSubmit = () => {
+    console.log("Applying filters:", filters);
+  };
 
   const handleRefresh = () => {
     setShowFilter(false);
     setFilters({
-      categoryName: '',
-      status: ''
+      categoryName: "",
+      status: "",
     });
   };
 
   const handleStatusToggle = async (id: string) => {
     try {
       // Assume updateCategoryStatus is an API method
-      await updateCategoryStatus(id, !categories.find(c => c._id === id)?.status);
-      setCategories(prev => prev.map(c => c._id === id ? { ...c, status: !c.status } : c));
+      await updateCategoryStatus(
+        id,
+        !categories.find((c) => c._id === id)?.status
+      );
+      setCategories((prev) =>
+        prev.map((c) => (c._id === id ? { ...c, status: c.status ? 0 : 1 } : c))
+      );
     } catch (error) {
-      console.error('Failed to update status', error);
+      console.error("Failed to update status", error);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this category?')) {
+    if (window.confirm("Are you sure you want to delete this category?")) {
       try {
-        // Assume deleteCategory is an API method
         await deleteCategory(id);
-        setCategories(prev => prev.filter(c => c._id !== id));
+        setCategories((prev) => prev.filter((c) => c._id !== id));
       } catch (error) {
-        console.error('Failed to delete category', error);
+        console.error("Failed to delete category", error);
       }
     }
+  };
+
+  const handleEdit = (id: string) => {
+    navigate(`/categories/edit`, { state: { categoryId: id } });
+  };
+
+  const handleView = (category: Category) => {
+    navigate(`/categorie/${category._id}`, { state: { category } });
   };
 
   if (loading) {
@@ -77,14 +110,15 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header and Filter Panel */}
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
               <Wrench className="h-6 w-6 text-white" />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">All Categories</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              All Categories
+            </h1>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <button
@@ -102,7 +136,7 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
               Filter
             </button>
             <button
-              onClick={onAddCategory}
+              onClick={() => navigate("/categories/add")}
               className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -115,23 +149,31 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8 animate-in slide-in-from-top duration-300 flex">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Category Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Category Name
+                </label>
                 <select
                   value={filters.categoryName}
-                  onChange={(e) => handleFilterChange('categoryName', e.target.value)}
+                  onChange={(e) =>
+                    handleFilterChange("categoryName", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">Select category</option>
-                  {categories.map(category => (
-                    <option key={category?._id} value={category.category_name}>{category.category_name}</option>
+                  {categories.map((category) => (
+                    <option key={category._id} value={category.category_name}>
+                      {category.category_name}
+                    </option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Status
+                </label>
                 <select
                   value={filters.status}
-                  onChange={(e) => handleFilterChange('status', e.target.value)}
+                  onChange={(e) => handleFilterChange("status", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">All Status</option>
@@ -150,22 +192,28 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
             </div>
           </div>
         )}
+
         {/* Categories Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {filteredCategories?.map((category) => (
-            <div key={category._id} className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <div
+              key={category._id}
+              className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+            >
               <div className="relative">
-                <img
-                  src={category.category_image}
-                  alt={category.category_name}
-                  className="w-full h-48 object-cover"
-                />
+                <div className="flex justify-center items-center p-2">
+                  <img
+                    src={category.category_image}
+                    alt={category.category_name}
+                    className="h-32"
+                  />
+                </div>
                 <div className="absolute top-4 right-4">
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
                       className="sr-only peer"
-                      checked={category.status === 1 ? true : false}
+                      checked={category.status === 1}
                       onChange={() => handleStatusToggle(category._id)}
                     />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
@@ -175,33 +223,48 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
 
               <div className="p-6">
                 <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{category.category_name}</h3>
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${category.status === 1 
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
-                    }`}>
-                    {category.status ? 'Active' : 'Inactive'}
+                  <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
+                    {category.category_name}
+                  </h3>
+                  <span
+                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                      category.status === 1
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {category.status ? "Active" : "Inactive"}
                   </span>
                 </div>
 
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{category.meta_title}</p>
+                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                  {category.meta_title}
+                </p>
 
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-sm text-gray-500">
-                    <span className="font-medium">{category?.servicesCount}</span> Technicians
+                    <span className="font-medium">
+                      {category?.servicesCount || 5}
+                    </span>{" "}
+                    Technicians
                   </div>
-                  <div className="text-sm text-gray-500">{new Date(category?.createdAt).toLocaleDateString('en-GB')}</div>
+                  <div className="text-sm text-gray-500">
+                    {new Date(category?.createdAt).toLocaleDateString("en-GB")}
+                  </div>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => onEdit(category._id)}
+                      onClick={() => handleEdit(category._id)}
                       className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all duration-200"
                     >
                       <Edit className="h-4 w-4" />
                     </button>
-                    <button className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-all duration-200">
+                    <button
+                      onClick={() => handleView(category)}
+                      className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-all duration-200"
+                    >
                       <Eye className="h-4 w-4" />
                     </button>
                     <button
@@ -225,6 +288,235 @@ const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) 
 };
 
 export default AllCategories;
+// import React, { useState, useMemo } from 'react';
+// import { Plus, RotateCcw, Filter, Edit, Eye, Trash2, Calendar, Wrench } from 'lucide-react';
+// import { useCategoryContext } from '../Context/CategoryContext';
+// import { deleteCategory } from '../../api/apiMethods';
+
+// interface AllCategoriesProps {
+//   onAddCategory: () => void;
+//   onEdit: (id: string) => void;
+// }
+
+// const AllCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit }) => {
+//   const { categories, setCategories, loading, error } = useCategoryContext();
+//   const [showFilter, setShowFilter] = useState(false);
+//   const [filters, setFilters] = useState({
+//     categoryName: '',
+//     status: ''
+//   });
+
+//   const filteredCategories = useMemo(() => {
+//       return categories?.filter((category)=>{
+//       const matchesName = filters.categoryName ? category.category_name.toLowerCase().includes(filters.categoryName.toLowerCase()) : true;
+//       const matchesStatus = filters.status ? category.status === 1 === (filters.status === 'active') : true;
+//       return matchesName && matchesStatus;
+
+//       })
+//   }, [categories, filters]);
+
+//   const handleFilterChange = (field: string, value: string) => {
+//     setFilters(prev => ({
+//       ...prev,
+//       [field]: value,
+//     }));
+//   };
+
+//     const handleFilterSubmit = () => {
+//       console.log('Applying filters:', filters);
+//     };
+
+//   const handleRefresh = () => {
+//     setShowFilter(false);
+//     setFilters({
+//       categoryName: '',
+//       status: ''
+//     });
+//   };
+
+//   const handleStatusToggle = async (id: string) => {
+//     try {
+//       // Assume updateCategoryStatus is an API method
+//       await updateCategoryStatus(id, !categories.find(c => c._id === id)?.status);
+//       setCategories(prev => prev.map(c => c._id === id ? { ...c, status: !c.status } : c));
+//     } catch (error) {
+//       console.error('Failed to update status', error);
+//     }
+//   };
+
+//   const handleDelete = async (id: string) => {
+//     if (window.confirm('Are you sure you want to delete this category?')) {
+//       try {
+//         // Assume deleteCategory is an API method
+//         await deleteCategory(id);
+//         setCategories(prev => prev.filter(c => c._id !== id));
+//       } catch (error) {
+//         console.error('Failed to delete category', error);
+//       }
+//     }
+//   };
+
+//   if (loading) {
+//     return <div className="text-center py-8">Loading categories...</div>;
+//   }
+
+//   if (error) {
+//     return <div className="text-center py-8 text-red-600">{error}</div>;
+//   }
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
+//       <div className="max-w-7xl mx-auto">
+//         {/* Header and Filter Panel */}
+//         {/* Header */}
+//         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+//           <div className="flex items-center gap-3">
+//             <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
+//               <Wrench className="h-6 w-6 text-white" />
+//             </div>
+//             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">All Categories</h1>
+//           </div>
+//           <div className="flex flex-wrap items-center gap-2">
+//             <button
+//               onClick={handleRefresh}
+//               className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+//             >
+//               <RotateCcw className="h-4 w-4 mr-2" />
+//               Refresh
+//             </button>
+//             <button
+//               onClick={() => setShowFilter(!showFilter)}
+//               className="flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+//             >
+//               <Filter className="h-4 w-4 mr-2" />
+//               Filter
+//             </button>
+//             <button
+//               onClick={onAddCategory}
+//               className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+//             >
+//               <Plus className="h-4 w-4 mr-2" />
+//               Add Category
+//             </button>
+//           </div>
+//         </div>
+
+//         {showFilter && (
+//           <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8 animate-in slide-in-from-top duration-300 flex">
+//             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700 mb-2">Category Name</label>
+//                 <select
+//                   value={filters.categoryName}
+//                   onChange={(e) => handleFilterChange('categoryName', e.target.value)}
+//                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+//                 >
+//                   <option value="">Select category</option>
+//                   {categories.map(category => (
+//                     <option key={category?._id} value={category.category_name}>{category.category_name}</option>
+//                   ))}
+//                 </select>
+//               </div>
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+//                 <select
+//                   value={filters.status}
+//                   onChange={(e) => handleFilterChange('status', e.target.value)}
+//                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+//                 >
+//                   <option value="">All Status</option>
+//                   <option value="active">Active</option>
+//                   <option value="inactive">Inactive</option>
+//                 </select>
+//               </div>
+//             </div>
+//             <div className="flex justify-center items-center">
+//               <button
+//                 onClick={handleFilterSubmit}
+//                 className="px-8 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+//               >
+//                 Search
+//               </button>
+//             </div>
+//           </div>
+//         )}
+//         {/* Categories Grid */}
+//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+//           {filteredCategories?.map((category) => (
+//             <div key={category._id} className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+//               <div className="relative">
+//                 <img
+//                   src={category.category_image}
+//                   alt={category.category_name}
+//                   className="w-full h-48 object-cover"
+//                 />
+//                 <div className="absolute top-4 right-4">
+//                   <label className="relative inline-flex items-center cursor-pointer">
+//                     <input
+//                       type="checkbox"
+//                       className="sr-only peer"
+//                       checked={category.status === 1 ? true : false}
+//                       onChange={() => handleStatusToggle(category._id)}
+//                     />
+//                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+//                   </label>
+//                 </div>
+//               </div>
+
+//               <div className="p-6">
+//                 <div className="flex items-start justify-between mb-3">
+//                   <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{category.category_name}</h3>
+//                   <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${category.status === 1
+//                       ? 'bg-green-100 text-green-800'
+//                       : 'bg-red-100 text-red-800'
+//                     }`}>
+//                     {category.status ? 'Active' : 'Inactive'}
+//                   </span>
+//                 </div>
+
+//                 <p className="text-gray-600 text-sm mb-4 line-clamp-2">{category.meta_title}</p>
+
+//                 <div className="flex items-center justify-between mb-4">
+//                   <div className="text-sm text-gray-500">
+//                     <span className="font-medium">{category?.servicesCount}</span> Technicians
+//                   </div>
+//                   <div className="text-sm text-gray-500">{new Date(category?.createdAt).toLocaleDateString('en-GB')}</div>
+//                 </div>
+
+//                 <div className="flex items-center justify-between">
+//                   <div className="flex items-center space-x-2">
+//                     <button
+//                       onClick={() => onEdit(category._id)}
+//                       className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all duration-200"
+//                     >
+//                       <Edit className="h-4 w-4" />
+//                     </button>
+//                     <button
+//                     onClick={() => handleView(category)}
+//                     className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-all duration-200">
+//                       <Eye className="h-4 w-4" />
+//                     </button>
+//                     <button
+//                       onClick={() => handleDelete(category._id)}
+//                       className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all duration-200"
+//                     >
+//                       <Trash2 className="h-4 w-4" />
+//                     </button>
+//                   </div>
+//                   <button className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg">
+//                     View Technicians
+//                   </button>
+//                 </div>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AllCategories;
 // import React, { useState } from 'react';
 // import { Plus, RotateCcw, Filter, Edit, Eye, Trash2, Calendar, Wrench } from 'lucide-react';
 // import { useCategoryContext } from '../Context/CategoryContext';
@@ -335,38 +627,38 @@ export default AllCategories;
 //   return (
 //     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
 //       <div className="max-w-7xl mx-auto">
-        // {/* Header */}
-        // <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
-        //   <div className="flex items-center gap-3">
-        //     <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
-        //       <Wrench className="h-6 w-6 text-white" />
-        //     </div>
-        //     <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">All Categories</h1>
-        //   </div>
-        //   <div className="flex flex-wrap items-center gap-2">
-        //     <button
-        //       onClick={handleRefresh}
-        //       className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-        //     >
-        //       <RotateCcw className="h-4 w-4 mr-2" />
-        //       Refresh
-        //     </button>
-        //     <button
-        //       onClick={() => setShowFilter(!showFilter)}
-        //       className="flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-        //     >
-        //       <Filter className="h-4 w-4 mr-2" />
-        //       Filter
-        //     </button>
-        //     <button
-        //       onClick={onAddCategory}
-        //       className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-        //     >
-        //       <Plus className="h-4 w-4 mr-2" />
-        //       Add Category
-        //     </button>
-        //   </div>
-        // </div>
+// {/* Header */}
+// <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+//   <div className="flex items-center gap-3">
+//     <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
+//       <Wrench className="h-6 w-6 text-white" />
+//     </div>
+//     <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">All Categories</h1>
+//   </div>
+//   <div className="flex flex-wrap items-center gap-2">
+//     <button
+//       onClick={handleRefresh}
+//       className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+//     >
+//       <RotateCcw className="h-4 w-4 mr-2" />
+//       Refresh
+//     </button>
+//     <button
+//       onClick={() => setShowFilter(!showFilter)}
+//       className="flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+//     >
+//       <Filter className="h-4 w-4 mr-2" />
+//       Filter
+//     </button>
+//     <button
+//       onClick={onAddCategory}
+//       className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+//     >
+//       <Plus className="h-4 w-4 mr-2" />
+//       Add Category
+//     </button>
+//   </div>
+// </div>
 
 //         {/* Filter Panel */}
 //         {showFilter && (
@@ -442,70 +734,70 @@ export default AllCategories;
 //         {/* Categories Grid */}
 //         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
 //           {categories.map((category) => (
-            // <div key={category.id} className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-            //   <div className="relative">
-            //     <img
-            //       src={category.image}
-            //       alt={category.name}
-            //       className="w-full h-48 object-cover"
-            //     />
-            //     <div className="absolute top-4 right-4">
-            //       <label className="relative inline-flex items-center cursor-pointer">
-            //         <input
-            //           type="checkbox"
-            //           className="sr-only peer"
-            //           checked={category.status}
-            //           onChange={() => handleStatusToggle(category.id)}
-            //         />
-            //         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-            //       </label>
-            //     </div>
-            //   </div>
+// <div key={category.id} className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+//   <div className="relative">
+//     <img
+//       src={category.image}
+//       alt={category.name}
+//       className="w-full h-48 object-cover"
+//     />
+//     <div className="absolute top-4 right-4">
+//       <label className="relative inline-flex items-center cursor-pointer">
+//         <input
+//           type="checkbox"
+//           className="sr-only peer"
+//           checked={category.status}
+//           onChange={() => handleStatusToggle(category.id)}
+//         />
+//         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+//       </label>
+//     </div>
+//   </div>
 
-            //   <div className="p-6">
-            //     <div className="flex items-start justify-between mb-3">
-            //       <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{category.name}</h3>
-            //       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${category.status
-            //           ? 'bg-green-100 text-green-800'
-            //           : 'bg-red-100 text-red-800'
-            //         }`}>
-            //         {category.status ? 'Active' : 'Inactive'}
-            //       </span>
-            //     </div>
+//   <div className="p-6">
+//     <div className="flex items-start justify-between mb-3">
+//       <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{category.name}</h3>
+//       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${category.status
+//           ? 'bg-green-100 text-green-800'
+//           : 'bg-red-100 text-red-800'
+//         }`}>
+//         {category.status ? 'Active' : 'Inactive'}
+//       </span>
+//     </div>
 
-            //     <p className="text-gray-600 text-sm mb-4 line-clamp-2">{category.description}</p>
+//     <p className="text-gray-600 text-sm mb-4 line-clamp-2">{category.description}</p>
 
-            //     <div className="flex items-center justify-between mb-4">
-            //       <div className="text-sm text-gray-500">
-            //         <span className="font-medium">{category.servicesCount}</span> Technicians
-            //       </div>
-            //       <div className="text-sm text-gray-500">{category.date}</div>
-            //     </div>
+//     <div className="flex items-center justify-between mb-4">
+//       <div className="text-sm text-gray-500">
+//         <span className="font-medium">{category.servicesCount}</span> Technicians
+//       </div>
+//       <div className="text-sm text-gray-500">{category.date}</div>
+//     </div>
 
-            //     <div className="flex items-center justify-between">
-            //       <div className="flex items-center space-x-2">
-            //         <button
-            //           onClick={() => onEdit(category.id)}
-            //           className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all duration-200"
-            //         >
-            //           <Edit className="h-4 w-4" />
-            //         </button>
-            //         <button className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-all duration-200">
-            //           <Eye className="h-4 w-4" />
-            //         </button>
-            //         <button
-            //           onClick={() => handleDelete(category.id)}
-            //           className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all duration-200"
-            //         >
-            //           <Trash2 className="h-4 w-4" />
-            //         </button>
-            //       </div>
-            //       <button className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg">
-            //         View Technicians
-            //       </button>
-            //     </div>
-            //   </div>
-            // </div>
+//     <div className="flex items-center justify-between">
+//       <div className="flex items-center space-x-2">
+//         <button
+//           onClick={() => onEdit(category.id)}
+//           className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all duration-200"
+//         >
+//           <Edit className="h-4 w-4" />
+//         </button>
+//         <button className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-all duration-200">
+//           <Eye className="h-4 w-4" />
+//         </button>
+//         <button
+//           onClick={() => handleDelete(category.id)}
+//           className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all duration-200"
+//         >
+//           <Trash2 className="h-4 w-4" />
+//         </button>
+//       </div>
+//       <button className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg">
+//         View Technicians
+//       </button>
+//     </div>
+//   </div>
+// </div>
 //           ))}
 //         </div>
 
@@ -514,7 +806,7 @@ export default AllCategories;
 //           <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
 //             <h2 className="text-lg font-semibold text-white">Categories Overview</h2>
 //           </div>
-          
+
 //           <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
 //             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
 //               <div className="flex items-center space-x-2">
@@ -528,8 +820,8 @@ export default AllCategories;
 //               </div>
 //               <div className="flex items-center space-x-2">
 //                 <span className="text-sm text-gray-600">Search:</span>
-//                 <input 
-//                   type="text" 
+//                 <input
+//                   type="text"
 //                   className="border border-gray-300 rounded px-3 py-1 text-sm w-full sm:w-auto"
 //                   placeholder="Search categories..."
 //                 />
@@ -556,8 +848,8 @@ export default AllCategories;
 //                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{index + 1}</td>
 //                     <td className="px-6 py-4 whitespace-nowrap">
 //                       <div className="flex items-center">
-//                         <img 
-//                           src={category.image} 
+//                         <img
+//                           src={category.image}
 //                           alt={category.name}
 //                           className="h-10 w-10 rounded-lg object-cover mr-3 shadow-sm"
 //                         />
@@ -573,9 +865,9 @@ export default AllCategories;
 //                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{category.date}</td>
 //                     <td className="px-6 py-4 whitespace-nowrap">
 //                       <label className="relative inline-flex items-center cursor-pointer">
-//                         <input 
-//                           type="checkbox" 
-//                           className="sr-only peer" 
+//                         <input
+//                           type="checkbox"
+//                           className="sr-only peer"
 //                           checked={category.status}
 //                           onChange={() => handleStatusToggle(category.id)}
 //                         />
@@ -584,7 +876,7 @@ export default AllCategories;
 //                     </td>
 //                     <td className="px-6 py-4 whitespace-nowrap">
 //                       <div className="flex items-center space-x-2">
-//                         <button 
+//                         <button
 //                           onClick={() => onEdit(category.id)}
 //                           className="text-blue-600 hover:text-blue-800 transition-colors duration-150"
 //                         >
@@ -593,7 +885,7 @@ export default AllCategories;
 //                         <button className="text-green-600 hover:text-green-800 transition-colors duration-150">
 //                           <Eye className="h-4 w-4" />
 //                         </button>
-//                         <button 
+//                         <button
 //                           onClick={() => handleDelete(category.id)}
 //                           className="text-red-600 hover:text-red-800 transition-colors duration-150"
 //                         >

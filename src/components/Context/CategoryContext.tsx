@@ -6,6 +6,7 @@ interface Category {
   category_name: string;
   category_slug: string;
   meta_title: string,
+  meta_description: string,
   status: number;
   category_image: string;
   createdAt: string;
