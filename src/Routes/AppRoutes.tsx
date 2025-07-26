@@ -16,6 +16,10 @@ import AddUser from "../components/manageUsers/AddUser";
 import Technicians from "../components/manageTechnicians/Technicians";
 import ProvidersDetails from "../pages/ProvidersDetails";
 import AddProvider from "../components/manageTechnicians/AddTechnician";
+import Providers from "../components/manageTechnicians/Technicians";
+import AddProvider from "../components/manageTechnicians/AddTechnician";
+import Franchises from "../components/manageFranchise/Franchises";
+
 
 interface Category {
   id: number;
@@ -174,6 +178,7 @@ const AppRoutes: React.FC = () => {
 
         {/* Management - Technicians */}
         <Route
+        <Route
           path="/management/technicians"
           element={
             <Technicians
@@ -209,15 +214,6 @@ const AppRoutes: React.FC = () => {
 
         {/* Management - Franchises */}
         <Route
-          path="/management/franchises"
-          element={
-            <div className="p-8">
-              <h1 className="text-2xl font-bold">Manage Franchises</h1>
-              <p>Franchises management coming soon...</p>
-            </div>
-          }
-        />
-        <Route
           path="/management/franchises/all"
           element={
             <div className="p-8">
@@ -225,6 +221,7 @@ const AppRoutes: React.FC = () => {
               <p>Franchises list coming soon...</p>
             </div>
           }
+          element={<Franchises />}
         />
         <Route
           path="/management/franchises/add"
@@ -243,6 +240,7 @@ const AppRoutes: React.FC = () => {
               <p>Admin created franchises list coming soon...</p>
             </div>
           }
+        />
         />
 
         {/* Areas */}
