@@ -7,6 +7,12 @@ import AddCategory from "../components/category/AddCategory";
 import ActiveCategories from "../components/category/ActiveCategories";
 import InactiveCategories from "../components/category/InactiveCategories";
 import ViewCategory from "../components/category/ViewCategory";
+import AddMetaInfo from "../components/metaInfo/AddMetaInfo";
+import AllMetaInfo from "../components/metaInfo/AllMetaInfo";
+import Users from "../components/manageUsers/Users";
+import AdminUsers from "../components/manageUsers/AdminUsers";
+import AddAdminUser from "../pages/AddAdminUser";
+import AddUser from "../components/manageUsers/AddUser";
 
 
 interface Category {
@@ -91,15 +97,15 @@ const AppRoutes: React.FC = () => {
         />
 
         {/* Meta Info */}
-        {/* <Route path="/meta-info" element={<AllMetaInfo />} />
+        <Route path="/meta-info" element={<AllMetaInfo />} />
         <Route path="/meta-info/all" element={<AllMetaInfo />} />
         <Route
           path="/meta-info/add"
           element={<AddMetaInfo onBack={() => navigate("/meta-info/all")} />}
-        /> */}
+        />
 
         {/* Subscription */}
-        {/* <Route
+        <Route
           path="/subscription"
           element={
             <div className="p-8">
@@ -125,9 +131,9 @@ const AppRoutes: React.FC = () => {
               <p>Add subscription form coming soon...</p>
             </div>
           }
-        /> */}
+        /> 
 
-        {/* Management - Users
+         {/* Management - Users */}
         <Route
           path="/management"
           element={<Users onAddUser={() => navigate("/management/users/add")} />}
@@ -161,8 +167,8 @@ const AppRoutes: React.FC = () => {
           }
         />
 
-        Management - Technicians
-        <Route
+        {/* Management - Technicians */}
+        {/* <Route
           path="/management/technicians"
           element={
             <Providers
@@ -194,10 +200,10 @@ const AppRoutes: React.FC = () => {
               <p>Admin created technicians list coming soon...</p>
             </div>
           }
-        />
+        /> */}
 
-        Management - Franchises
-        <Route path="/management/franchises" element={<BusinessAssociates />} />
+        {/* Management - Franchises */}
+        {/* <Route path="/management/franchises" element={<BusinessAssociates />} />
         <Route
           path="/management/franchises/all"
           element={<BusinessAssociates />}
@@ -219,10 +225,10 @@ const AppRoutes: React.FC = () => {
               <p>Admin created franchises list coming soon...</p>
             </div>
           }
-        />
+        /> */}
 
-        Areas
-        <Route
+        {/* Areas */}
+        {/* <Route
           path="/areas"
           element={
             <div className="p-8">
@@ -261,10 +267,10 @@ const AppRoutes: React.FC = () => {
               <p>Guest bookings list coming soon...</p>
             </div>
           }
-        />
+        /> */}
 
-        Reviews
-        <Route
+        {/* Reviews */}
+        {/* <Route
           path="/reviews"
           element={
             <div className="p-8">
@@ -281,10 +287,10 @@ const AppRoutes: React.FC = () => {
               <p>Reviews management coming soon...</p>
             </div>
           }
-        />
+        /> */}
 
-        Advertisements
-        <Route
+        {/* Advertisements */}
+        {/* <Route
           path="/advertisements"
           element={<AdvertisementPosts onEdit={handleEditAdvertisement} />}
         />
