@@ -14,11 +14,8 @@ interface Category {
   createdAt: string;
 }
 
-interface ViewCategoryProps {
-  onBack: () => void;
-}
 
-const ViewCategory: React.FC<ViewCategoryProps> = ({ onBack }) => {
+const ViewCategory: React.FC<ViewCategoryProps> = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const { loading, error } = useCategoryContext();
@@ -57,7 +54,6 @@ const ViewCategory: React.FC<ViewCategoryProps> = ({ onBack }) => {
           </div>
           <button
             onClick={() => {
-              onBack();
               navigate("/categories/all");
             }}
             className="flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm rounded-md hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"

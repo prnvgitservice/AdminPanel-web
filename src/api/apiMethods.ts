@@ -7,3 +7,7 @@ export const addCategory = (data: any) => apiRequest("addCategory", data);
 export const updateCategory = (data: any) => apiRequest("updateCategory", data);
 
 export const deleteCategory = (categoryId : string) => apiRequest("deleteCategory",null, categoryId);
+
+export const getAllPincodes = () => apiRequest("getAllPincodes");
+
+export const getPlans = (data: any) => apiRequest("getPlans", data);

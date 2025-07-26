@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Filter, Plus, Calendar } from 'lucide-react';
 
-interface ProvidersProps {
+interface TechniciansProps {
   onAddProvider?: () => void;
 }
 
-const Providers: React.FC<ProvidersProps> = ({ onAddProvider }) => {
+const Technicians: React.FC<TechniciansProps> = ({ onAddProvider }) => {
   const [showFilter, setShowFilter] = useState(false);
   const [filters, setFilters] = useState({
     providerName: '',
@@ -14,7 +14,7 @@ const Providers: React.FC<ProvidersProps> = ({ onAddProvider }) => {
     toDate: ''
   });
 
-  const providers = [
+  const Technicians = [
     {
       id: 1,
       providerName: 'Sumit',
@@ -58,7 +58,7 @@ const Providers: React.FC<ProvidersProps> = ({ onAddProvider }) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Providers</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Technicians</h1>
         <div className="flex items-center space-x-2">
           <button 
             onClick={() => setShowFilter(!showFilter)}
@@ -185,7 +185,7 @@ const Providers: React.FC<ProvidersProps> = ({ onAddProvider }) => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {providers.map((provider) => (
+              {Technicians.map((provider) => (
                 <tr key={provider.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{provider.id}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -216,4 +216,4 @@ const Providers: React.FC<ProvidersProps> = ({ onAddProvider }) => {
   );
 };
 
-export default Providers;
+export default Technicians;

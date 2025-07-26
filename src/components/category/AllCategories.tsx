@@ -91,12 +91,12 @@ const AllCategories: React.FC = () => {
     }
   };
 
-  const handleEdit = (id: string) => {
-    navigate(`/categories/edit`, { state: { categoryId: id } });
+  const handleEdit = (category: Category) => {
+    navigate(`/categories/edit`, { state: { category } });
   };
 
   const handleView = (category: Category) => {
-    navigate(`/categorie/${category._id}`, { state: { category } });
+    navigate(`/category/${category._id}`, { state: { category } });
   };
 
   if (loading) {
@@ -256,7 +256,7 @@ const AllCategories: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => handleEdit(category._id)}
+                      onClick={() => handleEdit(category)}
                       className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all duration-200"
                     >
                       <Edit className="h-4 w-4" />

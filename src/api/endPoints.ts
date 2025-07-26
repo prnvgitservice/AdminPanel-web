@@ -22,5 +22,17 @@ const endpoints: any = {
     url: (categoryId : string) => `/api/categories/${categoryId}`
   },
 
+  getAllPincodes: {
+    method: "get",
+    url: () => `/api/pincodes/allAreas`
+  },
+
+  getPlans: {
+    method: "get",
+    url: () => {
+      return `/api/subscriptions/plans`;
+    }
+  },
+
 }
 export default endpoints;
