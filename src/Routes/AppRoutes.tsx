@@ -14,11 +14,9 @@ import AdminUsers from "../components/manageUsers/AdminUsers";
 import AddAdminUser from "../pages/AddAdminUser";
 import AddUser from "../components/manageUsers/AddUser";
 import Technicians from "../components/manageTechnicians/Technicians";
-import ProvidersDetails from "../pages/ProvidersDetails";
-import AddProvider from "../components/manageTechnicians/AddTechnician";
-import Providers from "../components/manageTechnicians/Technicians";
-import AddProvider from "../components/manageTechnicians/AddTechnician";
-import Franchises from "../components/manageFranchise/Franchises";
+import AddTechnician from "../components/category/AddCategory";
+import Franchise from "../components/manageFranchise/Franchises";
+import AddFranchise from "../components/manageFranchise/AddFranchise";
 
 
 interface Category {
@@ -178,7 +176,6 @@ const AppRoutes: React.FC = () => {
 
         {/* Management - Technicians */}
         <Route
-        <Route
           path="/management/technicians"
           element={
             <Technicians
@@ -189,7 +186,7 @@ const AppRoutes: React.FC = () => {
         <Route
           path="/management/technicians/all"
           element={
-            <ProvidersDetails
+            <Technicians
               onAddProvider={() => navigate("/management/technicians/add")}
             />
           }
@@ -197,7 +194,7 @@ const AppRoutes: React.FC = () => {
         <Route
           path="/management/technicians/add"
           element={
-            <AddProvider
+            <AddTechnician
               onBack={() => navigate("/management/technicians/all")}
             />
           }
@@ -215,22 +212,11 @@ const AppRoutes: React.FC = () => {
         {/* Management - Franchises */}
         <Route
           path="/management/franchises/all"
-          element={
-            <div className="p-8">
-              <h1 className="text-2xl font-bold">All Franchises</h1>
-              <p>Franchises list coming soon...</p>
-            </div>
-          }
-          element={<Franchises />}
+          element={<Franchise />}
         />
         <Route
           path="/management/franchises/add"
-          element={
-            <div className="p-8">
-              <h1 className="text-2xl font-bold">Add Franchise</h1>
-              <p>Add franchise form coming soon...</p>
-            </div>
-          }
+          element={<AddFranchise />}
         />
         <Route
           path="/management/franchises/admin-created"
@@ -240,7 +226,6 @@ const AppRoutes: React.FC = () => {
               <p>Admin created franchises list coming soon...</p>
             </div>
           }
-        />
         />
 
         {/* Areas */}
