@@ -13,6 +13,9 @@ import Users from "../components/manageUsers/Users";
 import AdminUsers from "../components/manageUsers/AdminUsers";
 import AddAdminUser from "../pages/AddAdminUser";
 import AddUser from "../components/manageUsers/AddUser";
+import Providers from "../components/manageTechnicians/Technicians";
+import AddProvider from "../components/manageTechnicians/AddTechnician";
+import Franchises from "../components/manageFranchise/Franchises";
 
 
 interface Category {
@@ -168,7 +171,7 @@ const AppRoutes: React.FC = () => {
         />
 
         {/* Management - Technicians */}
-        {/* <Route
+        <Route
           path="/management/technicians"
           element={
             <Providers
@@ -200,13 +203,13 @@ const AppRoutes: React.FC = () => {
               <p>Admin created technicians list coming soon...</p>
             </div>
           }
-        /> */}
+        />
 
         {/* Management - Franchises */}
-        {/* <Route path="/management/franchises" element={<BusinessAssociates />} />
+        <Route path="/management/franchises" element={<Franchises />} />
         <Route
           path="/management/franchises/all"
-          element={<BusinessAssociates />}
+          element={<Franchises />}
         />
         <Route
           path="/management/franchises/add"
@@ -225,7 +228,7 @@ const AppRoutes: React.FC = () => {
               <p>Admin created franchises list coming soon...</p>
             </div>
           }
-        /> */}
+        />
 
         {/* Areas */}
         {/* <Route

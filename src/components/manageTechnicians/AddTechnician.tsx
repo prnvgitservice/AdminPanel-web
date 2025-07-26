@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Upload } from 'lucide-react';
 
-interface AddProviderProps {
+interface AddTechnicianProps {
   onBack: () => void;
 }
 
-const AddProvider: React.FC<AddProviderProps> = ({ onBack }) => {
+const AddTechnician: React.FC<AddTechnicianProps> = ({ onBack }) => {
   const [formData, setFormData] = useState({
     name: '',
     mobileNumber: '',
@@ -33,7 +33,7 @@ const AddProvider: React.FC<AddProviderProps> = ({ onBack }) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Add Provider</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Add Technician</h1>
         <button
           onClick={onBack}
           className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800"
@@ -203,4 +203,4 @@ const AddProvider: React.FC<AddProviderProps> = ({ onBack }) => {
   );
 };
 
-export default AddProvider;
+export default AddTechnician;

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Filter, Download, Calendar } from 'lucide-react';
+import Technicians from '../components/manageTechnicians/Technicians';
 
-const ProvidersDetails: React.FC = () => {
+const TechnicianDetails: React.FC = () => {
   const [filters, setFilters] = useState({
-    providerName: '',
+    TechnicianName: '',
     subscriptionType: '',
     paymentFromDate: '',
     paymentToDate: '',
@@ -12,11 +13,11 @@ const ProvidersDetails: React.FC = () => {
     nextRenewalDate: ''
   });
 
-  const providersData = [
+  const techniciansData = [
     {
       id: 1,
       dateOfJoining: '2024-05-28',
-      providerName: 'VENKATESH THANNIRU',
+      TechnicianName: 'VENKATESH THANNIRU',
       paymentType: 'Paid',
       plan: 'BASIC PLAN',
       amountPaid: 3540,
@@ -58,13 +59,13 @@ const ProvidersDetails: React.FC = () => {
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Provider Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
               <select
-                value={filters.providerName}
-                onChange={(e) => handleFilterChange('providerName', e.target.value)}
+                value={filters.TechnicianName}
+                onChange={(e) => handleFilterChange('TechnicianName', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
               >
-                <option value="">Select provider name</option>
+                <option value="">Select Technician name</option>
                 <option value="venkatesh">VENKATESH THANNIRU</option>
               </select>
             </div>
@@ -202,7 +203,7 @@ const ProvidersDetails: React.FC = () => {
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date of Joining</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Provider Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Technician Name</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Type</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PLAN</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount Paid</th>
@@ -214,18 +215,18 @@ const ProvidersDetails: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {providersData.map((provider) => (
-                  <tr key={provider.id} className="hover:bg-gray-50 transition-colors duration-150">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{provider.id}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{provider.dateOfJoining}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{provider.providerName}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{provider.paymentType}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{provider.plan}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{provider.amountPaid}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{provider.bdaWalletAddedAmount}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{provider.amountUsed}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{provider.amountBalance}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{provider.nextRenewalDate}</td>
+                {techniciansData.map((technician) => (
+                  <tr key={technician.id} className="hover:bg-gray-50 transition-colors duration-150">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{technician.id}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{technician.dateOfJoining}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{technician.TechnicianName}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{technician.paymentType}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{technician.plan}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{technician.amountPaid}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{technician.bdaWalletAddedAmount}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{technician.amountUsed}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{technician.amountBalance}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{technician.nextRenewalDate}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button className="px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs rounded hover:from-blue-600 hover:to-blue-700 transition-colors duration-150">
                         Renew Plan
@@ -242,4 +243,4 @@ const ProvidersDetails: React.FC = () => {
   );
 };
 
-export default ProvidersDetails;
+export default TechnicianDetails;
