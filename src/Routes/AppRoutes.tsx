@@ -14,9 +14,9 @@ import AdminUsers from "../components/manageUsers/AdminUsers";
 import AddAdminUser from "../pages/AddAdminUser";
 import AddUser from "../components/manageUsers/AddUser";
 import Technicians from "../components/manageTechnicians/Technicians";
-import AddTechnician from "../components/category/AddCategory";
 import Franchise from "../components/manageFranchise/Franchises";
 import AddFranchise from "../components/manageFranchise/AddFranchise";
+import AddTechnician from "../components/manageTechnicians/AddTechnician";
 
 
 interface Category {

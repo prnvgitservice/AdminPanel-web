@@ -4,11 +4,12 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 const Dashboard: React.FC = () => {
   const stats = [
+    { label: 'Total Categories', value: '226', icon: Wrench, color: 'bg-gradient-to-r from-purple-500 to-purple-600', change: '+15%' },
     { label: 'Total Technicians', value: '87', icon: UserCog, color: 'bg-gradient-to-r from-blue-500 to-blue-600', change: '+8%' },
     { label: 'Total Users', value: '38', icon: Users, color: 'bg-gradient-to-r from-emerald-500 to-emerald-600', change: '+12%' },
-    { label: 'Total Categories', value: '226', icon: Wrench, color: 'bg-gradient-to-r from-purple-500 to-purple-600', change: '+15%' },
-    { label: 'Revenue', value: '₹333,957', icon: CreditCard, color: 'bg-gradient-to-r from-amber-500 to-amber-600', change: '+23%' },
     { label: 'Total Franchise', value: '15', icon: Building2, color: 'bg-gradient-to-r from-indigo-500 to-indigo-600', change: '+5%' },
+    { label: 'Revenue', value: '₹3,957', icon: CreditCard, color: 'bg-gradient-to-r from-amber-500 to-amber-600', change: '+23%' },
+    
   ];
 
   const recentBookings = [
@@ -52,14 +53,14 @@ const Dashboard: React.FC = () => {
             </h1>
             <p className="text-slate-600 mt-2">Here's what's happening with your business today.</p>
           </div>
-          <button
+          {/* <button
             onClick={handleViewWebsite}
             className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
           >
             <Eye className="h-5 w-5 mr-2" />
             View Website
             <ExternalLink className="h-4 w-4 ml-2" />
-          </button>
+          </button> */}
         </div>
 
         {/* Stats Cards */}
@@ -73,16 +74,16 @@ const Dashboard: React.FC = () => {
                   </div>
                   <div className="ml-4">
                     <p className="text-2xl sm:text-3xl font-bold text-slate-800">{stat.value}</p>
-                    <p className="text-sm text-slate-600">{stat.label}</p>
+                    <p className="text-md text-slate-600">{stat.label}</p>
                   </div>
                 </div>
-                <div className="text-right">
+                {/* <div className="text-right">
                   <div className="flex items-center text-emerald-600 text-sm font-semibold">
                     <TrendingUp className="h-4 w-4 mr-1" />
                     {stat.change}
                   </div>
                   <p className="text-xs text-slate-500">vs last month</p>
-                </div>
+                </div> */}
               </div>
             </div>
           ))}

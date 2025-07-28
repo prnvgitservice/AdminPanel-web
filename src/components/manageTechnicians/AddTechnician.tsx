@@ -588,6 +588,8 @@ const AddTechnician: React.FC = () => {
 };
 
 export default AddTechnician;
+
+
 // import React, { useState, useCallback, useEffect } from 'react';
 // import { ArrowLeft, Eye, EyeOff, Upload } from 'lucide-react';
 // import { getAllCategories, getAllPincodes } from '../../api/apiMethods';

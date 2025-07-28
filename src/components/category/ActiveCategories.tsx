@@ -127,13 +127,13 @@ const ActiveCategories: React.FC<AllCategoriesProps> = ({ onAddCategory, onEdit 
               <Filter className="h-4 w-4 mr-2" />
               Filter
             </button>
-            <button
+            {/* <button
               onClick={onAddCategory}
               className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Category
-            </button>
+            </button> */}
           </div>
         </div>
 
