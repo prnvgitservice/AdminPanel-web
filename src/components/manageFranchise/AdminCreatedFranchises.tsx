@@ -78,7 +78,7 @@ const getAllFranchises = async () => {
   });
 };
 
-const Franchise: React.FC<FranchiseProps> = ({ onAddFranchise }) => {
+const AdminCreatedFranchises: React.FC<FranchiseProps> = ({ onAddFranchise }) => {
   const [showFilter, setShowFilter] = useState(false);
   const [franchises, setFranchises] = useState<FranchiseData[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -373,4 +373,4 @@ const Franchise: React.FC<FranchiseProps> = ({ onAddFranchise }) => {
   );
 };
 
-export default Franchise;
+export default AdminCreatedFranchises;

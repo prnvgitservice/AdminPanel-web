@@ -37,6 +37,12 @@ const menuItems: MenuItem[] = [
   { key: 'all-subscriptions', label: 'All Subscriptions', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/subscription/all' },
   { key: 'add-subscription', label: 'Add Subscription', icon: <Plus className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/subscription/add' },
   // { key: 'deleted-subscriptions', label: 'Deleted Subscriptions', icon: <XCircle className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/subscription/deleted' },
+    // { key: 'franchise', label: 'Franchise', icon: <Package className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/franchise' },
+    // { key: 'all-franchises', label: 'All Franchises', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/franchise/all' },
+    // { key: 'add-franchise', label: 'Add Franchise', icon: <Plus className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/franchise/add' },
+
+
+
   { key: 'management', label: 'Management', icon: <Settings className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/management' },
   { key: 'manage-users', label: 'Manage Users', icon: <Users className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/management/users' },
   { key: 'all-users', label: 'All Users', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/management/users/all' },
@@ -61,6 +67,9 @@ const menuItems: MenuItem[] = [
   { key: 'advertisements', label: 'Advertisements', icon: <Image className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/advertisements' },
   { key: 'all-advertisements', label: 'All Advertisements', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/advertisements/all' },
   { key: 'add-advertisement', label: 'Add Advertisement', icon: <Plus className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/advertisements/add' },
+  { key: 'franchise-plans', label: 'Franchise Plans', icon: <UserCheck className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/franchise/plans' },
+  { key: 'all-technicians', label: 'All Technicians', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/management/technicians/all' },
+  { key: 'add-technician', label: 'Add Technician', icon: <Plus className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/management/technicians/add' },
 ];
 
 const menuHierarchy: MenuHierarchy[] = [

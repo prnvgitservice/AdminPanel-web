@@ -11,3 +11,15 @@ export const deleteCategory = (categoryId : string) => apiRequest("deleteCategor
 export const getAllPincodes = () => apiRequest("getAllPincodes");
 
 export const getPlans = (data: any) => apiRequest("getPlans", data);
+
+export const getAllUsers = (data: any) => apiRequest("getAllUsers", data);
+
+
+export const getAllTechnicians = (data: any) => apiRequest("getAllTechnicians", data);
+
+
+export const getAllFranchises = (data: any) => apiRequest("getAllFranchises", data);
+
+
+// export const getAllUsers = (params: { offset: number; limit: number }) =>
+//   apiRequest('getAllUsers', params);

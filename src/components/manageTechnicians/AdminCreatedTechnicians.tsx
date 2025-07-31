@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Filter, Plus, Eye, Pencil, Trash2 } from 'lucide-react';
-import { getAllTechnicians } from '../../api/apiMethods';
+// import { getAllAdminCreatedTechnicians } from '../../api/apiMethods';
 
 interface Technician {
   id: string;
@@ -21,7 +21,7 @@ interface TechniciansProps {
   onAddTechnician?: () => void;
 }
 
-const Technicians: React.FC<TechniciansProps> = ({ onAddTechnician }) => {
+const AdminCreatedTechnicians: React.FC<TechniciansProps> = ({ onAddTechnician }) => {
   const [showFilter, setShowFilter] = useState(false);
   const [filters, setFilters] = useState({ technicianName: '', phoneNumber: '' });
   const [technicians, setTechnicians] = useState<Technician[]>([]);
@@ -29,9 +29,9 @@ const Technicians: React.FC<TechniciansProps> = ({ onAddTechnician }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const fetchAllTechnicians = async () => {
+  const fetchAllAdminCreatedTechnicians = async () => {
     try {
-      const response = await getAllTechnicians();
+      const response = await getAllAdminCreatedTechnicians();
       if (response?.technicians) {
         setTechnicians(response.technicians);
       } else {
@@ -43,7 +43,7 @@ const Technicians: React.FC<TechniciansProps> = ({ onAddTechnician }) => {
   };
 
   useEffect(() => {
-    fetchAllTechnicians();
+    fetchAllAdminCreatedTechnicians();
   }, []);
 
   const handleFilterChange = (field: string, value: string) => {
@@ -239,4 +239,4 @@ const Technicians: React.FC<TechniciansProps> = ({ onAddTechnician }) => {
   );
 };
 
-export default Technicians;
+export default AdminCreatedTechnicians;

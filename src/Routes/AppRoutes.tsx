@@ -13,11 +13,14 @@ import Users from "../components/manageUsers/Users";
 import AdminUsers from "../components/manageUsers/AdminUsers";
 import AddAdminUser from "../pages/AddAdminUser";
 import AddUser from "../components/manageUsers/AddUser";
-import Technicians from "../components/manageTechnicians/Technicians";
 import Franchise from "../components/manageFranchise/Franchises";
 import AddFranchise from "../components/manageFranchise/AddFranchise";
 import AddTechnician from "../components/manageTechnicians/AddTechnician";
-
+import SubscriptionPage from "../components/Subscriptions/SubscriptionPage";
+import PlanDetailsPage from "../components/Subscriptions/PlanDetailsPage";
+import Technicians from "../components/manageTechnicians/Technicians";
+import AdminCreatedFranchises from "../components/manageFranchise/AdminCreatedFranchises";
+import AdminCreatedTechnicians from "../components/manageTechnicians/AdminCreatedTechnicians";
 
 interface Category {
   id: number;
@@ -103,24 +106,9 @@ const AppRoutes: React.FC = () => {
         />
 
         {/* Subscription */}
-        <Route
-          path="/subscription"
-          element={
-            <div className="p-8">
-              <h1 className="text-2xl font-bold">All Subscriptions</h1>
-              <p>Subscription management coming soon...</p>
-            </div>
-          }
-        />
-        <Route
-          path="/subscription/all"
-          element={
-            <div className="p-8">
-              <h1 className="text-2xl font-bold">All Subscriptions</h1>
-              <p>Subscription management coming soon...</p>
-            </div>
-          }
-        />
+        <Route path="/subscription" element={<SubscriptionPage/>}/>
+        <Route path="/subscription/all" element={<SubscriptionPage/>}/>
+        <Route path="/subscription/:id" element={<PlanDetailsPage />} />
         <Route
           path="/subscription/add"
           element={
@@ -175,22 +163,7 @@ const AppRoutes: React.FC = () => {
         />
 
         {/* Management - Technicians */}
-        <Route
-          path="/management/technicians"
-          element={
-            <Technicians
-              onAddProvider={() => navigate("/management/technicians/add")}
-            />
-          }
-        />
-        <Route
-          path="/management/technicians/all"
-          element={
-            <Technicians
-              onAddProvider={() => navigate("/management/technicians/add")}
-            />
-          }
-        />
+        <Route path="/management/technicians/all" element={<Technicians/>}/>
         <Route
           path="/management/technicians/add"
           element={
@@ -201,18 +174,14 @@ const AppRoutes: React.FC = () => {
         />
         <Route
           path="/management/technicians/admin-created"
-          element={
-            <div className="p-8">
-              <h1 className="text-2xl font-bold">Admin Created Technicians</h1>
-              <p>Admin created technicians list coming soon...</p>
-            </div>
-          }
+          element={<AdminCreatedTechnicians 
+            onAddTechnician={() => navigate("/management/technicians")}/>}
         />
 
         {/* Management - Franchises */}
         <Route
           path="/management/franchises/all"
-          element={<Franchise />}
+          element={<Franchise/>}
         />
         <Route
           path="/management/franchises/add"
@@ -220,12 +189,7 @@ const AppRoutes: React.FC = () => {
         />
         <Route
           path="/management/franchises/admin-created"
-          element={
-            <div className="p-8">
-              <h1 className="text-2xl font-bold">Admin Created Franchises</h1>
-              <p>Admin created franchises list coming soon...</p>
-            </div>
-          }
+          element={<AdminCreatedFranchises />}
         />
 
         {/* Areas */}
@@ -363,7 +327,7 @@ const AppRoutes: React.FC = () => {
             />
           }
         />
-        <Route path="*" element={<Dashboard />} />
+        {/* <Route path="*" element={<NotFound />} /> */}
       </Route>
     </Routes>
   );

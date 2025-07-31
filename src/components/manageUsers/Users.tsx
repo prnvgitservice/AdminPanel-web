@@ -1,5 +1,20 @@
-import React, { useState } from 'react';
-import { Filter, Plus, Calendar, Edit, Trash2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Filter, Plus, Calendar, Edit, Trash2, Eye } from 'lucide-react';
+import { getAllUsers } from '../../api/apiMethods';
+
+interface Address {
+  area: string;
+  pincode: string;
+}
+
+interface User {
+  id: number;
+  userName: string;
+  contactNo: string;
+  signupDate: string;
+  address: Address;
+  avatar: string;
+}
 
 interface UsersProps {
   onAddUser?: () => void;
@@ -7,105 +22,59 @@ interface UsersProps {
 
 const Users: React.FC<UsersProps> = ({ onAddUser }) => {
   const [showFilter, setShowFilter] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [allUsers, setAllUsers] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [error, setError] = useState("");
   const [filters, setFilters] = useState({
     userName: '',
-    emailId: '',
+    contactNo: '',
     fromDate: '',
     toDate: ''
   });
 
-  const users = [
-    {
-      id: 1,
-      userName: 'Meesala Srikar',
-      email: 'stylishtarar7@gmail.com',
-      contactNo: '9490370463',
-      signupDate: '2024-08-06 09:43:09',
-      lastLogin: '2024-08-06 15:13:12',
-      status: true,
-      avatar: 'https://images.pexels.com/photos/3768911/pexels-photo-3768911.jpeg?auto=compress&cs=tinysrgb&w=100'
-    },
-    {
-      id: 2,
-      userName: 'padmini',
-      email: 'pvarma1986@gmail.com',
-      contactNo: '7780672181',
-      signupDate: '2024-08-05 11:16:57',
-      lastLogin: '2024-08-05 16:47:00',
-      status: true,
-      avatar: 'https://images.pexels.com/photos/3735781/pexels-photo-3735781.jpeg?auto=compress&cs=tinysrgb&w=100'
-    },
-    {
-      id: 3,
-      userName: 'Neelima',
-      email: 'gudikandulaneelima29@gmail.com',
-      contactNo: '9390335237',
-      signupDate: '2024-08-05 11:00:55',
-      lastLogin: '2024-08-05 17:00:41',
-      status: true,
-      avatar: 'https://images.pexels.com/photos/3768911/pexels-photo-3768911.jpeg?auto=compress&cs=tinysrgb&w=100'
-    },
-    {
-      id: 4,
-      userName: 'Veekshith K',
-      email: 'veekshithbharadwaj@gmail.com',
-      contactNo: '9177460386',
-      signupDate: '2024-08-03 21:42:10',
-      lastLogin: '2024-08-04 03:16:23',
-      status: true,
-      avatar: 'https://images.pexels.com/photos/3735781/pexels-photo-3735781.jpeg?auto=compress&cs=tinysrgb&w=100'
-    },
-    {
-      id: 5,
-      userName: 'kiran',
-      email: 'sabavathkiran143@gmail.com',
-      contactNo: '8374460488',
-      signupDate: '2024-07-10 12:13:34',
-      lastLogin: '2024-07-10 17:43:37',
-      status: true,
-      avatar: 'https://images.pexels.com/photos/3768911/pexels-photo-3768911.jpeg?auto=compress&cs=tinysrgb&w=100'
-    },
-    {
-      id: 6,
-      userName: 'Biswojeet',
-      email: 'biswaibiswojeet@gmail.com',
-      contactNo: '7008040474',
-      signupDate: '2024-06-10 17:18:49',
-      lastLogin: '2024-07-05 06:46:21',
-      status: true,
-      avatar: 'https://images.pexels.com/photos/3735781/pexels-photo-3735781.jpeg?auto=compress&cs=tinysrgb&w=100'
-    },
-    {
-      id: 7,
-      userName: 'Tanneerlakshmanarao',
-      email: 'lucky70328@gmail.com',
-      contactNo: '6304181708',
-      signupDate: '2024-05-27 14:58:24',
-      lastLogin: '2024-05-27 20:28:27',
-      status: true,
-      avatar: 'https://images.pexels.com/photos/3768911/pexels-photo-3768911.jpeg?auto=compress&cs=tinysrgb&w=100'
-    },
-    {
-      id: 8,
-      userName: 'Damodar',
-      email: 'sandcash8@gmail.com',
-      contactNo: '9030075965',
-      signupDate: '2024-05-06 14:13:26',
-      lastLogin: '2024-05-06 19:43:29',
-      status: true,
-      avatar: 'https://images.pexels.com/photos/3735781/pexels-photo-3735781.jpeg?auto=compress&cs=tinysrgb&w=100'
-    },
-    {
-      id: 9,
-      userName: 'ganeshprnv@gmail.com',
-      email: 'ganeshprnv2023@gmail.com',
-      contactNo: '9059789177',
-      signupDate: '2024-01-11 14:16:38',
-      lastLogin: '2024-08-05 21:08:16',
-      status: true,
-      avatar: 'https://images.pexels.com/photos/3768911/pexels-photo-3768911.jpeg?auto=compress&cs=tinysrgb&w=100'
+  const fetchAllUsers = async ()=>{
+    try{
+      const response = await getAllUsers();
+      if (response?.users) {
+        setAllUsers(response.users);
+      } else {
+        setError('Invalid response format');
+      }
+    } catch (err: any) {
+      setError(err?.message || 'Failed to fetch users');
     }
-  ];
+  }
+  useEffect(() => {
+    fetchAllUsers();
+  }, []);
+
+//   const fetchAllUsers = async () => {
+//   try {
+//     const offset = (currentPage - 1) * itemsPerPage;
+//     const response = await getAllUsers(offset, itemsPerPage);
+
+//     if (response?.users) {
+//       setAllUsers(response.users);
+//       setTotalUsers(response.data.totalCount); 
+//     } else {
+//       setError("Invalid response format");
+//     }
+//   } catch (err: any) {
+//     setError(err?.message || "Failed to fetch users");
+//   }
+// };
+// useEffect(() => {
+//   fetchAllUsers();
+// }, [currentPage, itemsPerPage]);
+
+  // Pagination calculations
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  // const currentUsers = allUsers.slice(indexOfFirstItem, indexOfLastItem);
+  // const totalPages = Math.ceil(allUsers.length / itemsPerPage);
+  const totalPages = Math.ceil(totalUsers / itemsPerPage);
 
   const handleFilterChange = (field: string, value: string) => {
     setFilters(prev => ({
@@ -119,8 +88,8 @@ const Users: React.FC<UsersProps> = ({ onAddUser }) => {
     setShowFilter(false);
   };
 
-  const handleStatusToggle = (id: number) => {
-    console.log('Toggle status for user:', id);
+  const handleView = (id: number) => {
+    console.log('View user:', id);
   };
 
   const handleEdit = (id: number) => {
@@ -131,6 +100,15 @@ const Users: React.FC<UsersProps> = ({ onAddUser }) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       console.log('Delete user:', id);
     }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1);
   };
 
   return (
@@ -169,23 +147,27 @@ const Users: React.FC<UsersProps> = ({ onAddUser }) => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 >
                   <option value="">Select user name</option>
-                  <option value="meesala">Meesala Srikar</option>
-                  <option value="padmini">padmini</option>
-                  <option value="neelima">Neelima</option>
+                  {allUsers.map(user => (
+                    <option key={user.id} value={user.username}>
+                      {user.username}
+                    </option>
+                  ))}
                 </select>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email ID</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Contact No</label>
                 <select
-                  value={filters.emailId}
-                  onChange={(e) => handleFilterChange('emailId', e.target.value)}
+                  value={filters.contactNo}
+                  onChange={(e) => handleFilterChange('contactNo', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 >
-                  <option value="">Select email</option>
-                  <option value="stylishtarar7">stylishtarar7@gmail.com</option>
-                  <option value="pvarma1986">pvarma1986@gmail.com</option>
-                  <option value="gudikandula">gudikandulaneelima29@gmail.com</option>
+                  <option value="">Select contact no</option>
+                  {allUsers.map(user => (
+                    <option key={user.id} value={user.phoneNumber}>
+                      {user.phoneNumber}
+                    </option>
+                  ))}
                 </select>
               </div>
               
@@ -226,28 +208,10 @@ const Users: React.FC<UsersProps> = ({ onAddUser }) => {
             </div>
           </div>
         )}
-
-        {/* Table */}
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600">Show</span>
-                <select className="border border-gray-300 rounded px-2 py-1 text-sm">
-                  <option>10</option>
-                  <option>25</option>
-                  <option>50</option>
-                </select>
-                <span className="text-sm text-gray-600">entries</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600">Search:</span>
-                <input 
-                  type="text" 
-                  className="border border-gray-300 rounded px-3 py-1 text-sm w-full sm:w-auto"
-                  placeholder="Search..."
-                />
-              </div>
+              
             </div>
           </div>
 
@@ -255,56 +219,53 @@ const Users: React.FC<UsersProps> = ({ onAddUser }) => {
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact No</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Signup Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Login</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th> */}
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mobile No</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Join Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {users.map((user) => (
+                {allUsers.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50 transition-colors duration-150">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.id}</td>
+                    {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.id}</td> */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <img 
                           src={user.avatar} 
-                          alt={user.userName}
+                          alt={user.username}
                           className="h-10 w-10 rounded-full object-cover mr-3 shadow-sm"
                         />
-                        <span className="text-sm font-medium text-gray-900">{user.userName}</span>
+                        <span className="text-sm font-medium text-gray-900">{user.username}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.email}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.contactNo}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.phoneNumber}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.signupDate}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.lastLogin}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          className="sr-only peer" 
-                          checked={user.status}
-                          onChange={() => handleStatusToggle(user.id)}
-                        />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-                      </label>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {user.areaName}, {user.city}, {user.pincode}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-2">
                         <button 
+                          onClick={() => handleView(user.id)}
+                          className="text-blue-600 hover:text-blue-800 transition-colors duration-150"
+                          title="View"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                        <button 
                           onClick={() => handleEdit(user.id)}
                           className="text-green-600 hover:text-green-800 transition-colors duration-150"
+                          title="Edit"
                         >
                           <Edit className="h-4 w-4" />
                         </button>
                         <button 
                           onClick={() => handleDelete(user.id)}
                           className="text-red-600 hover:text-red-800 transition-colors duration-150"
+                          title="Delete"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -314,6 +275,54 @@ const Users: React.FC<UsersProps> = ({ onAddUser }) => {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-sm text-gray-700">
+              Showing <span className="font-medium">{indexOfFirstItem + 1}</span> to{' '}
+              <span className="font-medium">{Math.min(indexOfLastItem, allUsers.length)}</span> of{' '}
+              <span className="font-medium">{allUsers.length}</span> results
+            </div>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`px-3 py-1 rounded-md ${
+                  currentPage === 1
+                    ? 'bg-gray-200 cursor-not-allowed'
+                    : 'bg-white border border-gray-300 hover:bg-gray-100'
+                }`}
+              >
+                Previous
+              </button>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`px-3 py-1 rounded-md ${
+                    currentPage === page
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-white border border-gray-300 hover:bg-gray-100'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+              
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`px-3 py-1 rounded-md ${
+                  currentPage === totalPages
+                    ? 'bg-gray-200 cursor-not-allowed'
+                    : 'bg-white border border-gray-300 hover:bg-gray-100'
+                }`}
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>
