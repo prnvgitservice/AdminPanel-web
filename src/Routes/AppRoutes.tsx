@@ -21,6 +21,7 @@ import PlanDetailsPage from "../components/Subscriptions/PlanDetailsPage";
 import Technicians from "../components/manageTechnicians/Technicians";
 import AdminCreatedFranchises from "../components/manageFranchise/AdminCreatedFranchises";
 import AdminCreatedTechnicians from "../components/manageTechnicians/AdminCreatedTechnicians";
+import AllReviews from "../pages/AllReviews";
 
 interface Category {
   id: number;
@@ -162,7 +163,8 @@ const AppRoutes: React.FC = () => {
           }
         />
 
-        {/* Management - Technicians */}
+
+                  {/* Management - Technicians */}
         <Route path="/management/technicians/all" element={<Technicians/>}/>
         <Route
           path="/management/technicians/add"
@@ -191,6 +193,7 @@ const AppRoutes: React.FC = () => {
           path="/management/franchises/admin-created"
           element={<AdminCreatedFranchises />}
         />
+
 
         {/* Areas */}
         <Route
@@ -246,26 +249,6 @@ const AppRoutes: React.FC = () => {
             <div className="p-8">
               <h1 className="text-2xl font-bold">Guest Bookings</h1>
               <p>Guest bookings list coming soon...</p>
-            </div>
-          }
-        />
-
-        {/* Reviews */}
-        <Route
-          path="/reviews"
-          element={
-            <div className="p-8">
-              <h1 className="text-2xl font-bold">All Reviews</h1>
-              <p>Reviews management coming soon...</p>
-            </div>
-          }
-        />
-        <Route
-          path="/reviews/all"
-          element={
-            <div className="p-8">
-              <h1 className="text-2xl font-bold">All Reviews</h1>
-              <p>Reviews management coming soon...</p>
             </div>
           }
         />
@@ -327,6 +310,7 @@ const AppRoutes: React.FC = () => {
             />
           }
         />
+        <Route path="/reviews/all" element={<AllReviews />} />
         {/* <Route path="*" element={<NotFound />} /> */}
       </Route>
     </Routes>
