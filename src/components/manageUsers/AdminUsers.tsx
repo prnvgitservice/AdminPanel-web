@@ -255,13 +255,13 @@ const AdminUsers: React.FC<UsersProps> = ({ onAddUser }) => {
                         >
                           <Eye className="h-4 w-4" />
                         </button>
-                        <button 
+                        {/* <button 
                           onClick={() => handleEdit(user.id)}
                           className="text-green-600 hover:text-green-800 transition-colors duration-150"
                           title="Edit"
                         >
                           <Edit className="h-4 w-4" />
-                        </button>
+                        </button> */}
                         <button 
                           onClick={() => handleDelete(user.id)}
                           className="text-red-600 hover:text-red-800 transition-colors duration-150"

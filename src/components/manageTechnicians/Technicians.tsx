@@ -7,7 +7,7 @@ interface Technician {
   username: string;
   phoneNumber: string;
   category?: string;
-  joiningDate?: string;
+  joinDate?: string;
   subscription?: string;
   buildingName?: string;
   areaName?: string;
@@ -134,10 +134,11 @@ const Technicians: React.FC<TechniciansProps> = ({ onAddTechnician }) => {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-left">
               <tr>
-                <th className="px-6 py-3">Technician</th>
+                <th className="px-6 py-3">Technician Name</th>
+                <th className="px-6 py-3">Technician ID</th>
                 <th className="px-6 py-3">Category</th>
                 <th className="px-6 py-3">Mobile No</th>
-                <th className="px-6 py-3">Joining Date</th>
+                <th className="px-6 py-3">Join Date</th>
                 <th className="px-6 py-3">Subscription</th>
                 <th className="px-6 py-3">Address</th>
                 <th className="px-6 py-3">Actions</th>
@@ -156,23 +157,26 @@ const Technicians: React.FC<TechniciansProps> = ({ onAddTechnician }) => {
                       <span>{tech.username}</span>
                     </div>
                   </td>
+                  <td className="px-6 py-4 font-mono text-xs">{tech.id}</td>
                   <td className="px-6 py-4">{tech.category || '-'}</td>
                   <td className="px-6 py-4">{tech.phoneNumber}</td>
-                  <td className="px-6 py-4">{tech.joiningDate || '-'}</td>
+                  <td className="px-6 py-4">{tech.joinDate || '-'}</td>
                   <td className="px-6 py-4">{tech.subscription || '-'}</td>
-                  <td className="px-6 py-4">
-                    {[tech.buildingName, tech.areaName, tech.city, tech.state, tech.pincode]
-                      .filter(Boolean)
-                      .join(', ')}
+                  <td className="px-6 py-4 max-w-xs">
+                    <div className="line-clamp-2">
+                      {[tech.buildingName, tech.areaName, tech.city, tech.state, tech.pincode]
+                        .filter(Boolean)
+                        .join(', ')}
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex space-x-2">
                       <button onClick={() => handleView(tech.id)} className="text-blue-600" title="View">
                         <Eye className="h-5 w-5" />
                       </button>
-                      <button onClick={() => handleEdit(tech.id)} className="text-yellow-500" title="Edit">
+                      {/* <button onClick={() => handleEdit(tech.id)} className="text-yellow-500" title="Edit">
                         <Pencil className="h-5 w-5" />
-                      </button>
+                      </button> */}
                       <button onClick={() => handleDelete(tech.id)} className="text-red-600" title="Delete">
                         <Trash2 className="h-5 w-5" />
                       </button>
@@ -182,7 +186,7 @@ const Technicians: React.FC<TechniciansProps> = ({ onAddTechnician }) => {
               ))}
               {currentTechnicians.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="text-center py-4 text-gray-500">
+                  <td colSpan={8} className="text-center py-4 text-gray-500">
                     No technicians found.
                   </td>
                 </tr>

@@ -170,9 +170,9 @@ const AdminCreatedTechnicians: React.FC<TechniciansProps> = ({ onAddTechnician }
                       <button onClick={() => handleView(tech.id)} className="text-blue-600" title="View">
                         <Eye className="h-5 w-5" />
                       </button>
-                      <button onClick={() => handleEdit(tech.id)} className="text-yellow-500" title="Edit">
+                      {/* <button onClick={() => handleEdit(tech.id)} className="text-yellow-500" title="Edit">
                         <Pencil className="h-5 w-5" />
-                      </button>
+                      </button> */}
                       <button onClick={() => handleDelete(tech.id)} className="text-red-600" title="Delete">
                         <Trash2 className="h-5 w-5" />
                       </button>

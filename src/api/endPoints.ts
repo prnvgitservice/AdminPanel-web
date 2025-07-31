@@ -1,3 +1,5 @@
+import { getAllFranchises, getCompanyReviews, getFranchisePlans } from "./apiMethods";
+
 const endpoints: any = {
 
     getAllCategories: {
@@ -54,8 +56,25 @@ const endpoints: any = {
       return `/api/franchiseAuth/getAllFranchises?offset=1&limit=2';
 `;
     }
+  },
+
+
+  getCompanyReviews: {
+    method: "get",
+    url: () => {
+      return `/api/reviews/getCompanyReviews?offset=1&limit=2`;
+    }
+  },
+
+
+  getAllFranchises: {
+    method: "get",
+    url: () => {
+      return `/api/franchiseAuth/getAllFranchises?offset=1&limit=2`;
+    }
   }
 
+  
 //   getAllUsers: (offset = 0, limit = 8) => ({
 //   method: "get",
 //   url: () => `/api/userAuth/getAllUsers?offset=${offset}&limit=${limit}`,

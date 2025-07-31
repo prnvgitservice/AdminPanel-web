@@ -302,13 +302,13 @@ const AdminCreatedFranchises: React.FC<FranchiseProps> = ({ onAddFranchise }) =>
                         >
                           <Eye className="h-5 w-5" />
                         </button>
-                        <button 
+                        {/* <button 
                           onClick={() => handleEdit(franchise.id)}
                           className="text-yellow-600 hover:text-yellow-900"
                           title="Edit"
                         >
                           <Pencil className="h-5 w-5" />
-                        </button>
+                        </button> */}
                         <button 
                           onClick={() => handleDelete(franchise.id)}
                           className="text-red-600 hover:text-red-900"

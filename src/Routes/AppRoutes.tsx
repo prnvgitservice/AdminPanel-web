@@ -21,7 +21,10 @@ import PlanDetailsPage from "../components/Subscriptions/PlanDetailsPage";
 import Technicians from "../components/manageTechnicians/Technicians";
 import AdminCreatedFranchises from "../components/manageFranchise/AdminCreatedFranchises";
 import AdminCreatedTechnicians from "../components/manageTechnicians/AdminCreatedTechnicians";
-import AllReviews from "../pages/AllReviews";
+import FranchisePage from "../components/FranchisePlansPage/AllFranchisePlansPage";
+import AllFranchisePlansPage from "../components/FranchisePlansPage/AllFranchisePlansPage";
+import AddFranchisePlanPage from "../components/FranchisePlansPage/AddFranchisePlanPage";
+// import CompanyReview from "../pages/CompanyReview";
 
 interface Category {
   id: number;
@@ -129,6 +132,11 @@ const AppRoutes: React.FC = () => {
           }
         />
 
+          {/* Franchise Plans Routes */}
+            <Route path="/franchise-plans" element={<FranchisePlansPage />} />
+      <Route path="/franchise-plans/all" element={<AllFranchisePlansPage />} />
+      <Route path="/franchise-plans/add" element={<AddFranchisePlanPage />} />
+            
         {/* Management - Users */}
         <Route
           path="/management"
@@ -309,10 +317,10 @@ const AppRoutes: React.FC = () => {
               onEdit={handleEditCategory}
             />
           }
-        />
-        <Route path="/reviews/all" element={<AllReviews />} />
-        {/* <Route path="*" element={<NotFound />} /> */}
-      </Route>
+        />   
+        </Route> 
+
+        
     </Routes>
   );
 };

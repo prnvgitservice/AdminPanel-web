@@ -1,82 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Filter, Plus, Eye, Pencil, Trash2 } from 'lucide-react';
+import { getAllFranchises } from '../../api/apiMethods';
 
 interface FranchiseProps {
   onAddFranchise?: () => void;
 }
 
 interface FranchiseData {
-  id: number;
+  id: string;
   franchiseId: string;
-  franchiseName: string;
-  contactNo: string;
-  joiningDate: string;
-  totalTechnicians: number;
-  avatar: string;
-  address: string;
+  buildingName: string;
+  phoneNumber: string;
+  areaName: string;
+  city: string;
+  state: string;
+  pincode: string;
+  totalTechnicians: number; // Added field
 }
-
-// Mock API service function
-const getAllFranchises = async () => {
-  return new Promise<{ franchises: FranchiseData[] }>((resolve) => {
-    setTimeout(() => {
-      resolve({
-        franchises: [
-          {
-            id: 1,
-            franchiseId: 'FR-001',
-            franchiseName: 'Metro Plumbing Solutions',
-            contactNo: '8765432109',
-            joiningDate: '22-04-2024',
-            totalTechnicians: 12,
-            avatar: 'https://images.pexels.com/photos/3779428/pexels-photo-3779428.jpeg?auto=compress&cs=tinysrgb&w=100',
-            address: '456 Oak Ave, Los Angeles, CA 90001'
-          },
-          {
-            id: 2,
-            franchiseId: 'FR-002',
-            franchiseName: 'Cool Air AC Technicians',
-            contactNo: '7654321098',
-            joiningDate: '05-05-2024',
-            totalTechnicians: 6,
-            avatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=100',
-            address: '789 Pine Rd, Chicago, IL 60601'
-          },
-          {
-            id: 3,
-            franchiseId: 'FR-003',
-            franchiseName: 'Precision Carpentry Works',
-            contactNo: '6543210987',
-            joiningDate: '18-06-2024',
-            totalTechnicians: 9,
-            avatar: 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=100',
-            address: '321 Cedar Ln, Houston, TX 77001'
-          },
-          {
-            id: 4,
-            franchiseId: 'FR-004',
-            franchiseName: 'Colorful Painting Services',
-            contactNo: '5432109876',
-            joiningDate: '29-07-2024',
-            totalTechnicians: 7,
-            avatar: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=100',
-            address: '555 Maple Dr, Phoenix, AZ 85001'
-          },
-          {
-            id: 5,
-            franchiseId: 'FR-005',
-            franchiseName: 'Swift Appliance Repairs',
-            contactNo: '4321098765',
-            joiningDate: '12-08-2024',
-            totalTechnicians: 10,
-            avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=100',
-            address: '777 Birch St, Philadelphia, PA 19101'
-          }
-        ]
-      });
-    }, 1000);
-  });
-};
 
 const Franchise: React.FC<FranchiseProps> = ({ onAddFranchise }) => {
   const [showFilter, setShowFilter] = useState(false);
@@ -84,8 +24,8 @@ const Franchise: React.FC<FranchiseProps> = ({ onAddFranchise }) => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
-    franchiseName: '',
-    contactNo: ''
+    buildingName: '',
+    phoneNumber: ''
   });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -125,15 +65,15 @@ const Franchise: React.FC<FranchiseProps> = ({ onAddFranchise }) => {
   };
 
   // Action handlers
-  const handleView = (id: number) => {
+  const handleView = (id: string) => {
     console.log(`View franchise with ID: ${id}`);
   };
 
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: string) => {
     console.log(`Edit franchise with ID: ${id}`);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     console.log(`Delete franchise with ID: ${id}`);
   };
 
@@ -142,7 +82,12 @@ const Franchise: React.FC<FranchiseProps> = ({ onAddFranchise }) => {
       setLoading(true);
       const response = await getAllFranchises();
       if (response?.franchises) {
-        setFranchises(response.franchises);
+        // Add totalTechnicians with default value if not provided
+        const franchisesWithTechCount = response.franchises.map(franchise => ({
+          ...franchise,
+          totalTechnicians: franchise.totalTechnicians || 0
+        }));
+        setFranchises(franchisesWithTechCount);
       } else {
         setError('Invalid response format');
       }
@@ -186,14 +131,14 @@ const Franchise: React.FC<FranchiseProps> = ({ onAddFranchise }) => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Franchise Name</label>
               <select
-                value={filters.franchiseName}
-                onChange={(e) => handleFilterChange('franchiseName', e.target.value)}
+                value={filters.buildingName}
+                onChange={(e) => handleFilterChange('buildingName', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
               >
                 <option value="">Select franchise name</option>
                 {franchises.map(franchise => (
-                  <option key={franchise.id} value={franchise.franchiseName}>
-                    {franchise.franchiseName}
+                  <option key={franchise.id} value={franchise.buildingName}>
+                    {franchise.buildingName}
                   </option>
                 ))}
               </select>
@@ -202,14 +147,14 @@ const Franchise: React.FC<FranchiseProps> = ({ onAddFranchise }) => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
               <select
-                value={filters.contactNo}
-                onChange={(e) => handleFilterChange('contactNo', e.target.value)}
+                value={filters.phoneNumber}
+                onChange={(e) => handleFilterChange('phoneNumber', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
               >
                 <option value="">Select Phone Number</option>
                 {franchises.map(franchise => (
-                  <option key={franchise.id} value={franchise.contactNo}>
-                    {franchise.contactNo}
+                  <option key={franchise.id} value={franchise.phoneNumber}>
+                    {franchise.phoneNumber}
                   </option>
                 ))}
               </select>
@@ -228,21 +173,14 @@ const Franchise: React.FC<FranchiseProps> = ({ onAddFranchise }) => {
       )}
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-          </div>
-        </div>
-
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Franchisee Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Franchise Name</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Franchise ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact No</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mobile No</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date of Joining</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Technicians</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
@@ -250,7 +188,7 @@ const Franchise: React.FC<FranchiseProps> = ({ onAddFranchise }) => {
             <tbody className="bg-white divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-4 text-center">
+                  <td colSpan={6} className="px-6 py-4 text-center">
                     <div className="flex justify-center items-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
                     </div>
@@ -258,38 +196,31 @@ const Franchise: React.FC<FranchiseProps> = ({ onAddFranchise }) => {
                 </tr>
               ) : error ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-4 text-center text-red-500">
+                  <td colSpan={6} className="px-6 py-4 text-center text-red-500">
                     {error}
                   </td>
                 </tr>
               ) : currentFranchises.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
                     No franchises found
                   </td>
                 </tr>
               ) : (
                 currentFranchises.map((franchise) => (
                   <tr key={franchise.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{franchise.id}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <img
-                          src={franchise.avatar}
-                          alt={franchise.franchiseName}
-                          className="h-10 w-10 rounded-full object-cover mr-3"
-                        />
-                        <span className="text-sm font-medium text-gray-900">{franchise.franchiseName}</span>
-                      </div>
+                      <span className="text-sm font-medium text-gray-900">{franchise.buildingName}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{franchise.franchiseId}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{franchise.contactNo}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{franchise.phoneNumber}</td>
                     <td className="px-6 py-4 text-sm text-gray-900 max-w-xs">
-                      <div className="line-clamp-2">{franchise.address}</div>
+                      <div className="line-clamp-2">
+                        {franchise.areaName}, {franchise.city}, {franchise.state} - {franchise.pincode}
+                      </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{franchise.joiningDate}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <span className="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                         {franchise.totalTechnicians}
                       </span>
                     </td>
@@ -302,13 +233,13 @@ const Franchise: React.FC<FranchiseProps> = ({ onAddFranchise }) => {
                         >
                           <Eye className="h-5 w-5" />
                         </button>
-                        <button 
+                        {/* <button 
                           onClick={() => handleEdit(franchise.id)}
                           className="text-yellow-600 hover:text-yellow-900"
                           title="Edit"
                         >
                           <Pencil className="h-5 w-5" />
-                        </button>
+                        </button> */}
                         <button 
                           onClick={() => handleDelete(franchise.id)}
                           className="text-red-600 hover:text-red-900"

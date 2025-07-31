@@ -20,6 +20,12 @@ export const getAllTechnicians = (data: any) => apiRequest("getAllTechnicians", 
 
 export const getAllFranchises = (data: any) => apiRequest("getAllFranchises", data);
 
+export const getCompanyReviews = (data: any) => apiRequest("getCompanyReviews", data);
+
+export const getFranchisePlans = (data: any) => apiRequest("getFranchisePlans", data);
+
+
+
 
 // export const getAllUsers = (params: { offset: number; limit: number }) =>
 //   apiRequest('getAllUsers', params);
