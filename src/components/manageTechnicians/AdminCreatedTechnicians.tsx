@@ -134,10 +134,11 @@ const AdminCreatedTechnicians: React.FC<TechniciansProps> = ({ onAddTechnician }
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-left">
               <tr>
-                <th className="px-6 py-3">Technician</th>
+                <th className="px-6 py-3">Technician Name</th>
+                <th className="px-6 py-3">Technician Id</th>
                 <th className="px-6 py-3">Category</th>
                 <th className="px-6 py-3">Mobile No</th>
-                <th className="px-6 py-3">Joining Date</th>
+                <th className="px-6 py-3">Join Date</th>
                 <th className="px-6 py-3">Subscription</th>
                 <th className="px-6 py-3">Address</th>
                 <th className="px-6 py-3">Actions</th>

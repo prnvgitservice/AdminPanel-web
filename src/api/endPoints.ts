@@ -53,32 +53,30 @@ const endpoints: any = {
   getAllFranchises: {
     method: "get",
     url: () => {
-      return `/api/franchiseAuth/getAllFranchises?offset=1&limit=2';
-`;
+      return `/api/franchiseAuth/getAllFranchises?offset=1&limit=2`;
     }
   },
-
 
   getCompanyReviews: {
     method: "get",
     url: () => {
-      return `/api/reviews/getCompanyReviews?offset=1&limit=2`;
+      return `/api/reviews/getCompanyReviews`;
     }
   },
 
+  createCompanyReview: {
+    method: "post",
+    url: () => {
+      return `/api/companyReview/getReview`;
+    }
+  },
 
-  getAllFranchises: {
+  getFranchisePlans: {
     method: "get",
     url: () => {
-      return `/api/franchiseAuth/getAllFranchises?offset=1&limit=2`;
+      return `/api/franchiseSubscription/franchisePlans`;
     }
   }
-
-  
-//   getAllUsers: (offset = 0, limit = 8) => ({
-//   method: "get",
-//   url: () => `/api/userAuth/getAllUsers?offset=${offset}&limit=${limit}`,
-// })
  
 }
 export default endpoints;

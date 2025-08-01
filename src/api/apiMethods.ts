@@ -14,18 +14,12 @@ export const getPlans = (data: any) => apiRequest("getPlans", data);
 
 export const getAllUsers = (data: any) => apiRequest("getAllUsers", data);
 
-
 export const getAllTechnicians = (data: any) => apiRequest("getAllTechnicians", data);
-
 
 export const getAllFranchises = (data: any) => apiRequest("getAllFranchises", data);
 
 export const getCompanyReviews = (data: any) => apiRequest("getCompanyReviews", data);
 
+export const createCompanyReview = (data: any) => apiRequest("createCompanyReview", data);
+
 export const getFranchisePlans = (data: any) => apiRequest("getFranchisePlans", data);
-
-
-
-
-// export const getAllUsers = (params: { offset: number; limit: number }) =>
-//   apiRequest('getAllUsers', params);
