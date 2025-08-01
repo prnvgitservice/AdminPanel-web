@@ -335,7 +335,7 @@ const AllFranchisePlansPage: React.FC = () => {
 
           <div className="lg:col-span-1">
             <div className="sticky top-8 space-y-6">
-              <div className="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6">
+              {/* <div className="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6">
                 <div className="text-center mb-6">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center mx-auto mb-3 shadow-lg animate-bounce">
                     <Phone className="text-white" size={20} />
@@ -409,10 +409,10 @@ const AllFranchisePlansPage: React.FC = () => {
                     CONTACT US
                   </button>
                 </form>
-              </div>
+              </div> */}
 
               {/* Contact Info */}
-              <div className="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6">
+              {/* <div className="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-6">
                 <h4 className="font-bold text-gray-800 mb-4 text-center">
                   Contact Information
                 </h4>
@@ -442,7 +442,7 @@ const AllFranchisePlansPage: React.FC = () => {
                     </span>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
