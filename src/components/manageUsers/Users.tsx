@@ -140,7 +140,7 @@ const Users: React.FC<UsersProps> = ({ onAddUser }) => {
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8 animate-in slide-in-from-top duration-300">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">User Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
                 <select
                   value={filters.userName}
                   onChange={(e) => handleFilterChange('userName', e.target.value)}
@@ -156,13 +156,13 @@ const Users: React.FC<UsersProps> = ({ onAddUser }) => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Contact No</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Mobile No</label>
                 <select
                   value={filters.contactNo}
                   onChange={(e) => handleFilterChange('contactNo', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 >
-                  <option value="">Select contact no</option>
+                  <option value="">Select Mobile no</option>
                   {allUsers.map(user => (
                     <option key={user.id} value={user.phoneNumber}>
                       {user.phoneNumber}
@@ -216,15 +216,15 @@ const Users: React.FC<UsersProps> = ({ onAddUser }) => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
+            <table className=" w-full">
+              <thead className=" bg-gray-50 text-left">
                 <tr>
                   {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th> */}
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mobile No</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Join Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                  <th className="px-6 py-3 ">Username</th>
+                  <th className="px-6 py-3 ">Mobile No</th>
+                  <th className="px-6 py-3 ">Join Date</th>
+                  <th className="px-6 py-3 ">Address</th>
+                  <th className="px-6 py-3 ">Action</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">

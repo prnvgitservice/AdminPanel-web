@@ -145,13 +145,13 @@ const Franchise: React.FC<FranchiseProps> = ({ onAddFranchise }) => {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Mobile No</label>
               <select
                 value={filters.phoneNumber}
                 onChange={(e) => handleFilterChange('phoneNumber', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
               >
-                <option value="">Select Phone Number</option>
+                <option value="">Select Mobile No</option>
                 {franchises.map(franchise => (
                   <option key={franchise.id} value={franchise.phoneNumber}>
                     {franchise.phoneNumber}
@@ -175,14 +175,15 @@ const Franchise: React.FC<FranchiseProps> = ({ onAddFranchise }) => {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 text-left">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Franchise Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Franchise ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mobile No</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Technicians</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 ">Franchise Name</th>
+                <th className="px-6 py-3 ">Franchise ID</th>
+                <th className="px-6 py-3 ">Mobile No</th>
+                <th className="px-6 py-3 ">Join Date</th>
+                <th className="px-6 py-3 ">Address</th>
+                <th className="px-6 py-3 ">Total Technicians</th>
+                <th className="px-6 py-3 ">Action</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -210,13 +211,14 @@ const Franchise: React.FC<FranchiseProps> = ({ onAddFranchise }) => {
                 currentFranchises.map((franchise) => (
                   <tr key={franchise.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm font-medium text-gray-900">{franchise.buildingName}</span>
+                      <span className="text-sm font-medium text-gray-900">{franchise.username}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{franchise.franchiseId}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{franchise.phoneNumber}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{franchise.joinDate || "-"}</td>
                     <td className="px-6 py-4 text-sm text-gray-900 max-w-xs">
                       <div className="line-clamp-2">
-                        {franchise.areaName}, {franchise.city}, {franchise.state} - {franchise.pincode}
+                        {franchise.areaName}, {franchise.city}, {franchise.pincode}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
@@ -231,7 +233,7 @@ const Franchise: React.FC<FranchiseProps> = ({ onAddFranchise }) => {
                           className="text-blue-600 hover:text-blue-900"
                           title="View"
                         >
-                          <Eye className="h-5 w-5" />
+                          <Eye className="h-4 w-4" />
                         </button>
                         {/* <button 
                           onClick={() => handleEdit(franchise.id)}
@@ -245,7 +247,7 @@ const Franchise: React.FC<FranchiseProps> = ({ onAddFranchise }) => {
                           className="text-red-600 hover:text-red-900"
                           title="Delete"
                         >
-                          <Trash2 className="h-5 w-5" />
+                          <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
                     </td>

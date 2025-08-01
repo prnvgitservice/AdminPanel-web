@@ -109,7 +109,7 @@ const Technicians: React.FC<TechniciansProps> = ({ onAddTechnician }) => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Mobile No</label>
               <input
                 type="text"
                 value={filters.phoneNumber}
@@ -131,7 +131,7 @@ const Technicians: React.FC<TechniciansProps> = ({ onAddTechnician }) => {
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full ">
             <thead className="bg-gray-50 text-left">
               <tr>
                 <th className="px-6 py-3">Technician Name</th>
@@ -141,7 +141,7 @@ const Technicians: React.FC<TechniciansProps> = ({ onAddTechnician }) => {
                 <th className="px-6 py-3">Join Date</th>
                 <th className="px-6 py-3">Subscription</th>
                 <th className="px-6 py-3">Address</th>
-                <th className="px-6 py-3">Actions</th>
+                <th className="px-6 py-3">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -164,7 +164,7 @@ const Technicians: React.FC<TechniciansProps> = ({ onAddTechnician }) => {
                   <td className="px-6 py-4">{tech.subscription || '-'}</td>
                   <td className="px-6 py-4 max-w-xs">
                     <div className="line-clamp-2">
-                      {[tech.buildingName, tech.areaName, tech.city, tech.state, tech.pincode]
+                      {[tech.areaName, tech.city, tech.pincode]
                         .filter(Boolean)
                         .join(', ')}
                     </div>
@@ -172,13 +172,13 @@ const Technicians: React.FC<TechniciansProps> = ({ onAddTechnician }) => {
                   <td className="px-6 py-4">
                     <div className="flex space-x-2">
                       <button onClick={() => handleView(tech.id)} className="text-blue-600" title="View">
-                        <Eye className="h-5 w-5" />
+                        <Eye size={18} />
                       </button>
                       {/* <button onClick={() => handleEdit(tech.id)} className="text-yellow-500" title="Edit">
                         <Pencil className="h-5 w-5" />
                       </button> */}
                       <button onClick={() => handleDelete(tech.id)} className="text-red-600" title="Delete">
-                        <Trash2 className="h-5 w-5" />
+                        <Trash2 size={18} />
                       </button>
                     </div>
                   </td>
