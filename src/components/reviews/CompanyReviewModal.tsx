@@ -13,13 +13,6 @@ interface ReviewModalProps {
   onReviewSubmitted?: () => void;
 }
 
-interface ReviewData {
-  [key: string]: string | number; 
-  role: string;
-  rating: number;
-  comment: string;
-}
-
 interface AuthenticatedUser {
   id: string;
   role: 'user' | 'technician';
@@ -39,11 +32,13 @@ const CompanyReviewModal: React.FC<ReviewModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const reviewModalRef = useRef<HTMLDivElement>(null);
 
-  const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+  const handleBackgroundClick = (
+    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>
+  ) => {
     if (e.target === e.currentTarget) {
       setShowReviewModal(false);
-      setSelectedRating(0); 
-      setComment(''); 
+      setSelectedRating(0);
+      setComment('');
     }
   };
 
@@ -67,7 +62,8 @@ const CompanyReviewModal: React.FC<ReviewModalProps> = ({
 
     setIsSubmitting(true);
 
-    const reviewData: ReviewData = {
+    // Prepare data according to backend structure
+    const reviewData = {
       [user.role === 'user' ? 'userId' : 'technicianId']: user.id,
       role: user.role,
       rating: selectedRating,
@@ -77,20 +73,21 @@ const CompanyReviewModal: React.FC<ReviewModalProps> = ({
     try {
       const response = await createCompanyReview(reviewData);
       
-      if (response && (response.status === 201 || response.status === 200)) {
+      // Handle backend response structure
+      if (response?.success) {
         alert('Thank you for your review!');
-        setShowReviewModal(false); 
-        setSelectedRating(0); 
+        setShowReviewModal(false);
+        setSelectedRating(0);
         setComment('');
-        if (onReviewSubmitted) onReviewSubmitted();
+        onReviewSubmitted?.();
       } else {
-        throw new Error(response?.data?.message || 'Failed to submit review');
+        throw new Error(response?.message || 'Failed to submit review');
       }
     } catch (error: any) {
       console.error('Error submitting review:', error);
       const errorMessage = error?.response?.data?.message || 
-                          error?.message || 
-                          'An error occurred. Please try again later.';
+                         error?.message || 
+                         'An error occurred. Please try again later.';
       alert(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -132,15 +129,20 @@ const CompanyReviewModal: React.FC<ReviewModalProps> = ({
             </label>
             <div className="flex justify-center space-x-2">
               {[1, 2, 3, 4, 5].map((star) => (
-                <Star
+                <button
+                  type="button"
                   key={star}
-                  className={`w-10 h-10 cursor-pointer transition-all duration-200 transform hover:scale-110 ${
-                    star <= selectedRating 
-                      ? 'text-yellow-400 fill-current' 
-                      : 'text-gray-300 hover:text-yellow-300'
-                  }`}
                   onClick={() => setSelectedRating(star)}
-                />
+                  className="focus:outline-none"
+                >
+                  <Star
+                    className={`w-10 h-10 transition-all duration-200 ${
+                      star <= selectedRating 
+                        ? 'text-yellow-400 fill-current' 
+                        : 'text-gray-300 hover:text-yellow-300'
+                    }`}
+                  />
+                </button>
               ))}
             </div>
             {selectedRating > 0 && (
@@ -188,7 +190,7 @@ const CompanyReviewModal: React.FC<ReviewModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting || !selectedRating || !comment.trim()}
-              className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-lg transition-all transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed"
+              className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Submitting...' : 'Submit Review'}
             </button>

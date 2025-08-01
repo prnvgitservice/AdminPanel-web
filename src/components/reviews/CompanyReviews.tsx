@@ -4,7 +4,7 @@ import { getCompanyReviews } from '../../api/apiMethods';
 import CompanyReviewModal from './CompanyReviewModal';
 
 interface Review {
-  id: string;
+  _id: string;
   userId?: string;
   technicianId?: string;
   role: 'user' | 'technician';
@@ -13,19 +13,10 @@ interface Review {
   createdAt: string;
   user?: {
     username: string;
-    email: string;
   };
   technician?: {
     username: string;
-    email: string;
   };
-}
-
-interface ReviewsResponse {
-  reviews: Review[];
-  totalCount: number;
-  currentPage: number;
-  totalPages: number;
 }
 
 const CompanyReviews: React.FC = () => {
@@ -35,40 +26,44 @@ const CompanyReviews: React.FC = () => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedRating, setSelectedRating] = useState(0);
   const [comment, setComment] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
   const [filterRating, setFilterRating] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [thisMonthCount, setThisMonthCount] = useState(0);
 
   const user = localStorage.getItem('user')
     ? JSON.parse(localStorage.getItem('user') as string)
     : null;
 
-  const fetchReviews = async (page: number = 1) => {
+  const fetchReviews = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const params = {
-        offset: (page - 1) * 10, // Fixed offset calculation
-        limit: 10
-      };
+      const response = await getCompanyReviews();
       
-      const response = await getCompanyReviews(params);
-      
-      if (response && response.reviews) {
-        setReviews(response.reviews);
-        setTotalCount(response.totalCount || 0);
-        setTotalPages(response.totalPages || 1);
-        setCurrentPage(response.currentPage || page);
+      if (response?.success && Array.isArray(response.result)) {
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth();
+        const currentYear = currentDate.getFullYear();
+        
+        // Calculate this month's reviews
+        const monthlyCount = response.result.filter(review => {
+          const reviewDate = new Date(review.createdAt);
+          return (
+            reviewDate.getMonth() === currentMonth &&
+            reviewDate.getFullYear() === currentYear
+          );
+        }).length;
+        
+        setThisMonthCount(monthlyCount);
+        setReviews(response.result);
       } else {
+        setError(response?.message || 'Failed to fetch reviews');
         setReviews([]);
-        setTotalCount(0);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching reviews:', err);
-      setError('Failed to load reviews. Please try again later.');
+      setError(err.message || 'Failed to load reviews. Please try again later.');
       setReviews([]);
     } finally {
       setLoading(false);
@@ -76,27 +71,23 @@ const CompanyReviews: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchReviews(currentPage);
-  }, [currentPage]);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+    fetchReviews();
+  }, []);
 
   const handleRefresh = () => {
-    fetchReviews(currentPage);
+    fetchReviews();
   };
 
   const getAverageRating = () => {
-    if (reviews.length === 0) return 0;
+    if (reviews.length === 0) return '0.0';
     const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
     return (sum / reviews.length).toFixed(1);
   };
 
   const getRatingDistribution = () => {
-    const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    const distribution: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
     reviews.forEach(review => {
-      distribution[review.rating as keyof typeof distribution]++;
+      distribution[review.rating] = (distribution[review.rating] || 0) + 1;
     });
     return distribution;
   };
@@ -104,9 +95,9 @@ const CompanyReviews: React.FC = () => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
-      year: 'numeric',
       month: 'short',
       day: 'numeric',
+      year: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     });
@@ -138,7 +129,7 @@ const CompanyReviews: React.FC = () => {
   };
 
   const onReviewSubmitted = () => {
-    fetchReviews(currentPage);
+    fetchReviews();
   };
 
   if (loading) {
@@ -204,7 +195,7 @@ const CompanyReviews: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Reviews</p>
-                <p className="text-3xl font-bold text-gray-900">{totalCount}</p>
+                <p className="text-3xl font-bold text-gray-900">{reviews.length}</p>
               </div>
               <div className="p-3 bg-blue-100 rounded-lg">
                 <MessageSquare className="w-6 h-6 text-blue-600" />
@@ -228,7 +219,7 @@ const CompanyReviews: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">5 Star Reviews</p>
-                <p className="text-3xl font-bold text-gray-900">{getRatingDistribution()[5]}</p>
+                <p className="text-3xl font-bold text-gray-900">{getRatingDistribution()[5] || 0}</p>
               </div>
               <div className="p-3 bg-green-100 rounded-lg">
                 <Star className="w-6 h-6 text-green-600 fill-current" />
@@ -240,7 +231,7 @@ const CompanyReviews: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">This Month</p>
-                <p className="text-3xl font-bold text-gray-900">{reviews.length}</p>
+                <p className="text-3xl font-bold text-gray-900">{thisMonthCount}</p>
               </div>
               <div className="p-3 bg-purple-100 rounded-lg">
                 <Calendar className="w-6 h-6 text-purple-600" />
@@ -299,7 +290,7 @@ const CompanyReviews: React.FC = () => {
           ) : (
             <div className="divide-y divide-gray-200">
               {filteredReviews.map((review) => (
-                <div key={review.id} className="p-6 hover:bg-gray-50 transition-colors">
+                <div key={review._id} className="p-6 hover:bg-gray-50 transition-colors">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-4">
                       <div className="flex-shrink-0">
@@ -343,47 +334,6 @@ const CompanyReviews: React.FC = () => {
             </div>
           )}
         </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="mt-8 flex items-center justify-between">
-            <div className="text-sm text-gray-700">
-              Showing {Math.min((currentPage - 1) * 10 + 1, totalCount)} to {Math.min(currentPage * 10, totalCount)} of {totalCount} reviews
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-white"
-              >
-                Previous
-              </button>
-              
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`px-3 py-2 text-sm font-medium rounded-lg ${
-                    page === currentPage
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50'
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
-              
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-white"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Review Modal */}
         {showReviewModal && (

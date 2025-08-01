@@ -60,16 +60,25 @@ const endpoints: any = {
   getCompanyReviews: {
     method: "get",
     url: () => {
-      return `/api/reviews/getCompanyReviews`;
+      return `/api/companyReview/getCompanyReviews`;
     }
   },
 
   createCompanyReview: {
-    method: "post",
+    method: "get",
     url: () => {
       return `/api/companyReview/getReview`;
     }
   },
+
+  // getFranchisePlans: {
+  //   method: "get",
+  //   url: () => {
+  //     return `/api/franchiseSubscription/franchisePlans`;
+  //   }
+  // }
+ 
+
 
   getFranchisePlans: {
     method: "get",
@@ -77,6 +86,5 @@ const endpoints: any = {
       return `/api/franchiseSubscription/franchisePlans`;
     }
   }
- 
 }
 export default endpoints;
