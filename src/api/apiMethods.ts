@@ -23,3 +23,7 @@ export const getCompanyReviews = (data: any) => apiRequest("getCompanyReviews", 
 export const createCompanyReview = (data: any) => apiRequest("createCompanyReview", data);
 
 export const getFranchisePlans = (data: any) => apiRequest("getFranchisePlans", data);
+
+// seo conteny
+
+export const createSeoContent = (data: any) => apiRequest("createSeoContent", data);
