@@ -407,7 +407,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
               <BookOpen className="h-6 w-6 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              {isEdit ? "Edit Search Content" : "Add Search Content"}
+              {isEdit ? "Edit Meta Info" : "Add Meta Info"}
             </h1>
           </div>
           <button
@@ -415,7 +415,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
             className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Search Content
+            Back
           </button>
         </div>
 
@@ -435,7 +435,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
                 {/* Category Dropdown */}
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Category*
+                    Category <span className="text-red-500">*</span>
                   </label>
                   <select
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
@@ -461,7 +461,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
                 {/* City Dropdown */}
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    City*
+                    City <span className="text-red-500">*</span>
                   </label>
                   <select
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
@@ -487,7 +487,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
                 {/* Area Dropdown */}
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Area*
+                    Area <span className="text-red-500">*</span>
                   </label>
                   <select
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
@@ -496,7 +496,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
                     required
                   >
                     <option value="" disabled>
-                      Select Area
+                      Select Area 
                     </option>
                     {areaOptions
                       .sort((a, b) => a.name.localeCompare(b.name))
@@ -515,7 +515,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
                 {/* Subarea Dropdown */}
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Subarea
+                    Subarea <span className="text-red-500">*</span>
                   </label>
                   <select
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
@@ -552,7 +552,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
             <div className="p-6 space-y-6">
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Meta Title*
+                  Meta Title <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -567,7 +567,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
 
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Meta Description*
+                  Meta Description <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   name="metaDescription"
@@ -591,7 +591,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
             <div className="p-6">
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  SEO Content
+                  SEO Content <span className="text-red-500">*</span>
                 </label>
                 <ReactQuill
                   value={formData.seoContent}
@@ -616,20 +616,20 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
                 <RefreshCw className="h-5 w-5" />
                 Reset
               </button>
-              <button
+              {/* <button
                 type="button"
                 onClick={onBack}
                 className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
               >
                 Cancel
-              </button>
+              </button> */}
             </div>
             <button
               type="submit"
               className="w-full sm:w-auto flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
-              <Search className="h-5 w-5" />
-              {isEdit ? "Update" : "Create"} Search Content
+              {/* <Search className="h-5 w-5" /> */}
+              {isEdit ? "Update" : "Add"}
             </button>
           </div>
         </form>

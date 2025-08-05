@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, BookOpen, Search, Edit, Trash2, Eye } from "lucide-react";
+import { ArrowLeft, BookOpen, Search, Edit, Trash2, Eye, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -37,7 +37,7 @@ const AllMetaInfo = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `http://localhost:5000/api/searchContentData/getAllSearchContents?offset=${offset}&limit=${limit}&search=${searchTerm}`
+        `https://services-platform-backend.onrender.com/api/searchContentData/getAllSearchContents?offset=${offset}&limit=${limit}&search=${searchTerm}`
       );
       const data = await response.json();
 
@@ -64,7 +64,7 @@ const AllMetaInfo = () => {
     ) {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/searchContentData/deleteCategorySearchDetails/${id}`,
+          `https://services-platform-backend.onrender.com/api/searchContentData/deleteCategorySearchDetails/${id}`,
           {
             method: "DELETE",
           }
@@ -101,14 +101,15 @@ const AllMetaInfo = () => {
               <BookOpen className="h-6 w-6 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              All Search Content
+              All Meta Info
             </h1>
           </div>
           <button
             onClick={() => navigate("/add-meta-info")}
             className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
           >
-            Add New Content
+            <Plus className="h-4 w-4 mr-2" />
+            Add Info
           </button>
         </div>
 
@@ -215,7 +216,7 @@ const AllMetaInfo = () => {
                             className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50"
                             title="View"
                           >
-                            <Eye className="h-5 w-5" />{" "}\
+                            <Eye className="h-5 w-5" />{" "}
                           </button>
                           <button
                             onClick={() => handleEdit(content.id)}
