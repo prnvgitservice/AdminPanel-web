@@ -162,26 +162,26 @@ const AllFranchisePlansPage: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-4">
+        {/* <div className="text-center mb-2">
           <h1 className="text-4xl font-bold text-gray-800">
             Franchise Opportunity
           </h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto mt-3 leading-relaxed">
             Join PRNV Services and build your business with comprehensive
             support and unlimited earning potential
           </p>
-        </div>
+        </div> */}
         {/* <Award className="text-white" size={32} /> bg-gradient-to-br from-yellow-50 via-pink-50 to-purple-100 */}
 
         <div className="grid lg:grid-cols-4">
           <div className="lg:col-span-4">
-            <div className="min-h-screen  py-10 flex items-center justify-center">
-              <div className="w-full max-w-2xl mx-auto px-4">
+            <div className="min-h-screen py-10 flex items-center justify-center">
+              <div className="w-full max-w-xl mx-auto px-2">
                 <div className="text-center mb-12">
-                  <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-600 via-yellow-500 to-purple-600 drop-shadow-lg">
+                  <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-600 via-yellow-500 to-purple-600 drop-shadow-lg">
                     The Ultimate Franchise Plan
                   </h1>
-                  <p className="text-xl text-gray-700 max-w-xl mx-auto mt-4 leading-relaxed">
+                  <p className="text-lg text-gray-600 max-w-5xl mx-auto mt-3 leading-relaxed">
                     Unlock every premium feature and grow your franchise
                     business with our all-in-one, most popular plan.
                   </p>
@@ -257,7 +257,7 @@ const AllFranchisePlansPage: React.FC = () => {
 
                       {Array.isArray(plan.fullFeatures) &&
                         plan.fullFeatures.length > 0 && (
-                          <ul className="space-y-1 mb-6 w-md max-w-md">
+                          <ul className="space-y-1 mb-2 w-md max-w-md">
                             {plan.fullFeatures.map((f, idx) => (
                               <li
                                 key={idx}
