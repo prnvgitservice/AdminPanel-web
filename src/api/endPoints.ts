@@ -1,8 +1,11 @@
-import { getAllFranchises, getCompanyReviews, getFranchisePlans } from "./apiMethods";
+import {
+  getAllFranchises,
+  getCompanyReviews,
+  getFranchisePlans,
+} from "./apiMethods";
 
 const endpoints: any = {
-
-    getAllCategories: {
+  getAllCategories: {
     method: "get",
     url: () => {
       return `/api/categories/get`;
@@ -11,64 +14,64 @@ const endpoints: any = {
 
   addCategory: {
     method: "post",
-    url: () => `/api/categories/create`
+    url: () => `/api/categories/create`,
   },
 
-   updateCategory: { 
+  updateCategory: {
     method: "put",
-    url: (categoryId : string) => `/api/categories/${categoryId}`
+    url: (categoryId: string) => `/api/categories/${categoryId}`,
   },
 
-   deleteCategory: {
+  deleteCategory: {
     method: "delete",
-    url: (categoryId : string) => `/api/categories/${categoryId}`
+    url: (categoryId: string) => `/api/categories/${categoryId}`,
   },
 
   getAllPincodes: {
     method: "get",
-    url: () => `/api/pincodes/allAreas`
+    url: () => `/api/pincodes/allAreas`,
   },
 
   getPlans: {
     method: "get",
     url: () => {
       return `/api/subscriptions/plans`;
-    }
+    },
   },
- 
+
   getAllUsers: {
     method: "get",
     url: () => {
       return `/api/userAuth/getAllUsers?offset=1&limit=8`;
-    }
+    },
   },
 
   getAllTechnicians: {
     method: "get",
     url: () => {
       return `/api/techAuth/getAllTechnicians?offset=1&limit=2`;
-    }
+    },
   },
 
   getAllFranchises: {
     method: "get",
     url: () => {
       return `/api/franchiseAuth/getAllFranchises?offset=1&limit=2`;
-    }
+    },
   },
 
   getCompanyReviews: {
     method: "get",
     url: () => {
       return `/api/companyReview/getCompanyReviews`;
-    }
+    },
   },
 
   createCompanyReview: {
     method: "get",
     url: () => {
       return `/api/companyReview/getReview`;
-    }
+    },
   },
 
   // getFranchisePlans: {
@@ -77,14 +80,18 @@ const endpoints: any = {
   //     return `/api/franchiseSubscription/franchisePlans`;
   //   }
   // }
- 
-
 
   getFranchisePlans: {
     method: "get",
     url: () => {
       return `/api/franchiseSubscription/franchisePlans`;
-    }
-  }
-}
+    },
+  },
+  createSeoContent: {
+    method: "post",
+    url: () => {
+      return `/api/searchContentData/addCagegorySearchDetails`;
+    },
+  },
+};
 export default endpoints;
