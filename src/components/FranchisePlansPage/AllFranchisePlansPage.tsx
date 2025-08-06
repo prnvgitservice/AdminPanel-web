@@ -238,7 +238,7 @@ const AllFranchisePlansPage: React.FC = () => {
                         Valid for {plan.validity} days
                       </div>
 
-                      <ul className="space-y-3 my-8 w-md max-w-md">
+                      <ul className="space-y-2 my-4 w-md max-w-md">
                         {Array.isArray(plan.features) &&
                           plan.features.map((feature, idx) => (
                             <li
@@ -258,7 +258,7 @@ const AllFranchisePlansPage: React.FC = () => {
                       {Array.isArray(plan.fullFeatures) &&
                         plan.fullFeatures.length > 0 && (
                           <ul className="space-y-1 mb-2 w-md max-w-md">
-                            {plan.fullFeatures.map((f, idx) => (
+                            {plan.fullFeatures.slice(0,5).map((f, idx) => (
                               <li
                                 key={idx}
                                 className="flex items-center gap-2 text-sm text-gray-500"
