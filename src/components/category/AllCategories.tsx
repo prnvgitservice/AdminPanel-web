@@ -167,7 +167,7 @@ const AllCategories: React.FC = () => {
                   ))}
                 </select>
               </div>
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Status
                 </label>
@@ -180,7 +180,7 @@ const AllCategories: React.FC = () => {
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
                 </select>
-              </div>
+              </div> */}
             </div>
             <div className="flex justify-center items-center">
               <button

@@ -276,19 +276,6 @@ const AddCategory: React.FC<AddCategoryProps> = ({ isEdit = false, category }) =
                   </div>
                 </div>
               </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Description</label>
-                <textarea
-                  name="category_description"
-                  value={formData.category_description}
-                  onChange={handleInputChange}
-                  rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Enter category description..."
-                />
-              </div>
-
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
                   Category Slug <span className="text-red-500">*</span>
@@ -387,6 +374,18 @@ const AddCategory: React.FC<AddCategoryProps> = ({ isEdit = false, category }) =
                   rows={3}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter meta description"
+                />
+              </div>
+
+               <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">SEO Content</label>
+                <textarea
+                  name="category_description"
+                  value={formData.category_description}
+                  onChange={handleInputChange}
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Enter SEO Content..."
                 />
               </div>
             </div>
