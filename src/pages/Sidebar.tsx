@@ -3,7 +3,9 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   Home, Wrench, Plus, List, XCircle, CheckCircle, Settings, Star,
   Calendar, MapPin, ChevronRight, ChevronDown, Users,
-  UserCheck, Building2, X, Package, Image, BookOpen, FileText
+  UserCheck, Building2, X, Package, Image, BookOpen, FileText,
+  Crown,
+  Bell
 } from 'lucide-react';
 
 interface MenuItem {
@@ -22,65 +24,130 @@ interface SidebarProps {
   onClose?: () => void;
 }
 
+// Array of menu items defining the sidebar navigation
 const menuItems: MenuItem[] = [
+  // Dashboard: Main landing page of the admin panel
   { key: 'dashboard', label: 'Dashboard', icon: <Home className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/dashboard' },
+
+  // Categories: Parent item for managing service categories
   { key: 'categories', label: 'Categories', icon: <Wrench className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/categories' },
+  // Sub-item: View all categories
   { key: 'all-categories', label: 'All Categories', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/categories/all' },
+  // Sub-item: Add a new category
   { key: 'add-category', label: 'Add Category', icon: <Plus className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/categories/add' },
-  // { key: 'active-categories', label: 'Active Categories', icon: <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/categories/active' },
-  // { key: 'inactive-categories', label: 'Inactive Categories', icon: <XCircle className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/categories/inactive' },
+
+  // Meta Info: Parent item for managing metadata (e.g., SEO or content details)
   { key: 'meta-info', label: 'Meta Info', icon: <BookOpen className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/meta-info' },
+  // Sub-item: View all metadata entries
   { key: 'all-meta-info', label: 'All Meta Info', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/meta-info/all' },
+  // Sub-item: Add new metadata
   { key: 'add-meta-info', label: 'Add Meta Info', icon: <Plus className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/meta-info/add' },
+
+  // Subscription: Parent item for managing subscription plans
   { key: 'subscription', label: 'Subscription', icon: <Package className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/subscription' },
+  // Sub-item: View all subscriptions
   { key: 'all-subscriptions', label: 'All Subscriptions', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/subscription/all' },
+  // Sub-item: Add a new subscription plan
   { key: 'add-subscription', label: 'Add Subscription', icon: <Plus className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/subscription/add' },
-  
-  // Franchise Plans Section
+
+  // Franchise Plans: Parent item for managing franchise-related plans
   { key: 'franchise-plans', label: 'Franchise Plans', icon: <FileText className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/franchise-plans' },
+  // Sub-item: View all franchise plans
   { key: 'all-franchise-plans', label: 'All Plans', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/franchise-plans/all' },
+  // Sub-item: Add a new franchise plan
   { key: 'add-franchise-plan', label: 'Add Plan', icon: <Plus className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/franchise-plans/add' },
 
+  // Management: Parent item for user, technician, and franchise management
   { key: 'management', label: 'Management', icon: <Settings className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/management' },
+  // Sub-item: Manage users (parent for user-related actions)
   { key: 'manage-users', label: 'Manage Users', icon: <Users className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/management/users' },
+  // Sub-sub-item: View all users
   { key: 'all-users', label: 'All Users', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/management/users/all' },
+  // Sub-sub-item: Add a new user
   { key: 'add-user', label: 'Add User', icon: <Plus className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/management/users/add' },
-  // { key: 'admin-created-users', label: 'Admin Created Users', icon: <UserCheck className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/management/users/admin-created' },
+
+  // Sub-item: Manage technicians (parent for technician-related actions)
   { key: 'manage-technicians', label: 'Manage Technicians', icon: <UserCheck className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/management/technicians' },
+  // Sub-sub-item: View all technicians
   { key: 'all-technicians', label: 'All Technicians', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/management/technicians/all' },
+  // Sub-sub-item: Add a new technician
   { key: 'add-technician', label: 'Add Technician', icon: <Plus className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/management/technicians/add' },
-  // { key: 'admin-created-technicians', label: 'Admin Created Technicians', icon: <UserCheck className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/management/technicians/admin-created' },
+
+  // Sub-item: Manage franchises (parent for franchise-related actions)
   { key: 'manage-franchises', label: 'Manage Franchises', icon: <Building2 className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/management/franchises' },
+  // Sub-sub-item: View all franchises
   { key: 'all-franchises', label: 'All Franchises', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/management/franchises/all' },
+  // Sub-sub-item: Add a new franchise
   { key: 'add-franchise', label: 'Add Franchise', icon: <Plus className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/management/franchises/add' },
-  // { key: 'admin-created-franchises', label: 'Admin Created Franchises', icon: <Building2 className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/management/franchises/admin-created' },
+
+  // Areas: Parent item for managing service areas
   { key: 'areas', label: 'Areas', icon: <MapPin className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/areas' },
+  // Sub-item: View all areas
   { key: 'all-areas', label: 'All Areas', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/areas/all' },
+  // Sub-item: Add a new area
   { key: 'add-area', label: 'Add Area', icon: <Plus className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/areas/add' },
+
+  // Bookings: Parent item for managing bookings
   { key: 'bookings', label: 'Bookings', icon: <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/bookings' },
+  // Sub-item: View all bookings
   { key: 'all-bookings', label: 'All Bookings', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/bookings/all' },
+  // Sub-item: View guest (non-registered user) bookings
   { key: 'guest-bookings', label: 'Guest Bookings', icon: <Users className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/bookings/guest' },
+
+  // Advertisements: Parent item for managing ads
   { key: 'advertisements', label: 'Advertisements', icon: <Image className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/advertisements' },
+  // Sub-item: View all advertisements
   { key: 'all-advertisements', label: 'All Advertisements', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/advertisements/all' },
+  // Sub-item: Add a new advertisement
   { key: 'add-advertisement', label: 'Add Advertisement', icon: <Plus className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/advertisements/add' },
+
+  // Reviews: Parent item for managing user reviews
   { key: 'reviews', label: 'Reviews', icon: <Star className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/reviews' },
+  // Sub-item: View all reviews
   { key: 'all-reviews', label: 'All Reviews', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/reviews/all' },
+
+  // Notifications: Parent item for notification-related actions
+  { key: 'notifications', label: 'Notifications', icon: <Bell className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/notifications' },
+  // Sub-item: View franchise requests
+  { key: 'franchise-requests', label: 'Franchise Requests', icon: <Crown className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/franchise-requests' },
 ];
 
 const menuHierarchy: MenuHierarchy[] = [
+  // Dashboard: Top-level item with no sub-items
   { key: 'dashboard', subItems: [] },
-  { key: 'categories', subItems: ['all-categories', 'add-category', 'active-categories', 'inactive-categories'] },
+
+  // Categories: Parent with sub-items for managing categories
+  { key: 'categories', subItems: ['all-categories', 'add-category'] },
+
+  // Meta Info: Parent with sub-items for managing metadata
   { key: 'meta-info', subItems: ['all-meta-info', 'add-meta-info'] },
+
+  // Subscription: Parent with sub-items for managing subscriptions
   { key: 'subscription', subItems: ['all-subscriptions', 'add-subscription'] },
+
+  // Franchise Plans: Parent with sub-items for managing franchise plans
   { key: 'franchise-plans', subItems: ['all-franchise-plans', 'add-franchise-plan'] },
+
+  // Management: Parent with nested sub-items for users, technicians, and franchises
   { key: 'management', subItems: [
-    'manage-users', 'all-users', 'add-user', 'admin-created-users',
-    'manage-technicians', 'all-technicians', 'add-technician', 'admin-created-technicians',
-    'manage-franchises', 'all-franchises', 'add-franchise', 'admin-created-franchises'
+    'manage-users', 'all-users', 'add-user', // User management sub-items
+    'manage-technicians', 'all-technicians', 'add-technician', // Technician management sub-items
+    'manage-franchises', 'all-franchises', 'add-franchise' // Franchise management sub-items
   ]},
+
+  // Areas: Parent with sub-items for managing service areas
   { key: 'areas', subItems: ['all-areas', 'add-area'] },
+
+  // Bookings: Parent with sub-items for managing bookings
   { key: 'bookings', subItems: ['all-bookings', 'guest-bookings'] },
+
+  // Notifications: Parent with sub-item for franchise requests
+  { key: 'notifications', subItems: ['franchise-requests'] },
+
+  // Reviews: Parent with sub-item for managing reviews
   { key: 'reviews', subItems: ['all-reviews'] },
+
+  // Advertisements: Parent with sub-items for managing ads
   { key: 'advertisements', subItems: ['all-advertisements', 'add-advertisement'] },
 ];
 

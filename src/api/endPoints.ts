@@ -93,5 +93,25 @@ const endpoints: any = {
       return `/api/searchContentData/addCagegorySearchDetails`;
     },
   },
+  createTechnicianByAdmin: {
+    method: "post",
+    url: () => {
+      return `/api/techAuth/registerByAdmin`;
+    },
+  },
+
+  createUserByAdmin: {
+    method: "post",
+    url: () => {
+      return `/api/userAuth/registerUserByAdmin`;
+    },
+  },
+
+  getAllGuestBookings: {
+    method: "get",
+    url: () => {
+      return `/api/guestBooking/getAllGuestBooking`;
+    },
+  },
 };
 export default endpoints;

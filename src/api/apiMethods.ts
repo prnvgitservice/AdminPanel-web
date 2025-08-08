@@ -25,3 +25,9 @@ export const createCompanyReview = (data: any) => apiRequest("createCompanyRevie
 export const getFranchisePlans = (data: any) => apiRequest("getFranchisePlans", data);
 
 export const createSeoContent = (data: any) => apiRequest("createSeoContent", data);
+
+export const createTechnicianByAdmin = (data: any) => apiRequest("createTechnicianByAdmin", data);
+
+export const createUserByAdmin = (data: any) => apiRequest("createUserByAdmin", data);
+
+export const getAllGuestBookings = (data: any) => apiRequest("getAllGuestBookings", data);
