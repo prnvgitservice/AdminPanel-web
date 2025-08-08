@@ -24,6 +24,7 @@ import AdminCreatedTechnicians from "../components/manageTechnicians/AdminCreate
 import FranchisePage from "../components/FranchisePlansPage/AllFranchisePlansPage";
 import AllFranchisePlansPage from "../components/FranchisePlansPage/AllFranchisePlansPage";
 import CompanyReviews from "../components/reviews/CompanyReviews";
+import ViewMetaInfo from "../components/metaInfo/ViewMetaInfo";
 
 interface Category {
   id: number;
@@ -101,11 +102,15 @@ const AppRoutes: React.FC = () => {
         <Route path="/category/:id" element={<ViewCategory/>}/>
 
         {/* Meta Info */}
-        <Route path="/meta-info" element={<AllMetaInfo />} />
+        {/* <Route path="/meta-info" element={<AllMetaInfo />} /> */}
         <Route path="/meta-info/all" element={<AllMetaInfo />} />
         <Route
           path="/meta-info/add"
-          element={<AddMetaInfo onBack={() => navigate("/meta-info/all")} />}
+          element={<AddMetaInfo onBack={() => navigate(`/meta-info/all`)} />}
+        />
+        <Route
+          path="/meta-info/view/:id"
+          element={<ViewMetaInfo onBack={() => navigate(`/meta-info/all`)} />}
         />
 
         {/* Subscription */}
