@@ -31,3 +31,5 @@ export const createTechnicianByAdmin = (data: any) => apiRequest("createTechnici
 export const createUserByAdmin = (data: any) => apiRequest("createUserByAdmin", data);
 
 export const getAllGuestBookings = (data: any) => apiRequest("getAllGuestBookings", data);
+
+export const getAllFranchiseRequests = (data: any) => apiRequest("getAllFranchiseRequests", data)

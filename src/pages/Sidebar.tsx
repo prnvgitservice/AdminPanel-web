@@ -4,8 +4,8 @@ import {
   Home, Wrench, Plus, List, XCircle, CheckCircle, Settings, Star,
   Calendar, MapPin, ChevronRight, ChevronDown, Users,
   UserCheck, Building2, X, Package, Image, BookOpen, FileText,
-  Crown,
-  Bell
+  Crown, 
+  MailQuestion
 } from 'lucide-react';
 
 interface MenuItem {
@@ -106,8 +106,8 @@ const menuItems: MenuItem[] = [
   // Sub-item: View all reviews
   { key: 'all-reviews', label: 'All Reviews', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/reviews/all' },
 
-  // Notifications: Parent item for notification-related actions
-  { key: 'notifications', label: 'Notifications', icon: <Bell className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/notifications' },
+  // Enquiries: Parent item for enquiry-related actions
+  { key: 'enquiries', label: 'Enquiries', icon: <MailQuestion className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/enquiries' },
   // Sub-item: View franchise requests
   { key: 'franchise-requests', label: 'Franchise Requests', icon: <Crown className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/franchise-requests' },
 ];
@@ -141,8 +141,8 @@ const menuHierarchy: MenuHierarchy[] = [
   // Bookings: Parent with sub-items for managing bookings
   { key: 'bookings', subItems: ['all-bookings', 'guest-bookings'] },
 
-  // Notifications: Parent with sub-item for franchise requests
-  { key: 'notifications', subItems: ['franchise-requests'] },
+  // Enquiries: Parent with sub-item for franchise requests
+  { key: 'enquiries', subItems: ['franchise-requests'] },
 
   // Reviews: Parent with sub-item for managing reviews
   { key: 'reviews', subItems: ['all-reviews'] },

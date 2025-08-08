@@ -23,6 +23,7 @@ import AddFranchise from "../components/manageFranchise/AddFranchise";
 import AdminCreatedFranchises from "../components/manageFranchise/AdminCreatedFranchises";
 import CompanyReviews from "../components/reviews/CompanyReviews";
 import AllGuestBookings from "../components/bookings/GuestBooking";
+import FranchiseRequest from "../components/enquiries/FranchiseRequest";
 
 // Placeholder component for routes not yet implemented
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
@@ -96,7 +97,7 @@ const AppRoutes: React.FC = () => {
 
         {/* Notifications: Routes for notification-related actions */}
         <Route path="/notifications" element={<PlaceholderPage title="Notifications" />} />
-        <Route path="/franchise-requests" element={<PlaceholderPage title="Franchise Requests" />} />
+        <Route path="/franchise-requests" element={<FranchiseRequest />} />
 
         {/* Reviews: Routes for managing reviews */}
         <Route path="/reviews" element={<CompanyReviews />} />

@@ -113,5 +113,12 @@ const endpoints: any = {
       return `/api/guestBooking/getAllGuestBooking`;
     },
   },
+
+  getAllFranchiseRequests: {
+    method: "get",
+    url: () => {
+      return `/api/franchaseEnquiry/getAllFranchaseEnquiries`;
+    },
+  },
 };
 export default endpoints;
