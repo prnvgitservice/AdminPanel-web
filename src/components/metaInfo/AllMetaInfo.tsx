@@ -172,9 +172,9 @@ const AllMetaInfo = () => {
                     <th className="px-6 py-3 ">
                       Meta Title
                     </th>
-                    <th className="px-6 py-3">
+                    {/* <th className="px-6 py-3">
                       Created
-                    </th>
+                    </th> */}
                     <th className="px-6 py-3 ">
                       Action
                     </th>
@@ -204,16 +204,16 @@ const AllMetaInfo = () => {
                           {content.meta_title}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      {/* <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-500">
                           {formatDate(content.createdAt)}
                         </div>
-                      </td>
+                      </td> */}
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex gap-2">
                           <button
                             onClick={() =>
-                              navigate(`/meta-info/view/${content.id}`)
+                              navigate(`/meta-info/view/${content.id}`,{state : {content}})
                               // navigate(`/view-meta-info/${content}`)
                             }
                             className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50"
