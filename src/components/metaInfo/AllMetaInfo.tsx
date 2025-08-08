@@ -75,7 +75,6 @@ const AllMetaInfo = () => {
           throw new Error(data.message || "Failed to delete search content");
         }
 
-        // Refresh the list after deletion
         fetchSearchContents();
       } catch (err: any) {
         setError(err.message);
@@ -162,22 +161,22 @@ const AllMetaInfo = () => {
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className=" bg-gray-50 text-left">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 ">
                       Category
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Location
+                    <th className="px-6 py-3 ">
+                      Address
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 ">
                       Meta Title
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3">
                       Created
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
+                    <th className="px-6 py-3 ">
+                      Action
                     </th>
                   </tr>
                 </thead>
@@ -191,10 +190,13 @@ const AllMetaInfo = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {content.areaName.trim()}, {content.city}
+                           {content.city},
                         </div>
                         <div className="text-sm text-gray-500">
-                          {content.state} - {content.pincode}
+                          {content.areaName.trim()} - {content.pincode}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {content.subAreaName}
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -211,7 +213,8 @@ const AllMetaInfo = () => {
                         <div className="flex gap-2">
                           <button
                             onClick={() =>
-                              navigate(`/view-meta-info/${content}`)
+                              navigate(`/meta-info/view/${content.id}`)
+                              // navigate(`/view-meta-info/${content}`)
                             }
                             className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50"
                             title="View"
