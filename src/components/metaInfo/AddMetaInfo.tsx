@@ -339,7 +339,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
       const response = await createSeoContent(requestData);
 
       if (response?.success) {
-        alert("Thank you for your review!");
+        alert("Meta Info added Successfully!");
       } else {
         throw new Error(response?.message || "Failed to submit review");
       }
@@ -515,7 +515,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
                 {/* Subarea Dropdown */}
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Subarea <span className="text-red-500">*</span>
+                    Subarea
                   </label>
                   <select
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
