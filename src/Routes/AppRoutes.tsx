@@ -102,7 +102,6 @@ const AppRoutes: React.FC = () => {
         <Route path="/category/:id" element={<ViewCategory/>}/>
 
         {/* Meta Info */}
-        {/* <Route path="/meta-info" element={<AllMetaInfo />} /> */}
         <Route path="/meta-info/all" element={<AllMetaInfo />} />
         <Route
           path="/meta-info/add"
