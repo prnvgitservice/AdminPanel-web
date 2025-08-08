@@ -24,26 +24,12 @@ import AdminCreatedTechnicians from "../components/manageTechnicians/AdminCreate
 import FranchisePage from "../components/FranchisePlansPage/AllFranchisePlansPage";
 import AllFranchisePlansPage from "../components/FranchisePlansPage/AllFranchisePlansPage";
 import CompanyReviews from "../components/reviews/CompanyReviews";
-
-interface Category {
-  id: number;
-}
+import AllGuestBookings from "../components/bookings/GuestBooking";
 
 const AppRoutes: React.FC = () => {
   const navigate = useNavigate();
-  const [editingAdvertisement, setEditingAdvertisement] = useState<number | null>(null);
   const [editingCategory, setEditingCategory] = useState<number | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-
-  const handleViewCategory = (data: Category) => {
-    setSelectedCategory(data);
-    navigate("/categories/view");
-  };
-
-  const handleEditAdvertisement = (id: number) => {
-    setEditingAdvertisement(id);
-    navigate("/advertisements/edit");
-  };
+ 
 
   const handleEditCategory = (id: number) => {
     setEditingCategory(id);
@@ -57,27 +43,12 @@ const AppRoutes: React.FC = () => {
         <Route path="/dashboard" element={<Dashboard />} />
 
         {/* Categories */}
-        <Route
-          path="/categories"
-          element={
-            <AllCategories
-              onAddCategory={() => navigate("/categories/add")}
-              onEdit={handleEditCategory}
-            />
-          }
-        />
+        <Route path="/categories" element={<AllCategories onEdit={handleEditCategory}/>}/>
         <Route
           path="/categories/all"
-          element={
-            <AllCategories
-              onEdit={handleEditCategory}
-            />
-          }
+          element={<AllCategories onEdit={handleEditCategory} />}
         />
-        <Route
-          path="/categories/add"
-          element={<AddCategory/>}
-        />
+        <Route path="/categories/add" element={<AddCategory />} />
         <Route
           path="/categories/edit"
           element={
@@ -98,7 +69,7 @@ const AppRoutes: React.FC = () => {
           }
         />
         <Route path="/categories/inactive" element={<InactiveCategories />} />
-        <Route path="/category/:id" element={<ViewCategory/>}/>
+        <Route path="/category/:id" element={<ViewCategory />} />
 
         {/* Meta Info */}
         <Route path="/meta-info" element={<AllMetaInfo />} />
@@ -109,8 +80,8 @@ const AppRoutes: React.FC = () => {
         />
 
         {/* Subscription */}
-        <Route path="/subscription" element={<SubscriptionPage/>}/>
-        <Route path="/subscription/all" element={<SubscriptionPage/>}/>
+        <Route path="/subscription" element={<SubscriptionPage />} />
+        <Route path="/subscription/all" element={<SubscriptionPage />} />
         <Route path="/subscription/:id" element={<PlanDetailsPage />} />
         <Route
           path="/subscription/add"
@@ -131,28 +102,34 @@ const AppRoutes: React.FC = () => {
           }
         />
 
-          {/* Franchise Plans Routes */}
-            <Route path="/franchise-plans" element={<FranchisePage />} />
-      <Route path="/franchise-plans/all" element={<AllFranchisePlansPage />} />
-      {/* <Route path="/franchise-plans/add" element={<AddFranchisePlanPage />} /> */}
-            
+        {/* Franchise Plans Routes */}
+        <Route path="/franchise-plans" element={<FranchisePage />} />
+        <Route
+          path="/franchise-plans/all"
+          element={<AllFranchisePlansPage />}
+        />
+        {/* <Route path="/franchise-plans/add" element={<AddFranchisePlanPage />} /> */}
+
         {/* Management - Users */}
         <Route
           path="/management"
-          element={<Users onAddUser={() => navigate("/management/users/add")} />}
+          element={
+            <Users onAddUser={() => navigate("/management/users/add")} />
+          }
         />
         <Route
           path="/management/users"
-          element={<Users onAddUser={() => navigate("/management/users/add")} />}
+          element={
+            <Users onAddUser={() => navigate("/management/users/add")} />
+          }
         />
         <Route
           path="/management/users/all"
-          element={<Users onAddUser={() => navigate("/management/users/add")} />}
+          element={
+            <Users onAddUser={() => navigate("/management/users/add")} />
+          }
         />
-        <Route
-          path="/management/users/add"
-          element={<AddUser onBack={() => navigate("/management/users/all")} />}
-        />
+        <Route path="/management/users/add" element={<AddUser/>}/>
         <Route
           path="/management/users/admin-created"
           element={
@@ -170,9 +147,8 @@ const AppRoutes: React.FC = () => {
           }
         />
 
-
-                  {/* Management - Technicians */}
-        <Route path="/management/technicians/all" element={<Technicians/>}/>
+        {/* Management - Technicians */}
+        <Route path="/management/technicians/all" element={<Technicians />} />
         <Route
           path="/management/technicians/add"
           element={
@@ -183,24 +159,20 @@ const AppRoutes: React.FC = () => {
         />
         <Route
           path="/management/technicians/admin-created"
-          element={<AdminCreatedTechnicians 
-            onAddTechnician={() => navigate("/management/technicians")}/>}
+          element={
+            <AdminCreatedTechnicians
+              onAddTechnician={() => navigate("/management/technicians")}
+            />
+          }
         />
 
         {/* Management - Franchises */}
-        <Route
-          path="/management/franchises/all"
-          element={<Franchise/>}
-        />
-        <Route
-          path="/management/franchises/add"
-          element={<AddFranchise />}
-        />
+        <Route path="/management/franchises/all" element={<Franchise />} />
+        <Route path="/management/franchises/add" element={<AddFranchise />} />
         <Route
           path="/management/franchises/admin-created"
           element={<AdminCreatedFranchises />}
         />
-
 
         {/* Areas */}
         <Route
@@ -253,10 +225,7 @@ const AppRoutes: React.FC = () => {
         <Route
           path="/bookings/guest"
           element={
-            <div className="p-8">
-              <h1 className="text-2xl font-bold">Guest Bookings</h1>
-              <p>Guest bookings list coming soon...</p>
-            </div>
+            <AllGuestBookings />
           }
         />
 
@@ -320,10 +289,8 @@ const AppRoutes: React.FC = () => {
               onEdit={handleEditCategory}
             />
           }
-        />   
-        </Route> 
-
-        
+        />
+      </Route>
     </Routes>
   );
 };
