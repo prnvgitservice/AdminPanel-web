@@ -298,7 +298,8 @@ const AddTechnician: React.FC = () => {
                       Select a category
                     </option>
                     {apiCategories
-                      .filter((category) => category?.status === 1)
+                    .sort((a, b) => a.category_name.toLowerCase().localeCompare(b.category_name.toLowerCase()))
+                      // .filter((category) => category?.status === 1)
                       .map((item) => (
                         <option key={item._id} value={item._id}>
                           {item.category_name}
@@ -422,7 +423,9 @@ const AddTechnician: React.FC = () => {
                     <option value="" disabled>
                       Select Pincode
                     </option>
-                    {pincodeData.map((p) => (
+                    {pincodeData
+                    .sort((a, b) => Number(a.code) - Number(b.code))
+                    .map((p) => (
                       <option key={p._id} value={p.code}>
                         {p.code}
                       </option>

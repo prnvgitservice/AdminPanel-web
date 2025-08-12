@@ -446,7 +446,9 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
                     <option value="" disabled>
                       Select Category
                     </option>
-                    {categories.map((cat, idx) => (
+                    {categories
+                    .sort((a, b) => a.category_name.toLowerCase().localeCompare(b.category_name.toLowerCase()))
+                    .map((cat, idx) => (
                       <option key={idx} value={cat.category_name}>
                         {cat.category_name}
                       </option>

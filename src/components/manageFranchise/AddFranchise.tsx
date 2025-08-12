@@ -332,7 +332,9 @@ const AddFranchise: React.FC = () => {
                     aria-describedby={errors.pincode ? 'pincode-error' : undefined}
                   >
                     <option value="" disabled>Select Pincode</option>
-                    {pincodeData.map((p) => (
+                    {pincodeData
+                    .sort((a, b) => Number(a.code) - Number(b.code))
+                    .map((p) => (
                       <option key={p._id} value={p.code}>
                         {p.code}
                       </option>
