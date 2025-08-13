@@ -5,7 +5,8 @@ import {
   Calendar, MapPin, ChevronRight, ChevronDown, Users,
   UserCheck, Building2, X, Package, Image, BookOpen, FileText,
   Crown, 
-  MailQuestion
+  MailQuestion,
+  UserCog
 } from 'lucide-react';
 
 interface MenuItem {
@@ -35,6 +36,13 @@ const menuItems: MenuItem[] = [
   { key: 'all-categories', label: 'All Categories', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/categories/all' },
   // Sub-item: Add a new category
   { key: 'add-category', label: 'Add Category', icon: <Plus className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/categories/add' },
+
+  // Services: Parent item for managing service categories
+  { key: 'services', label: 'Services', icon: <UserCog className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/services' },
+  // Sub-item: View all services
+  { key: 'all-services', label: 'All Services', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/services/all' },
+  // Sub-item: Add a new service
+  { key: 'add-service', label: 'Add Service', icon: <Plus className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/services/add' },
 
   // Meta Info: Parent item for managing metadata (e.g., SEO or content details)
   { key: 'meta-info', label: 'Meta Info', icon: <BookOpen className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/meta-info' },
@@ -118,6 +126,9 @@ const menuHierarchy: MenuHierarchy[] = [
 
   // Categories: Parent with sub-items for managing categories
   { key: 'categories', subItems: ['all-categories', 'add-category'] },
+
+  // Services: Parent with sub-items for managing services
+  { key: 'services', subItems: ['all-services', 'add-service'] },
 
   // Meta Info: Parent with sub-items for managing metadata
   { key: 'meta-info', subItems: ['all-meta-info', 'add-meta-info'] },

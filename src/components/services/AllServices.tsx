@@ -1,86 +1,113 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, BookOpen, Search, Edit, Trash2, Eye, Plus } from "lucide-react";
+import { ArrowLeft, Briefcase, Search, Eye, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import "react-quill/dist/quill.snow.css";
 
-interface SearchContent {
+// Interface for Service data
+interface Service {
   id: string;
-  categoryId: string;
-  categoryName: string;
-  areaName: string;
-  city: string;
-  state: string;
-  pincode: string;
-  meta_title: string;
-  meta_description: string;
-  seo_content: string;
+  category: string;
+  name: string;
+  price: number;
+  image: string;
+  technicianName: string;
   createdAt: string;
-  updatedAt: string;
 }
 
-const AllMetaInfo = () => {
-  const [searchContents, setSearchContents] = useState<SearchContent[]>([]);
+const AllServices = () => {
+  const [services, setServices] = useState<Service[]>([]);
+  const [filteredServices, setFilteredServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Plumbing");
   const navigate = useNavigate();
 
+  // Fake data for services
+  const fakeServices: Service[] = [
+    {
+      id: "1",
+      category: "Plumbing",
+      name: "Pipe Repair",
+      price: 150,
+      image: "https://via.placeholder.com/150?text=Pipe+Repair",
+      technicianName: "John Doe",
+      createdAt: "2025-07-10",
+    },
+    {
+      id: "2",
+      category: "Plumbing",
+      name: "Faucet Installation",
+      price: 200,
+      image: "https://via.placeholder.com/150?text=Faucet+Install",
+      technicianName: "Jane Smith",
+      createdAt: "2025-07-12",
+    },
+    {
+      id: "3",
+      category: "Electrical",
+      name: "Wiring Repair",
+      price: 250,
+      image: "https://via.placeholder.com/150?text=Wiring+Repair",
+      technicianName: "Mike Johnson",
+      createdAt: "2025-07-15",
+    },
+    {
+      id: "4",
+      category: "Electrical",
+      name: "Light Fixture Installation",
+      price: 180,
+      image: "https://via.placeholder.com/150?text=Light+Fixture",
+      technicianName: "Emily Davis",
+      createdAt: "2025-07-18",
+    },
+    {
+      id: "5",
+      category: "Cleaning",
+      name: "Deep Cleaning",
+      price: 300,
+      image: "https://via.placeholder.com/150?text=Deep+Cleaning",
+      technicianName: "Sarah Wilson",
+      createdAt: "2025-07-20",
+    },
+    {
+      id: "6",
+      category: "Cleaning",
+      name: "Carpet Cleaning",
+      price: 120,
+      image: "https://via.placeholder.com/150?text=Carpet+Cleaning",
+      technicianName: "Tom Brown",
+      createdAt: "2025-07-22",
+    },
+  ];
+
+  // Categories for filter
+  const categories = ["Plumbing", "Electrical", "Cleaning"];
+
   useEffect(() => {
-    fetchSearchContents();
-  }, [offset, limit, searchTerm]);
-
-  const fetchSearchContents = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `https://services-platform-backend.onrender.com/api/searchContentData/getAllSearchContents?offset=${offset}&limit=${limit}&search=${searchTerm}`
-      );
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to fetch search contents");
-      }
-
-      setSearchContents(data.result.results);
-      setTotal(data.result.total);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEdit = (id: string) => {
-    navigate(`/meta-info/add`, { state: { content } });
-    // navigate(`/meta-info/add/${id}`, { state: { content } });
-  };
-
-  const handleDelete = async (id: string) => {
-    if (
-      window.confirm("Are you sure you want to delete this search content?")
-    ) {
+    // Simulate fetching data
+    setLoading(true);
+    setTimeout(() => {
       try {
-        const response = await fetch(
-          `https://services-platform-backend.onrender.com/api/searchContentData/deleteCategorySearchDetails/${id}`,
-          {
-            method: "DELETE",
-          }
+        const filtered = fakeServices.filter(
+          (service) =>
+            service.category === selectedCategory &&
+            (service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              service.technicianName.toLowerCase().includes(searchTerm.toLowerCase()))
         );
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.message || "Failed to delete search content");
-        }
-
-        fetchSearchContents();
+        setTotal(filtered.length);
+        const paginated = filtered.slice(offset, offset + limit);
+        setServices(paginated);
+        setFilteredServices(filtered);
+        setLoading(false);
       } catch (err: any) {
-        setError(err.message);
+        setError("Failed to load services");
+        setLoading(false);
       }
-    }
-  };
+    }, 500);
+  }, [offset, limit, searchTerm, selectedCategory]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -96,19 +123,18 @@ const AllMetaInfo = () => {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
-              <BookOpen className="h-6 w-6 text-white" />
+              <Briefcase className="h-6 w-6 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              All Meta Info
+              All Services
             </h1>
           </div>
           <button
-            onClick={() => navigate("/meta-info/add")}
-            
+            onClick={() => navigate("/services/add")}
             className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Add Info
+            Add Service
           </button>
         </div>
 
@@ -120,13 +146,24 @@ const AllMetaInfo = () => {
               </div>
               <input
                 type="text"
-                placeholder="Search by area, city, pincode or title..."
+                placeholder="Search by service name or technician..."
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div className="flex gap-2">
+              <select
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
               <select
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={limit}
@@ -155,87 +192,55 @@ const AllMetaInfo = () => {
           </div>
         )}
 
-        {/* Content Table */}
+        {/* Services Table */}
         {!loading && (
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className=" bg-gray-50 text-left">
+                <thead className="bg-gray-50 text-left">
                   <tr>
-                    <th className="px-6 py-3 ">
-                      Category
-                    </th>
-                    <th className="px-6 py-3 ">
-                      Address
-                    </th>
-                    <th className="px-6 py-3 ">
-                      Meta Title
-                    </th>
-                    {/* <th className="px-6 py-3">
-                      Created
-                    </th> */}
-                    <th className="px-6 py-3 ">
-                      Action
-                    </th>
+                    <th className="px-6 py-3">Category</th>
+                    <th className="px-6 py-3">Service</th>
+                    <th className="px-6 py-3">Price</th>
+                    <th className="px-6 py-3">Technician</th>
+                    <th className="px-6 py-3">Image</th>
+                    <th className="px-6 py-3">Action</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {searchContents.map((content) => (
-                    <tr key={content.id} className="hover:bg-gray-50">
+                  {services.map((service) => (
+                    <tr key={service.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">
-                          {content.categoryName}
+                          {service.category}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {content.city},
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {content.areaName.trim()} - {content.pincode}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {content.subAreaName}
-                        </div>
+                        <div className="text-sm text-gray-900">{service.name}</div>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900 line-clamp-2">
-                          {content.meta_title}
-                        </div>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">${service.price}</div>
                       </td>
-                      {/* <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">
-                          {formatDate(content.createdAt)}
-                        </div>
-                      </td> */}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-500">{service.technicianName}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <img
+                          src={service.image}
+                          alt={service.name}
+                          className="h-10 w-10 rounded object-cover"
+                        />
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() =>
-                              navigate(`/meta-info/view/${content.id}`, { state: { content } })
-                              // navigate(`/view-meta-info/${content}`)
-                            }
-                            className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50"
-                            title="View"
-                          >
-                            <Eye className="h-5 w-5" />{" "}
-                          </button>
-                          <button
-                            onClick={() => handleEdit(content.id)}
-                            className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
-                            title="Edit"
-                          >
-                            <Edit className="h-5 w-5" />
-                          </button>
-
-                          <button
-                            onClick={() => handleDelete(content.id)}
-                            className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
-                            title="Delete"
-                          >
-                            <Trash2 className="h-5 w-5" />
-                          </button>
-                        </div>
+                        <button
+                          onClick={() =>
+                            navigate(`/services/view/${service.id}`, { state: { service } })
+                          }
+                          className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50"
+                          title="View"
+                        >
+                          <Eye className="h-5 w-5" />
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -303,4 +308,4 @@ const AllMetaInfo = () => {
   );
 };
 
-export default AllMetaInfo;
+export default AllServices;

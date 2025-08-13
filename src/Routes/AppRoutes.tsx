@@ -24,6 +24,9 @@ import AdminCreatedFranchises from "../components/manageFranchise/AdminCreatedFr
 import CompanyReviews from "../components/reviews/CompanyReviews";
 import AllGuestBookings from "../components/bookings/GuestBooking";
 import FranchiseRequest from "../components/enquiries/FranchiseRequest";
+import AllServices from "../components/services/AllServices";
+import AddService from "../components/services/AddServices";
+import ViewService from "../components/services/ViewService";
 
 // Placeholder component for routes not yet implemented
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
@@ -48,6 +51,12 @@ const AppRoutes: React.FC = () => {
         <Route path="/categories/add" element={<AddCategory />} />
         <Route path="/category/:id" element={<ViewCategory />} />
 
+        {/* Services: Routes for managing services */}
+        <Route path="/services" element={<AllServices />} />
+        <Route path="/services/all" element={<AllServices />} />
+        <Route path="/services/add" element={<AddService />} />
+        <Route path="/services/view/:id" element={<ViewService />} />
+
         {/* Meta Info: Routes for managing metadata (e.g., SEO or content details) */}
         <Route path="/meta-info" element={<AllMetaInfo />} />
         <Route path="/meta-info/all" element={<AllMetaInfo />} />
@@ -58,45 +67,78 @@ const AppRoutes: React.FC = () => {
         <Route path="/subscription" element={<SubscriptionPage />} />
         <Route path="/subscription/all" element={<SubscriptionPage />} />
         <Route path="/subscription/:id" element={<PlanDetailsPage />} />
-        <Route path="/subscription/add" element={<PlaceholderPage title="Add Subscription" />} />
+        <Route
+          path="/subscription/add"
+          element={<PlaceholderPage title="Add Subscription" />}
+        />
 
         {/* Franchise Plans: Routes for managing franchise plans */}
         <Route path="/franchise-plans" element={<AllFranchisePlansPage />} />
-        <Route path="/franchise-plans/all" element={<AllFranchisePlansPage />} />
-        <Route path="/franchise-plans/add" element={<PlaceholderPage title="Add Franchise Plan" />} />
+        <Route
+          path="/franchise-plans/all"
+          element={<AllFranchisePlansPage />}
+        />
+        <Route
+          path="/franchise-plans/add"
+          element={<PlaceholderPage title="Add Franchise Plan" />}
+        />
 
         {/* Management - Users: Routes for user management */}
         <Route path="/management" element={<Users />} />
         <Route path="/management/users" element={<Users />} />
         <Route path="/management/users/all" element={<Users />} />
         <Route path="/management/users/add" element={<AddUser />} />
-        <Route path="/management/users/admin-created" element={<AdminUsers />} />
+        <Route
+          path="/management/users/admin-created"
+          element={<AdminUsers />}
+        />
         <Route path="/management/users/add-admin" element={<AddAdminUser />} />
 
         {/* Management - Technicians: Routes for technician management */}
         <Route path="/management/technicians" element={<Technicians />} />
         <Route path="/management/technicians/all" element={<Technicians />} />
         <Route path="/management/technicians/add" element={<AddTechnician />} />
-        <Route path="/management/technicians/admin-created" element={<AdminCreatedTechnicians />} />
+        <Route
+          path="/management/technicians/admin-created"
+          element={<AdminCreatedTechnicians />}
+        />
 
         {/* Management - Franchises: Routes for franchise management */}
         <Route path="/management/franchises" element={<Franchise />} />
         <Route path="/management/franchises/all" element={<Franchise />} />
         <Route path="/management/franchises/add" element={<AddFranchise />} />
-        <Route path="/management/franchises/admin-created" element={<AdminCreatedFranchises />} />
+        <Route
+          path="/management/franchises/admin-created"
+          element={<AdminCreatedFranchises />}
+        />
 
         {/* Areas: Routes for managing service areas */}
         <Route path="/areas" element={<PlaceholderPage title="Areas" />} />
-        <Route path="/areas/all" element={<PlaceholderPage title="All Areas" />} />
-        <Route path="/areas/add" element={<PlaceholderPage title="Add Area" />} />
+        <Route
+          path="/areas/all"
+          element={<PlaceholderPage title="All Areas" />}
+        />
+        <Route
+          path="/areas/add"
+          element={<PlaceholderPage title="Add Area" />}
+        />
 
         {/* Bookings: Routes for managing bookings */}
-        <Route path="/bookings" element={<PlaceholderPage title="Bookings" />} />
-        <Route path="/bookings/all" element={<PlaceholderPage title="All Bookings" />} />
+        <Route
+          path="/bookings"
+          element={<PlaceholderPage title="Bookings" />}
+        />
+        <Route
+          path="/bookings/all"
+          element={<PlaceholderPage title="All Bookings" />}
+        />
         <Route path="/bookings/guest" element={<AllGuestBookings />} />
 
         {/* Notifications: Routes for notification-related actions */}
-        <Route path="/notifications" element={<PlaceholderPage title="Notifications" />} />
+        <Route
+          path="/notifications"
+          element={<PlaceholderPage title="Notifications" />}
+        />
         <Route path="/franchise-requests" element={<FranchiseRequest />} />
 
         {/* Reviews: Routes for managing reviews */}
@@ -104,9 +146,18 @@ const AppRoutes: React.FC = () => {
         <Route path="/reviews/all" element={<CompanyReviews />} />
 
         {/* Advertisements: Routes for managing advertisements */}
-        <Route path="/advertisements" element={<PlaceholderPage title="Advertisements" />} />
-        <Route path="/advertisements/all" element={<PlaceholderPage title="All Advertisements" />} />
-        <Route path="/advertisements/add" element={<PlaceholderPage title="Add Advertisement" />} />
+        <Route
+          path="/advertisements"
+          element={<PlaceholderPage title="Advertisements" />}
+        />
+        <Route
+          path="/advertisements/all"
+          element={<PlaceholderPage title="All Advertisements" />}
+        />
+        <Route
+          path="/advertisements/add"
+          element={<PlaceholderPage title="Add Advertisement" />}
+        />
 
         {/* Legacy Routes: Older service-related routes for backward compatibility */}
         <Route path="/services" element={<AllCategories />} />
@@ -153,7 +204,6 @@ export default AppRoutes;
 // const AppRoutes: React.FC = () => {
 //   const navigate = useNavigate();
 //   const [editingCategory, setEditingCategory] = useState<number | null>(null);
- 
 
 //   const handleEditCategory = (id: number) => {
 //     setEditingCategory(id);
