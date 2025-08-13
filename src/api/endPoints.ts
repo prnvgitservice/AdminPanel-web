@@ -120,5 +120,12 @@ const endpoints: any = {
       return `/api/franchaseEnquiry/getAllFranchaseEnquiries`;
     },
   },
+
+  createServiceControlByAdmin: {
+    method: "post",
+    url: () => {
+      return `/api/cateServices/createServiceControl`;
+    },
+  },
 };
 export default endpoints;
