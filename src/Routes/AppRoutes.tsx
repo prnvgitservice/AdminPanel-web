@@ -28,6 +28,9 @@ import AllServices from "../components/services/AllServices";
 import AddService from "../components/services/AddServices";
 import ViewService from "../components/services/ViewService";
 import EditService from "../components/services/EditService";
+import AllAreas from "../components/areas/AllAreas";
+import AddArea from "../components/areas/AddArea";
+import ViewArea from "../components/areas/ViewArea";
 
 // Placeholder component for routes not yet implemented
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
@@ -115,15 +118,11 @@ const AppRoutes: React.FC = () => {
         />
 
         {/* Areas: Routes for managing service areas */}
-        <Route path="/areas" element={<PlaceholderPage title="Areas" />} />
-        <Route
-          path="/areas/all"
-          element={<PlaceholderPage title="All Areas" />}
-        />
-        <Route
-          path="/areas/add"
-          element={<PlaceholderPage title="Add Area" />}
-        />
+        <Route path="/areas" element={<AllAreas />} />
+        <Route path="/areas/all" element={<AllAreas />} />
+        <Route path="/areas/add" element={<AddArea />} />
+        <Route path="/areas/view/:id" element={<ViewArea />} />
+
 
         {/* Bookings: Routes for managing bookings */}
         <Route

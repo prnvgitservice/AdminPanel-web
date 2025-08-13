@@ -195,7 +195,7 @@ const AllCategories: React.FC = () => {
 
         {/* Categories Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {filteredCategories?.map((category) => (
+          {filteredCategories?.sort((a, b) => a.category_name.localeCompare(b.category_name)).map((category) => (
             <div
               key={category._id}
               className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
