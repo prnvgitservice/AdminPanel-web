@@ -27,6 +27,7 @@ import FranchiseRequest from "../components/enquiries/FranchiseRequest";
 import AllServices from "../components/services/AllServices";
 import AddService from "../components/services/AddServices";
 import ViewService from "../components/services/ViewService";
+import EditService from "../components/services/EditService";
 
 // Placeholder component for routes not yet implemented
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
@@ -56,6 +57,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/services/all" element={<AllServices />} />
         <Route path="/services/add" element={<AddService />} />
         <Route path="/services/view/:id" element={<ViewService />} />
+        <Route path="/services/edit/:id" element={<EditService />} />
 
         {/* Meta Info: Routes for managing metadata (e.g., SEO or content details) */}
         <Route path="/meta-info" element={<AllMetaInfo />} />

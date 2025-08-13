@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Briefcase, Search, Eye, Plus } from "lucide-react";
+import { ArrowLeft, Briefcase, Search, Eye, Plus, Pencil, Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 // Interface for Service data
@@ -240,6 +240,23 @@ const AllServices = () => {
                           title="View"
                         >
                           <Eye className="h-5 w-5" />
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            navigate(`/services/edit/${service.id}`, { state: { service } })
+                          }
+                          className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
+                          title="Edit"
+                        >
+                          <Pencil className="h-5 w-5" />
+                        </button>
+
+                        <button
+                          className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+                          title="Delete"
+                        >
+                          <Trash className="h-5 w-5" />
                         </button>
                       </td>
                     </tr>
