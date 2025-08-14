@@ -35,3 +35,7 @@ export const getAllGuestBookings = (data: any) => apiRequest("getAllGuestBooking
 export const getAllFranchiseRequests = (data: any) => apiRequest("getAllFranchiseRequests", data)
 
 export const createServiceControlByAdmin = (data: any) => apiRequest("createServiceControlByAdmin", data);
+
+export const getServicesByCateId = (categoryId: string) => apiRequest("getServicesByCateId", null, categoryId);
+
+export const deleteServiceByAdmin = (serviceId: string) => apiRequest("deleteServiceByAdmin", null, serviceId);

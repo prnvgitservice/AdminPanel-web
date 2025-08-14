@@ -43,7 +43,7 @@ const ViewService: React.FC = () => {
   // Format discount for display
   const formatDiscount = (discount: string) => {
     if (!discount) return "No discount";
-    return discount.includes("%") ? `${discount} off` : `$${discount} off`;
+    return discount.includes("%") ? `${discount} off` : `₹${discount} off`;
   };
 
   return (
@@ -100,7 +100,7 @@ const ViewService: React.FC = () => {
 
             <div>
               <h2 className="text-sm font-bold text-gray-700">Price</h2>
-              <p className="text-gray-900">${service.price.toFixed(2)}</p>
+              <p className="text-gray-900">₹{service.price.toFixed(2)}</p>
             </div>
 
             <div>

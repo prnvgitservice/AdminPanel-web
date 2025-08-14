@@ -127,5 +127,19 @@ const endpoints: any = {
       return `/api/cateServices/createServiceControl`;
     },
   },
+
+  getServicesByCateId: {
+    method: "get",
+    url: (categoryId: string) => {
+      return `/api/cateServices/getServicesByCateId/${categoryId}`
+    }
+  },
+
+  deleteServiceByAdmin: {
+    method: "delete",
+    url: (serviceId: string) => {
+      return `/api/cateServices/deleteServiceById/${serviceId}`;
+    }
+  },
 };
 export default endpoints;
