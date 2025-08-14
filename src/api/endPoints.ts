@@ -141,5 +141,22 @@ const endpoints: any = {
       return `/api/cateServices/deleteServiceById/${serviceId}`;
     }
   },
+
+  getAllSearchContents: {
+    method: "get",
+    url: ({offset, limit, searchTerm}: {offset: number, limit: number, searchTerm: string}) => {
+      return `/api/searchContentData/getAllSearchContents?offset=${offset}&limit=${limit}&search=${searchTerm}`
+    }
+  },
+
+  deleteCategorySearchDetails: {
+    method: 'delete',
+    url: (id: string) => `/api/searchContentData/deleteCategorySearchDetails/${id}`
+  },
+
+  updateCagegorySearchDetails: {
+    method: 'put',
+    url: () => `/api/searchContentData/updateCagegorySearchDetails`
+  }
 };
 export default endpoints;

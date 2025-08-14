@@ -31,6 +31,7 @@ import EditService from "../components/services/EditService";
 import AllAreas from "../components/areas/AllAreas";
 import AddArea from "../components/areas/AddArea";
 import ViewArea from "../components/areas/ViewArea";
+import EditMetaInfo from "../components/metaInfo/EditMetaInfo";
 
 // Placeholder component for routes not yet implemented
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
@@ -67,6 +68,8 @@ const AppRoutes: React.FC = () => {
         <Route path="/meta-info/all" element={<AllMetaInfo />} />
         <Route path="/meta-info/add" element={<AddMetaInfo />} />
         <Route path="/meta-info/view/:id" element={<ViewMetaInfo />} />
+        <Route path="/meta-info/edit/:id" element={<EditMetaInfo />} />
+
 
         {/* Subscriptions: Routes for managing subscription plans */}
         <Route path="/subscription" element={<SubscriptionPage />} />

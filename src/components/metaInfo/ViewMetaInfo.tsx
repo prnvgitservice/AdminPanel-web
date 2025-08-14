@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Edit, Trash2 } from 'lucide-react';
-import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 interface SearchContent {
