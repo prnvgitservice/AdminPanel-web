@@ -32,6 +32,11 @@ const endpoints: any = {
     url: () => `/api/pincodes/allAreas`,
   },
 
+  updatePincode: {
+    method: "put",
+    url: (pincodeId: string) => `/api/pincodes/${pincodeId}`,
+  },
+
   getPlans: {
     method: "get",
     url: () => {
@@ -157,6 +162,8 @@ const endpoints: any = {
   updateCagegorySearchDetails: {
     method: 'put',
     url: () => `/api/searchContentData/updateCagegorySearchDetails`
-  }
+  },
+
+
 };
 export default endpoints;

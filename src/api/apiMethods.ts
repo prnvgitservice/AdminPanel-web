@@ -10,6 +10,8 @@ export const deleteCategory = (categoryId : string) => apiRequest("deleteCategor
 
 export const getAllPincodes = () => apiRequest("getAllPincodes");
 
+export const updatePincode = (pincodeId: string, data: any) => apiRequest("updatePincode", data, pincodeId);
+
 export const getPlans = (data: any) => apiRequest("getPlans", data);
 
 export const getAllUsers = (data: any) => apiRequest("getAllUsers", data);

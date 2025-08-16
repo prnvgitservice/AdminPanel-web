@@ -94,7 +94,7 @@ const AllAreas = () => {
 
   const handleEdit = (id: string) => {
     const pincode = pincodes.find((p) => p._id === id);
-    navigate(`/areas/add`, { state: { pincode } });
+    navigate(`/areas/edit/${id}`, { state: { pincode } });
   };
 
   const handleDelete = async (id: string) => {
@@ -293,7 +293,11 @@ const AllAreas = () => {
                               <Eye className="h-5 w-5" />
                             </button>
                             <button
-                              onClick={() => handleEdit(pincode._id)}
+                              onClick={() =>
+                                navigate(`/areas/edit/${pincode._id}`, {
+                                  state: { pincode },
+                                })
+                              }
                               className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
                               title="Edit"
                             >

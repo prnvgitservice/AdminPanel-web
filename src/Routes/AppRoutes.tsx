@@ -32,6 +32,7 @@ import AllAreas from "../components/areas/AllAreas";
 import AddArea from "../components/areas/AddArea";
 import ViewArea from "../components/areas/ViewArea";
 import EditMetaInfo from "../components/metaInfo/EditMetaInfo";
+import EditArea from "../components/areas/EditArea";
 
 // Placeholder component for routes not yet implemented
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
@@ -125,6 +126,8 @@ const AppRoutes: React.FC = () => {
         <Route path="/areas/all" element={<AllAreas />} />
         <Route path="/areas/add" element={<AddArea />} />
         <Route path="/areas/view/:id" element={<ViewArea />} />
+        <Route path="/areas/edit/:id" element={<EditArea />} />
+
 
 
         {/* Bookings: Routes for managing bookings */}
