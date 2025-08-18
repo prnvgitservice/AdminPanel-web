@@ -40,6 +40,8 @@ export const createServiceControlByAdmin = (data: any) => apiRequest("createServ
 
 export const getServicesByCateId = (categoryId: string) => apiRequest("getServicesByCateId", null, categoryId);
 
+export const updateServiceControlByCateId = (data: any) => apiRequest("updateServiceControlByCateId", data);
+
 export const deleteServiceByAdmin = (serviceId: string) => apiRequest("deleteServiceByAdmin", null, serviceId);
 
 export const updateCagegorySearchDetails = (data: any) => apiRequest("updateCagegorySearchDetails", data);

@@ -140,6 +140,13 @@ const endpoints: any = {
     }
   },
 
+  updateServiceControlByCateId: {
+    method: "put",
+    url: () => {
+      return `/api/cateServices/updateServiceControl`;
+    }
+  },
+
   deleteServiceByAdmin: {
     method: "delete",
     url: (serviceId: string) => {
