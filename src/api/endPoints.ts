@@ -24,7 +24,7 @@ const endpoints: any = {
 
   deleteCategory: {
     method: "delete",
-    url: (categoryId: string) => `/api/categories/${categoryId}`,
+    url: (categoryId: string) => `/api/categories/delete/${categoryId}`,
   },
 
   getAllPincodes: {

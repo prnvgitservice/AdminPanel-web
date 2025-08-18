@@ -24,7 +24,6 @@ const ViewMetaInfo = () => {
   const content = location.state?.content as SearchContent;
 
 
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
