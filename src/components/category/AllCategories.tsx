@@ -248,9 +248,9 @@ const AllCategories: React.FC = () => {
                     </span>{" "}
                     Technicians
                   </div>
-                  <div className="text-sm text-gray-500">
+                  {/* <div className="text-sm text-gray-500">
                     {new Date(category?.createdAt).toLocaleDateString("en-GB")}
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="flex items-center justify-between">
