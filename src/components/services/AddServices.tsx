@@ -219,6 +219,36 @@ const AddService: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
+                    Category <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="categoryId"
+                    value={formData.categoryId}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    required
+                    aria-describedby={errors.categoryId ? "categoryId-error" : undefined}
+                  >
+                    <option value="" disabled>
+                      Select a category
+                    </option>
+                    {categories
+                      .sort((a, b) => a.category_name.localeCompare(b.category_name))
+                      .map((category) => (
+                        <option key={category._id} value={category._id}>
+                          {category.category_name}
+                        </option>
+                      ))}
+                  </select>
+                  {errors.categoryId && (
+                    <p id="categoryId-error" className="text-red-500 text-sm">
+                      {errors.categoryId}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
                     Service Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -260,9 +290,7 @@ const AddService: React.FC = () => {
                     </p>
                   )}
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
                     Image <span className="text-red-500">*</span>
@@ -279,9 +307,9 @@ const AddService: React.FC = () => {
                     />
                     {imagePreview && (
                       <img
-                        src={imagePreview}
-                        alt="Preview"
-                        className="h-16 w-16 rounded object-cover"
+                      src={imagePreview}
+                      alt="Preview"
+                      className="h-16 w-16 rounded object-cover"
                       />
                     )}
                     {!imagePreview && (
@@ -294,38 +322,12 @@ const AddService: React.FC = () => {
                     </p>
                   )}
                 </div>
-
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Category <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    name="categoryId"
-                    value={formData.categoryId}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    required
-                    aria-describedby={errors.categoryId ? "categoryId-error" : undefined}
-                  >
-                    <option value="" disabled>
-                      Select a category
-                    </option>
-                    {categories
-                      .sort((a, b) => a.category_name.localeCompare(b.category_name))
-                      .map((category) => (
-                        <option key={category._id} value={category._id}>
-                          {category.category_name}
-                        </option>
-                      ))}
-                  </select>
-                  {errors.categoryId && (
-                    <p id="categoryId-error" className="text-red-500 text-sm">
-                      {errors.categoryId}
-                    </p>
-                  )}
-                </div>
               </div>
 
+              {/* 
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
@@ -346,7 +348,7 @@ const AddService: React.FC = () => {
                     </p>
                   )}
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 

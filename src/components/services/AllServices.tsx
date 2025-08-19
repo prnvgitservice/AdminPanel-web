@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Briefcase, Search, Eye, Plus, Pencil, Trash, ArrowUpDown } from "lucide-react";
+import { ArrowLeft, Briefcase, Search, Eye, Plus, ArrowUpDown, Edit, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCategoryContext } from "../Context/CategoryContext";
 import { getServicesByCateId, deleteServiceByAdmin } from "../../api/apiMethods";
@@ -319,7 +319,7 @@ const AllServices = () => {
                             title="Edit"
                             disabled={deleteLoading === service.id}
                           >
-                            <Pencil className="h-5 w-5" />
+                            <Edit className="h-5 w-5" />
                           </button>
                           <button
                             onClick={() => handleDeleteService(service.id)}
@@ -330,7 +330,7 @@ const AllServices = () => {
                             {deleteLoading === service.id ? (
                               <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-red-500"></div>
                             ) : (
-                              <Trash className="h-5 w-5" />
+                              <Trash2 className="h-5 w-5" />
                             )}
                           </button>
                         </td>
