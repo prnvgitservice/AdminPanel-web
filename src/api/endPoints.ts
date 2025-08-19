@@ -19,7 +19,7 @@ const endpoints: any = {
 
   updateCategory: {
     method: "put",
-    url: (categoryId: string) => `/api/categories/${categoryId}`,
+    url: () => `/api/categories/update`,
   },
 
   deleteCategory: {

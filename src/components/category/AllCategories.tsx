@@ -21,6 +21,7 @@ interface Category {
   meta_description: string;
   servicesCount: number;
   createdAt: string;
+  seo_content: string;
 }
 
 const AllCategories: React.FC = () => {
@@ -92,7 +93,7 @@ const AllCategories: React.FC = () => {
   };
 
   const handleEdit = (category: Category) => {
-    navigate(`/categories/edit`, { state: { category } });
+    navigate(`/categories/edit/${category._id}`, { state: { category } });
   };
 
   const handleView = (category: Category) => {

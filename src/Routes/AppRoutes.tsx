@@ -33,6 +33,7 @@ import AddArea from "../components/areas/AddArea";
 import ViewArea from "../components/areas/ViewArea";
 import EditMetaInfo from "../components/metaInfo/EditMetaInfo";
 import EditArea from "../components/areas/EditArea";
+import EditCategory from "../components/category/EditCategory";
 
 // Placeholder component for routes not yet implemented
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
@@ -55,6 +56,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/categories" element={<AllCategories />} />
         <Route path="/categories/all" element={<AllCategories />} />
         <Route path="/categories/add" element={<AddCategory />} />
+        <Route path="/categories/edit/:id" element={<AddCategory isEdit={true} />} />
         <Route path="/category/:id" element={<ViewCategory />} />
 
         {/* Services: Routes for managing services */}
