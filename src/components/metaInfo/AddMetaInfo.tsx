@@ -1,15 +1,13 @@
-import { useState, useEffect } from "react";
-import { ArrowLeft, BookOpen, MapPin, RefreshCw } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ArrowLeft, BookOpen, MapPin, RefreshCw, Search } from "lucide-react";
 import { BiSolidCategory } from "react-icons/bi";
-import { getAllCategories, getAllPincodes as fetchPincodes, createSeoContent } from "../../api/apiMethods";
+import {
+  getAllCategories,
+  getAllPincodes as fetchPincodes,
+  createSeoContent,
+} from "../../api/apiMethods";
 import ReactQuill from "react-quill";
-import Quill from "quill";
-import BetterTable from "quill-better-table";
 import "react-quill/dist/quill.snow.css";
-import "quill-better-table/dist/quill-better-table.css";
-
-// Register quill-better-table module
-Quill.register("modules/better-table", BetterTable);
 
 interface AddCategoryProps {
   onBack: () => void;
@@ -17,7 +15,11 @@ interface AddCategoryProps {
   categoryId?: number | null;
 }
 
-const AddMetaInfo: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categoryId }) => {
+const AddMetaInfo: React.FC<AddCategoryProps> = ({
+  onBack,
+  isEdit = false,
+  categoryId,
+}) => {
   // States for dropdowns
   const [categories, setCategories] = useState([]);
   const [pincodeData, setPincodeData] = useState([]);
@@ -27,7 +29,11 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
   // Selected values
   const [selectedCity, setSelectedCity] = useState("Hyderabad");
   const [selectedState, setSelectedState] = useState("Telangana");
-  const [selectedCategory, setSelectedCategory] = useState({ name: "", slug: "", id: "" });
+  const [selectedCategory, setSelectedCategory] = useState({
+    name: "",
+    slug: "",
+    id: "",
+  });
   const [selectedArea, setSelectedArea] = useState("");
   const [selectedPincode, setSelectedPincode] = useState("");
   const [selectedSubArea, setSelectedSubArea] = useState("");
@@ -94,21 +100,28 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
   }, [pincodeData]);
 
   // Handle area selection and update subareas
-  const handleAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleAreaChange = (e) => {
     const areaName = e.target.value;
     setSelectedArea(areaName);
 
-    const matchedPincodeObj = pincodeData.find((p) => p.areas.some((a) => a.name === areaName));
+    // Find area and related pincode
+    const matchedPincodeObj = pincodeData.find((p) =>
+      p.areas.some((a) => a.name === areaName)
+    );
 
     if (matchedPincodeObj) {
       setSelectedPincode(matchedPincodeObj.code);
       setSelectedState(matchedPincodeObj.state);
       setSelectedCity(matchedPincodeObj.city);
 
-      const matchedArea = matchedPincodeObj.areas.find((a) => a.name === areaName);
+      const matchedArea = matchedPincodeObj.areas.find(
+        (a) => a.name === areaName
+      );
       const subAreas = matchedArea?.subAreas || [];
 
-      setSubAreaOptions([...subAreas].sort((a, b) => a.name.localeCompare(b.name)));
+      setSubAreaOptions(
+        [...subAreas].sort((a, b) => a.name.localeCompare(b.name))
+      );
       setSelectedSubArea("");
     } else {
       setSelectedPincode("");
@@ -117,7 +130,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
     }
   };
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleCategoryChange = (e) => {
     const index = e.target.selectedIndex - 1;
     if (index >= 0) {
       const cat = categories[index];
@@ -140,7 +153,9 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -158,7 +173,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+     setError("");
 
     try {
       if (
@@ -189,15 +204,16 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
       if (response?.success) {
         alert("Meta Info added Successfully!");
         setFormData({
-          categoryId: "",
-          areaName: "",
-          city: "",
-          state: "",
-          pincode: "",
-          metaTitle: "",
-          metaDescription: "",
-          seoContent: "",
-        });
+      categoryId: "",
+      areaName: "",
+      city: "",
+      state: "",
+      pincode: "",
+      metaTitle: "",
+      metaDescription: "",
+      seoContent: "",
+    });
+
       } else {
         throw new Error(response?.message || "Failed to submit review");
       }
@@ -233,40 +249,17 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
     setError(null);
   };
 
-  // Quill editor modules with table support
+  // Quill editor modules and formats
   const modules = {
     toolbar: [
       [{ header: [1, 2, 3, false] }],
       ["bold", "italic", "underline", "strike"],
       [{ list: "ordered" }, { list: "bullet" }],
       ["link"],
-      [
-        { table: "insert-table" },
-        { table: "insert-row-above" },
-        { table: "insert-row-below" },
-        { table: "insert-column-left" },
-        { table: "insert-column-right" },
-        { table: "delete-table" },
-      ],
       ["clean"],
     ],
-    table: false, // Disable default table module
-    "better-table": {
-      operationMenu: {
-        items: {
-          unmergeCells: {
-            text: "Unmerge cells",
-          },
-        },
-        color: {
-          colors: ["#000000", "#e60000", "#ff9900", "#ffff00", "#008a00"],
-          text: "Background Color",
-        },
-      },
-    },
   };
 
-  // Formats including table support
   const formats = [
     "header",
     "bold",
@@ -276,7 +269,6 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
     "list",
     "bullet",
     "link",
-    "table", // Required for quill-better-table
   ];
 
   return (
@@ -305,7 +297,9 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
           {/* Search Selection Section */}
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
             <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
-              <h2 className="text-lg font-semibold text-white">Search Selection</h2>
+              <h2 className="text-lg font-semibold text-white">
+                Search Selection
+              </h2>
             </div>
 
             <div className="p-6 space-y-6">
@@ -327,12 +321,12 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
                       Select Category
                     </option>
                     {categories
-                      .sort((a, b) => a.category_name.toLowerCase().localeCompare(b.category_name.toLowerCase()))
-                      .map((cat, idx) => (
-                        <option key={idx} value={cat.category_name}>
-                          {cat.category_name}
-                        </option>
-                      ))}
+                    .sort((a, b) => a.category_name.toLowerCase().localeCompare(b.category_name.toLowerCase()))
+                    .map((cat, idx) => (
+                      <option key={idx} value={cat.category_name}>
+                        {cat.category_name}
+                      </option>
+                    ))}
                   </select>
                   <BiSolidCategory
                     className="absolute left-3 top-[38px] text-blue-400"
@@ -378,7 +372,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
                     required
                   >
                     <option value="" disabled>
-                      Select Area
+                      Select Area 
                     </option>
                     {areaOptions
                       .sort((a, b) => a.name.localeCompare(b.name))
@@ -426,7 +420,9 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
           {/* Meta Information */}
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
             <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
-              <h2 className="text-lg font-semibold text-white">Meta Information</h2>
+              <h2 className="text-lg font-semibold text-white">
+                Meta Information
+              </h2>
             </div>
 
             <div className="p-6 space-y-6">
@@ -496,11 +492,19 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
                 <RefreshCw className="h-5 w-5" />
                 Reset
               </button>
+              {/* <button
+                type="button"
+                onClick={onBack}
+                className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+              >
+                Cancel
+              </button> */}
             </div>
             <button
               type="submit"
               className="w-full sm:w-auto flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
+              {/* <Search className="h-5 w-5" /> */}
               {isEdit ? "Update" : "Add"}
             </button>
           </div>
@@ -511,16 +515,18 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categ
 };
 
 export default AddMetaInfo;
-// import React, { useState, useEffect } from "react";
-// import { ArrowLeft, BookOpen, MapPin, RefreshCw, Search } from "lucide-react";
+// import { useState, useEffect } from "react";
+// import { ArrowLeft, BookOpen, MapPin, RefreshCw } from "lucide-react";
 // import { BiSolidCategory } from "react-icons/bi";
-// import {
-//   getAllCategories,
-//   getAllPincodes as fetchPincodes,
-//   createSeoContent,
-// } from "../../api/apiMethods";
+// import { getAllCategories, getAllPincodes as fetchPincodes, createSeoContent } from "../../api/apiMethods";
 // import ReactQuill from "react-quill";
+// import Quill from "quill";
+// import BetterTable from "quill-better-table";
 // import "react-quill/dist/quill.snow.css";
+// import "quill-better-table/dist/quill-better-table.css";
+
+// // Register quill-better-table module
+// Quill.register("modules/better-table", BetterTable);
 
 // interface AddCategoryProps {
 //   onBack: () => void;
@@ -528,11 +534,7 @@ export default AddMetaInfo;
 //   categoryId?: number | null;
 // }
 
-// const AddMetaInfo: React.FC<AddCategoryProps> = ({
-//   onBack,
-//   isEdit = false,
-//   categoryId,
-// }) => {
+// const AddMetaInfo: React.FC<AddCategoryProps> = ({ onBack, isEdit = false, categoryId }) => {
 //   // States for dropdowns
 //   const [categories, setCategories] = useState([]);
 //   const [pincodeData, setPincodeData] = useState([]);
@@ -542,11 +544,7 @@ export default AddMetaInfo;
 //   // Selected values
 //   const [selectedCity, setSelectedCity] = useState("Hyderabad");
 //   const [selectedState, setSelectedState] = useState("Telangana");
-//   const [selectedCategory, setSelectedCategory] = useState({
-//     name: "",
-//     slug: "",
-//     id: "",
-//   });
+//   const [selectedCategory, setSelectedCategory] = useState({ name: "", slug: "", id: "" });
 //   const [selectedArea, setSelectedArea] = useState("");
 //   const [selectedPincode, setSelectedPincode] = useState("");
 //   const [selectedSubArea, setSelectedSubArea] = useState("");
@@ -613,28 +611,21 @@ export default AddMetaInfo;
 //   }, [pincodeData]);
 
 //   // Handle area selection and update subareas
-//   const handleAreaChange = (e) => {
+//   const handleAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 //     const areaName = e.target.value;
 //     setSelectedArea(areaName);
 
-//     // Find area and related pincode
-//     const matchedPincodeObj = pincodeData.find((p) =>
-//       p.areas.some((a) => a.name === areaName)
-//     );
+//     const matchedPincodeObj = pincodeData.find((p) => p.areas.some((a) => a.name === areaName));
 
 //     if (matchedPincodeObj) {
 //       setSelectedPincode(matchedPincodeObj.code);
 //       setSelectedState(matchedPincodeObj.state);
 //       setSelectedCity(matchedPincodeObj.city);
 
-//       const matchedArea = matchedPincodeObj.areas.find(
-//         (a) => a.name === areaName
-//       );
+//       const matchedArea = matchedPincodeObj.areas.find((a) => a.name === areaName);
 //       const subAreas = matchedArea?.subAreas || [];
 
-//       setSubAreaOptions(
-//         [...subAreas].sort((a, b) => a.name.localeCompare(b.name))
-//       );
+//       setSubAreaOptions([...subAreas].sort((a, b) => a.name.localeCompare(b.name)));
 //       setSelectedSubArea("");
 //     } else {
 //       setSelectedPincode("");
@@ -643,7 +634,7 @@ export default AddMetaInfo;
 //     }
 //   };
 
-//   const handleCategoryChange = (e) => {
+//   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 //     const index = e.target.selectedIndex - 1;
 //     if (index >= 0) {
 //       const cat = categories[index];
@@ -666,9 +657,7 @@ export default AddMetaInfo;
 //   };
 
 //   const handleInputChange = (
-//     e: React.ChangeEvent<
-//       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-//     >
+//     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
 //   ) => {
 //     const { name, value } = e.target;
 //     setFormData((prev) => ({
@@ -686,7 +675,7 @@ export default AddMetaInfo;
 
 //   const handleSubmit = async (e: React.FormEvent) => {
 //     e.preventDefault();
-//      setError("");
+//     setError("");
 
 //     try {
 //       if (
@@ -717,16 +706,15 @@ export default AddMetaInfo;
 //       if (response?.success) {
 //         alert("Meta Info added Successfully!");
 //         setFormData({
-//       categoryId: "",
-//       areaName: "",
-//       city: "",
-//       state: "",
-//       pincode: "",
-//       metaTitle: "",
-//       metaDescription: "",
-//       seoContent: "",
-//     });
-
+//           categoryId: "",
+//           areaName: "",
+//           city: "",
+//           state: "",
+//           pincode: "",
+//           metaTitle: "",
+//           metaDescription: "",
+//           seoContent: "",
+//         });
 //       } else {
 //         throw new Error(response?.message || "Failed to submit review");
 //       }
@@ -762,17 +750,40 @@ export default AddMetaInfo;
 //     setError(null);
 //   };
 
-//   // Quill editor modules and formats
+//   // Quill editor modules with table support
 //   const modules = {
 //     toolbar: [
 //       [{ header: [1, 2, 3, false] }],
 //       ["bold", "italic", "underline", "strike"],
 //       [{ list: "ordered" }, { list: "bullet" }],
 //       ["link"],
+//       [
+//         { table: "insert-table" },
+//         { table: "insert-row-above" },
+//         { table: "insert-row-below" },
+//         { table: "insert-column-left" },
+//         { table: "insert-column-right" },
+//         { table: "delete-table" },
+//       ],
 //       ["clean"],
 //     ],
+//     table: false, // Disable default table module
+//     "better-table": {
+//       operationMenu: {
+//         items: {
+//           unmergeCells: {
+//             text: "Unmerge cells",
+//           },
+//         },
+//         color: {
+//           colors: ["#000000", "#e60000", "#ff9900", "#ffff00", "#008a00"],
+//           text: "Background Color",
+//         },
+//       },
+//     },
 //   };
 
+//   // Formats including table support
 //   const formats = [
 //     "header",
 //     "bold",
@@ -782,6 +793,7 @@ export default AddMetaInfo;
 //     "list",
 //     "bullet",
 //     "link",
+//     "table", // Required for quill-better-table
 //   ];
 
 //   return (
@@ -810,9 +822,7 @@ export default AddMetaInfo;
 //           {/* Search Selection Section */}
 //           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
 //             <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
-//               <h2 className="text-lg font-semibold text-white">
-//                 Search Selection
-//               </h2>
+//               <h2 className="text-lg font-semibold text-white">Search Selection</h2>
 //             </div>
 
 //             <div className="p-6 space-y-6">
@@ -834,12 +844,12 @@ export default AddMetaInfo;
 //                       Select Category
 //                     </option>
 //                     {categories
-//                     .sort((a, b) => a.category_name.toLowerCase().localeCompare(b.category_name.toLowerCase()))
-//                     .map((cat, idx) => (
-//                       <option key={idx} value={cat.category_name}>
-//                         {cat.category_name}
-//                       </option>
-//                     ))}
+//                       .sort((a, b) => a.category_name.toLowerCase().localeCompare(b.category_name.toLowerCase()))
+//                       .map((cat, idx) => (
+//                         <option key={idx} value={cat.category_name}>
+//                           {cat.category_name}
+//                         </option>
+//                       ))}
 //                   </select>
 //                   <BiSolidCategory
 //                     className="absolute left-3 top-[38px] text-blue-400"
@@ -885,7 +895,7 @@ export default AddMetaInfo;
 //                     required
 //                   >
 //                     <option value="" disabled>
-//                       Select Area 
+//                       Select Area
 //                     </option>
 //                     {areaOptions
 //                       .sort((a, b) => a.name.localeCompare(b.name))
@@ -933,9 +943,7 @@ export default AddMetaInfo;
 //           {/* Meta Information */}
 //           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
 //             <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
-//               <h2 className="text-lg font-semibold text-white">
-//                 Meta Information
-//               </h2>
+//               <h2 className="text-lg font-semibold text-white">Meta Information</h2>
 //             </div>
 
 //             <div className="p-6 space-y-6">
@@ -1005,19 +1013,11 @@ export default AddMetaInfo;
 //                 <RefreshCw className="h-5 w-5" />
 //                 Reset
 //               </button>
-//               {/* <button
-//                 type="button"
-//                 onClick={onBack}
-//                 className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-//               >
-//                 Cancel
-//               </button> */}
 //             </div>
 //             <button
 //               type="submit"
 //               className="w-full sm:w-auto flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
 //             >
-//               {/* <Search className="h-5 w-5" /> */}
 //               {isEdit ? "Update" : "Add"}
 //             </button>
 //           </div>
