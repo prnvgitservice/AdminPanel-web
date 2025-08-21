@@ -11,11 +11,12 @@ interface Category {
   meta_title: string;
   meta_description: string; // Added meta_description
   servicesCount: number;
+  seo_content: []; // Added seo_content
   createdAt: string;
 }
 
 
-const ViewCategory: React.FC<ViewCategoryProps> = () => {
+const ViewCategory: React.FC = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const { loading, error } = useCategoryContext();
@@ -95,9 +96,9 @@ const ViewCategory: React.FC<ViewCategoryProps> = () => {
                   {category.category_name}
                 </p>
               </div>
-              <div className="text-sm text-gray-500">
+              {/* <div className="text-sm text-gray-500">
                 {new Date(category?.createdAt).toLocaleDateString("en-GB")}
-              </div>
+              </div> */}
             </div>
 
             <div>
@@ -121,6 +122,15 @@ const ViewCategory: React.FC<ViewCategoryProps> = () => {
               <p className="text-gray-900">
                 {category.servicesCount || 5} Technicians
               </p>
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-gray-700">SEO Content</h2>
+              <div className="ql-snow">
+              <div 
+                className="ql-editor" 
+                dangerouslySetInnerHTML={{ __html: category.seo_content }}
+              />
+            </div>
             </div>
           </div>
         </div>

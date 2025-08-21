@@ -6,7 +6,8 @@ import {
   UserCheck, Building2, X, Package, Image, BookOpen, FileText,
   Crown, 
   MailQuestion,
-  UserCog
+  UserCog,
+  Cable
 } from 'lucide-react';
 
 interface MenuItem {
@@ -118,6 +119,9 @@ const menuItems: MenuItem[] = [
   { key: 'enquiries', label: 'Enquiries', icon: <MailQuestion className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/enquiries' },
   // Sub-item: View franchise requests
   { key: 'franchise-requests', label: 'Franchise Requests', icon: <Crown className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/franchise-requests' },
+
+  // Sitemap: Parent item for managing the sitemap
+  { key: 'sitemap', label: 'Sitemap', icon: <Cable className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/sitemap' },
 ];
 
 const menuHierarchy: MenuHierarchy[] = [
@@ -160,6 +164,9 @@ const menuHierarchy: MenuHierarchy[] = [
 
   // Advertisements: Parent with sub-items for managing ads
   { key: 'advertisements', subItems: ['all-advertisements', 'add-advertisement'] },
+
+  // Sitemap: Parent item for managing the sitemap
+  { key: 'sitemap', subItems: [] },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {

@@ -34,6 +34,7 @@ import ViewArea from "../components/areas/ViewArea";
 import EditMetaInfo from "../components/metaInfo/EditMetaInfo";
 import EditArea from "../components/areas/EditArea";
 import EditCategory from "../components/category/EditCategory";
+import Sitemap from "../components/sitemap/Sitemap";
 
 // Placeholder component for routes not yet implemented
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
@@ -162,11 +163,15 @@ const AppRoutes: React.FC = () => {
         <Route
           path="/advertisements/all"
           element={<PlaceholderPage title="All Advertisements" />}
+          // element={<Sitemap />}
         />
         <Route
           path="/advertisements/add"
           element={<PlaceholderPage title="Add Advertisement" />}
         />
+
+        {/* Sitemap: Routes for managing the sitemap */}
+        <Route path="/sitemap" element={<Sitemap />} />
 
         {/* Legacy Routes: Older service-related routes for backward compatibility */}
         <Route path="/services" element={<AllCategories />} />
