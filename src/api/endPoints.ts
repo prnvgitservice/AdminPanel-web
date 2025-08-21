@@ -2,6 +2,7 @@ import {
   getAllFranchises,
   getCompanyReviews,
   getFranchisePlans,
+  registerTechByAdmin,
 } from "./apiMethods";
 
 const endpoints: any = {
@@ -58,11 +59,25 @@ const endpoints: any = {
     },
   },
 
+  registerTechByAdmin:{
+    method: "post",
+    url: () => {
+      return `/api/franchiseAuth//registerFranchiseByAdmin`;
+    }
+  },
+
   getAllFranchises: {
     method: "get",
     url: () => {
       return `/api/franchiseAuth/getAllFranchises?offset=1&limit=2`;
     },
+  },
+
+  registerFranchiseByAdmin: {
+    method: "post",
+    url: () => {
+      return `/api/franchiseAuth/registerFranchiseByAdmin`;
+    }
   },
 
   getCompanyReviews: {

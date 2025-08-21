@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllPincodes, getFranchisePlans } from '../../api/apiMethods';
+import { getAllPincodes, getFranchisePlans, registerFranchiseByAdmin } from '../../api/apiMethods';
 import { ArrowLeft, User } from 'lucide-react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
@@ -186,15 +186,17 @@ const AddFranchise: React.FC = () => {
         city: formData.city,
         state: formData.state,
         pincode: formData.pincode,
-        subscriptionPlanId: formData.subscriptionPlanId,
+        franchiseSubscriptionId: formData.subscriptionPlanId,
       };
+      await registerFranchiseByAdmin(payload);
+      alert("Franchise added successfully!");
 
-      console.log('Registering franchise with payload:', payload);
 
     } catch (error: any) {
       setErrors({
         username: error?.data?.error?.[0] || error?.message || 'Registration failed. Please try again.',
       });
+      alert("something went wrong");
     } finally {
       setIsSubmitting(false);
     }
@@ -468,7 +470,7 @@ const AddFranchise: React.FC = () => {
                     <option value="" disabled>Select Subscription Plan</option>
                     {subscriptionPlans.map((plan) => (
                       <option key={plan._id} value={plan._id}>
-                        {plan.name} (₹{plan.finalPrice} incl. GST, (₹{plan.originalPrice * (1 + plan.gst/100) } ))
+                       {plan.name} - ₹{plan.finalPrice} ({plan.price} + {plan.gst} GST)
                       </option>
                     ))}
                   </select>

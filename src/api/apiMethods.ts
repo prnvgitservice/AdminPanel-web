@@ -18,7 +18,11 @@ export const getAllUsers = (data: any) => apiRequest("getAllUsers", data);
 
 export const getAllTechnicians = (data: any) => apiRequest("getAllTechnicians", data);
 
+export const registerTechByAdmin = (data: any) => apiRequest("registerTechByAdmin", data);
+
 export const getAllFranchises = (data: any) => apiRequest("getAllFranchises", data);
+
+export const registerFranchiseByAdmin = (data: any) => apiRequest("registerFranchiseByAdmin", data);
 
 export const getCompanyReviews = (data: any) => apiRequest("getCompanyReviews", data);
 

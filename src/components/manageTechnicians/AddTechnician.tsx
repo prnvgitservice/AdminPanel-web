@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
-import { getAllCategories, getAllPincodes, getPlans } from "../../api/apiMethods";
+import { getAllCategories, getAllPincodes, getPlans, registerTechByAdmin } from "../../api/apiMethods";
 import { useNavigate } from "react-router-dom";
 
 interface TechnicianData {
@@ -13,7 +13,7 @@ interface TechnicianData {
   city: string;
   state: string;
   pincode: string;
-  subscriptionPlan: string;
+  subscriptionId: string;
   // status: "active" | "inactive";
 }
 
@@ -43,7 +43,7 @@ interface FormErrors {
   areaName?: string;
   city?: string;
   state?: string;
-  subscriptionPlan?: string;
+  subscriptionId?: string;
 }
 
 const initialFormState: TechnicianData = {
@@ -56,7 +56,7 @@ const initialFormState: TechnicianData = {
   city: "",
   state: "",
   pincode: "",
-  subscriptionPlan: "",
+  subscriptionId: "",
   // status: "active",
 };
 
@@ -208,19 +208,19 @@ const AddTechnician: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      console.log("Submitting technician data:", formData);
-      setTimeout(() => {
-        alert("Technician added successfully!");
-        setIsSubmitting(false);
-        navigate(-1);
-      }, 1000);
+      await registerTechByAdmin(formData);
+      alert("Technician added successfully!");
+      setIsSubmitting(false);
+      navigate(-1);
     } catch (error) {
       setIsSubmitting(false);
+      alert("something went wrong")
+      console.error("Error adding technician:", error);
       setErrors({
         username: "An error occurred while submitting the form.",
       });
     }
-  };
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
