@@ -206,7 +206,7 @@ const AllCategories: React.FC = () => {
                   <img
                     src={category.category_image}
                     alt={category.category_name}
-                    className="h-32"
+                    className="h-24"
                   />
                 </div>
                 {/* <div className="absolute top-4 right-4">
