@@ -62,14 +62,14 @@ const endpoints: any = {
   registerTechByAdmin:{
     method: "post",
     url: () => {
-      return `/api/franchiseAuth//registerFranchiseByAdmin`;
+      return `/api/techAuth/registerByAdmin`;
     }
   },
 
   getAllFranchises: {
     method: "get",
     url: () => {
-      return `/api/franchiseAuth/getAllFranchises?offset=1&limit=2`;
+      return `/api/franchiseAuth/getAllFranchises?offset=1&limit=10`;
     },
   },
 
