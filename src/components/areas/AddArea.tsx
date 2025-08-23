@@ -156,67 +156,123 @@ const AddArea: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  e.preventDefault();
+  setError("");
 
-    try {
-      if (
-        !formData.areaName ||
-        !formData.city ||
-        !formData.state ||
-        !formData.pincode
-      ) {
-        setError("Please fill all required fields");
-        return;
-      }
-
-      const requestData = {
-        areaName: formData.areaName,
-        city: formData.city,
-        state: formData.state,
-        pincode: formData.pincode,
-        subAreas: formData.subAreas,
-      };
-
-      const response = await fetch(
-        `https://services-platform-backend.onrender.com/api/pincodeData/createArea`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestData),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to submit area");
-      }
-
-      alert("Area added successfully!");
-      setFormData({
-        areaName: "",
-        city: "",
-        state: "",
-        pincode: "",
-        subAreas: [],
-      });
-      setSelectedCity("");
-      setSelectedState("");
-      setSelectedPincode("");
-      setSelectedArea("");
-      setSelectedSubArea("");
-      setSubAreaOptions([]);
-      navigate("/areas");
-    } catch (error: any) {
-      const errorMessage =
-        error?.message || "An error occurred. Please try again later.";
-      setError(errorMessage);
-      alert(errorMessage);
+  try {
+    if (
+      !formData.areaName ||
+      !formData.city ||
+      !formData.state ||
+      !formData.pincode
+    ) {
+      setError("Please fill all required fields");
+      return;
     }
-  };
+
+    // ✅ transform frontend formData to backend schema
+    const requestData = {
+      code: formData.pincode,
+      city: formData.city,
+      state: formData.state,
+      areas: [
+        {
+          name: formData.areaName,
+          subAreas: formData.subAreas.map((sa) => ({ name: sa })),
+        },
+      ],
+    };
+
+    const response = await fetch(
+      `https://services-platform-backend.onrender.com/api/pincodes/create`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestData),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to submit area");
+    }
+
+    alert("Area added successfully!");
+    handleReset();
+    navigate("/areas");
+  } catch (error: any) {
+    const errorMessage =
+      error?.message || "An error occurred. Please try again later.";
+    setError(errorMessage);
+    alert(errorMessage);
+  }
+};
+
+
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setError("");
+
+  //   try {
+  //     if (
+  //       !formData.areaName ||
+  //       !formData.city ||
+  //       !formData.state ||
+  //       !formData.pincode
+  //     ) {
+  //       setError("Please fill all required fields");
+  //       return;
+  //     }
+
+  //     const requestData = {
+  //       areaName: formData.areaName,
+  //       city: formData.city,
+  //       state: formData.state,
+  //       pincode: formData.pincode,
+  //       subAreas: formData.subAreas,
+  //     };
+
+  //     const response = await fetch(
+  //       `http://localhost:5000/api/pincodes/create`,
+  //       // `https://services-platform-backend.onrender.com/api/pincodes/create`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(requestData),
+  //       }
+  //     );
+
+  //     const data = await response.json();
+
+  //     if (!response.ok) {
+  //       throw new Error(data.message || "Failed to submit area");
+  //     }
+
+  //     alert("Area added successfully!");
+  //     setFormData({
+  //       areaName: "",
+  //       city: "",
+  //       state: "",
+  //       pincode: "",
+  //       subAreas: [],
+  //     });
+  //     setSelectedCity("");
+  //     setSelectedState("");
+  //     setSelectedPincode("");
+  //     setSelectedArea("");
+  //     setSelectedSubArea("");
+  //     setSubAreaOptions([]);
+  //     navigate("/areas");
+  //   } catch (error: any) {
+  //     const errorMessage =
+  //       error?.message || "An error occurred. Please try again later.";
+  //     setError(errorMessage);
+  //     alert(errorMessage);
+  //   }
+  // };
 
   const handleReset = () => {
     setSelectedCity("");
@@ -379,7 +435,7 @@ const AddArea: React.FC = () => {
 
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Sub-Area
+                    Subarea Name
                   </label>
                   <div className="flex gap-2">
                     <input
@@ -387,7 +443,7 @@ const AddArea: React.FC = () => {
                       value={selectedSubArea}
                       onChange={(e) => setSelectedSubArea(e.target.value)}
                       className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
-                      placeholder="Enter sub-area name"
+                      placeholder="Enter subarea name"
                     />
                     <button
                       type="button"
@@ -408,7 +464,7 @@ const AddArea: React.FC = () => {
               {formData.subAreas.length > 0 && (
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Added Sub-Areas
+                    Added Subareas
                   </label>
                   <div className="flex flex-wrap gap-2">
                     {formData.subAreas.map((subArea, idx) => (

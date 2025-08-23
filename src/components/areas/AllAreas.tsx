@@ -101,7 +101,7 @@ const AllAreas = () => {
     if (window.confirm("Are you sure you want to delete this pincode?")) {
       try {
         const response = await fetch(
-          `https://services-platform-backend.onrender.com/api/pincodeData/deletePincode/${id}`,
+          `https://services-platform-backend.onrender.com/api/pincodes/delete`,
           {
             method: "DELETE",
           }

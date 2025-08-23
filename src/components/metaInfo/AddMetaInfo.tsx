@@ -362,6 +362,36 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
 
                 {/* Area Dropdown */}
                 <div className="relative">
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Area <span className="text-red-500">*</span>
+  </label>
+  <select
+    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+    value={selectedArea}
+    onChange={handleAreaChange}
+    required
+  >
+    <option value="" disabled>
+      Select Area
+    </option>
+
+    {areaOptions
+      ?.slice()
+      .sort((a, b) => Number(a.pincode) - Number(b.pincode))
+      .map((area, idx) => (
+        <option key={`${area.pincode}-${idx}`} value={area.name}>
+          {area.name} - {area.pincode}
+        </option>
+      ))}
+  </select>
+
+  <MapPin
+    className="absolute left-3 top-[38px] text-blue-400"
+    size={20}
+  />
+</div>
+
+                {/* <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Area <span className="text-red-500">*</span>
                   </label>
@@ -386,7 +416,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
                     className="absolute left-3 top-[38px] text-blue-400"
                     size={20}
                   />
-                </div>
+                </div> */}
 
                 {/* Subarea Dropdown */}
                 <div className="relative">
