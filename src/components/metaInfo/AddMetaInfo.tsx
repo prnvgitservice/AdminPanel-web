@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, BookOpen, MapPin, RefreshCw, Search } from "lucide-react";
+import { ArrowLeft, BookOpen, MapPin, RefreshCw } from "lucide-react";
 import { BiSolidCategory } from "react-icons/bi";
 import {
   getAllCategories,
@@ -8,6 +8,18 @@ import {
 } from "../../api/apiMethods";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+
+import Quill from "quill";
+import QuillBetterTable from "quill-better-table";
+import "quill-better-table/dist/quill-better-table.css";
+
+// Register table module
+Quill.register(
+  {
+    "modules/better-table": QuillBetterTable,
+  },
+  true
+);
 
 interface AddCategoryProps {
   onBack: () => void;
@@ -51,6 +63,9 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
 
   const [error, setError] = useState<string | null>(null);
   const cityOptions = ["Hyderabad"];
+
+  // Quill ref for programmatic insertion
+  const quillRef = React.useRef<ReactQuill>(null);
 
   // Fetch categories
   useEffect(() => {
@@ -173,7 +188,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-     setError("");
+    setError("");
 
     try {
       if (
@@ -196,7 +211,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
         pincode: selectedPincode,
         meta_title: formData.metaTitle,
         meta_description: formData.metaDescription,
-        seo_content: formData.seoContent,
+        seo_content: formData.seoContent, // This is the raw HTML string with tags, tables, etc.
       };
 
       const response = await createSeoContent(requestData);
@@ -204,15 +219,15 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
       if (response?.success) {
         alert("Meta Info added Successfully!");
         setFormData({
-      categoryId: "",
-      areaName: "",
-      city: "",
-      state: "",
-      pincode: "",
-      metaTitle: "",
-      metaDescription: "",
-      seoContent: "",
-    });
+          categoryId: "",
+          areaName: "",
+          city: "",
+          state: "",
+          pincode: "",
+          metaTitle: "",
+          metaDescription: "",
+          seoContent: "",
+        });
 
       } else {
         throw new Error(response?.message || "Failed to submit review");
@@ -249,15 +264,107 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
     setError(null);
   };
 
+  // Custom handler to insert the specific price chart table like in the image
+  const insertPriceChart = () => {
+    const quill = quillRef.current?.getEditor();
+    if (!quill) return;
+
+    const tableModule = quill.getModule("better-table");
+    if (!tableModule) return;
+
+    // Insert a 6x3 table (1 header row + 5 data rows)
+    const table = tableModule.insertTable(6, 3);
+
+    // Get the table element and rows
+    const tableBody = table.querySelector('tbody');
+    if (!tableBody) return;
+
+    const rows = tableBody.querySelectorAll('tr');
+
+    // Set header row with bold text
+    const headerCells = rows[0].querySelectorAll('td');
+    headerCells[0].innerHTML = '<strong>Plumbing Works</strong>';
+    headerCells[1].innerHTML = '<strong>Prices</strong>';
+    headerCells[2].innerHTML = '<strong>Location</strong>';
+
+    // Set data rows based on the image
+    const data = [
+      ["Tap Repair", "Rs. 119", "Hyderabad"],
+      ["Flush Tank Repair", "Rs. 149", "Hyderabad"],
+      ["Wash Basin Installation", "Rs. 469", "Hyderabad"],
+      ["Waste Pipe Leakage", "Rs. 129", "Hyderabad"],
+      ["Shower Installation", "Rs. 133", "Hyderabad"],
+    ];
+
+    data.forEach((rowData, index) => {
+      const cells = rows[index + 1].querySelectorAll('td');
+      rowData.forEach((cellText, cellIndex) => {
+        cells[cellIndex].innerHTML = cellText;
+      });
+    });
+
+    // Insert heading above the table (H1 or similar)
+    const range = quill.getSelection();
+    const delta = quill.insertText(
+      range ? range.index : 0,
+      "PRNV Services Best Plumbing Services in India\n",
+      "header",
+      1,
+      "user"
+    );
+    quill.insertText(range ? range.index + delta.ops.length : delta.ops.length, "\n", "user");
+
+    // Optionally, add a link example (e.g., a fake link below the table)
+    quill.insertText(
+      quill.getLength() - 1,
+      "\nFor more details, visit our ",
+      "user"
+    );
+    quill.insertText(quill.getLength() - 1, "website", {
+      link: "https://prnvservices.com",
+      bold: true,
+    });
+    quill.insertText(quill.getLength() - 1, ".\n", "user");
+  };
+
   // Quill editor modules and formats
-  const modules = {
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ["bold", "italic", "underline", "strike"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["link"],
-      ["clean"],
-    ],
+const modules = {
+    toolbar: {
+      container: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["link"],
+        ["clean"],
+        ["insertTable"], // ✅ our custom button
+      ],
+      handlers: {
+        insertTable: function () {
+          const table = this.quill.getModule("better-table");
+          if (table) {
+            table.insertTable(3, 3); // default 3x3 table
+          }
+        },
+      },
+    },
+    "better-table": {
+      operationMenu: {
+        items: {
+          insertColumnRight: { text: "Insert column right" },
+          insertColumnLeft: { text: "Insert column left" },
+          insertRowUp: { text: "Insert row above" },
+          insertRowDown: { text: "Insert row below" },
+          mergeCells: { text: "Merge cells" },
+          unmergeCells: { text: "Unmerge cells" },
+          deleteRow: { text: "Delete row" },
+          deleteColumn: { text: "Delete column" },
+          deleteTable: { text: "Delete table" },
+        },
+      },
+    },
+    keyboard: {
+      bindings: QuillBetterTable.keyboardBindings,
+    },
   };
 
   const formats = [
@@ -265,11 +372,63 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
     "bold",
     "italic",
     "underline",
-    "strike",
     "list",
     "bullet",
     "link",
+    "table", // ✅ this allows Quill to render <table>
   ];
+  // const modules = {
+  //   toolbar: {
+  //     container: [
+  //       [{ header: [1, 2, 3, 4, 5, 6, false] }],
+  //       ["bold", "italic", "underline", "strike"],
+  //       [{ list: "ordered" }, { list: "bullet" }],
+  //       ["link"],
+  //       ["clean"],
+  //       ["insertTable"], // Standard table insert (3x3)
+  //       ["insertPriceChart"], // Custom button for price chart
+  //     ],
+  //     handlers: {
+  //       insertTable: function () {
+  //         const tableModule = this.quill.getModule("better-table");
+  //         if (tableModule) {
+  //           tableModule.insertTable(3, 3); // Default 3x3 table
+  //         }
+  //       },
+  //       insertPriceChart: insertPriceChart, // Custom handler for specific table
+  //     },
+  //   },
+  //   "better-table": {
+  //     operationMenu: {
+  //       items: {
+  //         insertColumnRight: { text: "Insert column right" },
+  //         insertColumnLeft: { text: "Insert column left" },
+  //         insertRowUp: { text: "Insert row above" },
+  //         insertRowDown: { text: "Insert row below" },
+  //         mergeCells: { text: "Merge cells" },
+  //         unmergeCells: { text: "Unmerge cells" },
+  //         deleteRow: { text: "Delete row" },
+  //         deleteColumn: { text: "Delete column" },
+  //         deleteTable: { text: "Delete table" },
+  //       },
+  //     },
+  //   },
+  //   keyboard: {
+  //     bindings: QuillBetterTable.keyboardBindings,
+  //   },
+  // };
+
+  // const formats = [
+  //   "header",
+  //   "bold",
+  //   "italic",
+  //   "underline",
+  //   "strike",
+  //   "list",
+  //   "bullet",
+  //   "link",
+  //   "table",
+  // ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
@@ -321,12 +480,12 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
                       Select Category
                     </option>
                     {categories
-                    .sort((a, b) => a.category_name.toLowerCase().localeCompare(b.category_name.toLowerCase()))
-                    .map((cat, idx) => (
-                      <option key={idx} value={cat.category_name}>
-                        {cat.category_name}
-                      </option>
-                    ))}
+                      .sort((a, b) => a.category_name.toLowerCase().localeCompare(b.category_name.toLowerCase()))
+                      .map((cat, idx) => (
+                        <option key={idx} value={cat.category_name}>
+                          {cat.category_name}
+                        </option>
+                      ))}
                   </select>
                   <BiSolidCategory
                     className="absolute left-3 top-[38px] text-blue-400"
@@ -362,36 +521,6 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
 
                 {/* Area Dropdown */}
                 <div className="relative">
-  <label className="block text-sm font-medium text-gray-700 mb-1">
-    Area <span className="text-red-500">*</span>
-  </label>
-  <select
-    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
-    value={selectedArea}
-    onChange={handleAreaChange}
-    required
-  >
-    <option value="" disabled>
-      Select Area
-    </option>
-
-    {areaOptions
-      ?.slice()
-      .sort((a, b) => Number(a.pincode) - Number(b.pincode))
-      .map((area, idx) => (
-        <option key={`${area.pincode}-${idx}`} value={area.name}>
-          {area.name} - {area.pincode}
-        </option>
-      ))}
-  </select>
-
-  <MapPin
-    className="absolute left-3 top-[38px] text-blue-400"
-    size={20}
-  />
-</div>
-
-                {/* <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Area <span className="text-red-500">*</span>
                   </label>
@@ -402,22 +531,24 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
                     required
                   >
                     <option value="" disabled>
-                      Select Area 
+                      Select Area
                     </option>
+
                     {areaOptions
-                      .sort((a, b) => a.name.localeCompare(b.name))
+                      ?.slice()
+                      .sort((a, b) => Number(a.pincode) - Number(b.pincode))
                       .map((area, idx) => (
-                        <option key={idx} value={area.name}>
+                        <option key={`${area.pincode}-${idx}`} value={area.name}>
                           {area.name} - {area.pincode}
                         </option>
                       ))}
                   </select>
+
                   <MapPin
                     className="absolute left-3 top-[38px] text-blue-400"
                     size={20}
                   />
-                </div> */}
-
+                </div>
                 {/* Subarea Dropdown */}
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -500,12 +631,13 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
                   SEO Content <span className="text-red-500">*</span>
                 </label>
                 <ReactQuill
+                  ref={quillRef}
                   value={formData.seoContent}
                   onChange={handleSeoContentChange}
                   modules={modules}
                   formats={formats}
-                  placeholder="Write your SEO content here..."
-                  className="bg-white rounded-lg"
+                  theme="snow"
+                  style={{ height: "300px", marginBottom: "20px" }}
                 />
               </div>
             </div>
@@ -522,19 +654,11 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
                 <RefreshCw className="h-5 w-5" />
                 Reset
               </button>
-              {/* <button
-                type="button"
-                onClick={onBack}
-                className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-              >
-                Cancel
-              </button> */}
             </div>
             <button
               type="submit"
               className="w-full sm:w-auto flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
-              {/* <Search className="h-5 w-5" /> */}
               {isEdit ? "Update" : "Add"}
             </button>
           </div>
@@ -545,6 +669,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
 };
 
 export default AddMetaInfo;
+
 // import { useState, useEffect } from "react";
 // import { ArrowLeft, BookOpen, MapPin, RefreshCw } from "lucide-react";
 // import { BiSolidCategory } from "react-icons/bi";
