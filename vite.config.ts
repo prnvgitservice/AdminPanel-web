@@ -7,4 +7,9 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  resolve: {
+    alias: {
+      'quill-table': 'quill-table/dist/index.js',
+    },
+  },
 });

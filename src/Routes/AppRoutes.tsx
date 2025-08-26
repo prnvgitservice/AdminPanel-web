@@ -6,7 +6,6 @@ import AllCategories from "../components/category/AllCategories";
 import AddCategory from "../components/category/AddCategory";
 import ViewCategory from "../components/category/ViewCategory";
 import AllMetaInfo from "../components/metaInfo/AllMetaInfo";
-import AddMetaInfo from "../components/metaInfo/AddMetaInfo";
 import ViewMetaInfo from "../components/metaInfo/ViewMetaInfo";
 import SubscriptionPage from "../components/Subscriptions/SubscriptionPage";
 import PlanDetailsPage from "../components/Subscriptions/PlanDetailsPage";
@@ -35,6 +34,7 @@ import EditMetaInfo from "../components/metaInfo/EditMetaInfo";
 import EditArea from "../components/areas/EditArea";
 import EditCategory from "../components/category/EditCategory";
 import Sitemap from "../components/sitemap/Sitemap";
+import AddMetaInfo from "../components/metaInfo/AddMetaInfo";
 
 // Placeholder component for routes not yet implemented
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
