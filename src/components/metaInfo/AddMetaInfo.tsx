@@ -1,87 +1,56 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { ArrowLeft, BookOpen, MapPin, RefreshCw } from 'lucide-react';
-import { BiSolidCategory } from 'react-icons/bi';
-import { getAllCategories, getAllPincodes, createSeoContent } from '../../api/apiMethods';
-import Quill from 'quill';
-import TableModule from 'quill-table';
-import ReactQuill from 'react-quill';
-import { useNavigate } from 'react-router-dom';
-import { Document, Packer, Paragraph, Table, TableRow, TableCell, WidthType, TextRun } from 'docx';
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { ArrowLeft, BookOpen, MapPin, RefreshCw } from "lucide-react";
+import { BiSolidCategory } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
+import { getAllPincodes, createSeoContent } from "../../api/apiMethods";
+import { useCategoryContext } from "../Context/CategoryContext";
+import JoditEditor from "jodit-react";
 
-// Register Quill table module
-Quill.register('modules/table', TableModule);
+interface Category {
+  _id: string;
+  category_name: string;
+  category_image: string | null;
+  category_slug: string;
+  meta_title: string;
+  meta_description: string;
+  status: number;
+}
 
 const AddMetaInfo: React.FC = () => {
-  const [categories, setCategories] = useState<any[]>([]);
-  const [pincodeData, setPincodeData] = useState<any[]>([]);
-  const [areaOptions, setAreaOptions] = useState<any[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState({ name: '', slug: '', id: '' });
-  const [selectedArea, setSelectedArea] = useState('');
-  const [selectedPincode, setSelectedPincode] = useState('');
-  const [selectedCity, setSelectedCity] = useState('Hyderabad');
-  const [selectedState, setSelectedState] = useState('Telangana');
-  const [formData, setFormData] = useState({
-    categoryId: '',
-    areaName: '',
-    city: '',
-    state: '',
-    pincode: '',
-    metaTitle: '',
-    metaDescription: '',
-    seoContent: '',
-  });
-  const [error, setError] = useState<string | null>(null);
-  const quillRef = useRef<HTMLDivElement>(null);
+  const { categories, loading: categoriesLoading, error: categoriesError } = useCategoryContext();
   const navigate = useNavigate();
+  const editor = useRef(null);
 
-  // Quill modules configuration
-  const modules = useMemo(
-    () => ({
-      toolbar: {
-        container: [
-          [{ header: [1, 2, 3, false] }],
-          ['bold', 'italic', 'underline'],
-          [{ list: 'ordered' }, { list: 'bullet' }],
-          ['link', 'table'],
-          ['clean'],
-        ],
-      },
-      'better-table': true, // Use quill-better-table
-      table: true, // Fallback for quill-table
-    }),
-    []
-  );
+  // States for dropdowns
+  const [pincodeData, setPincodeData] = useState([]);
+  const [areaOptions, setAreaOptions] = useState([]);
+  const [subAreaOptions, setSubAreaOptions] = useState([]);
 
-  const formats = [
-    'header',
-    'bold',
-    'italic',
-    'underline',
-    'strike',
-    'color',
-    'background',
-    'list',
-    'bullet',
-    'link',
-    'table',
-  ];
+  // Selected values
+  const [selectedCity, setSelectedCity] = useState("Hyderabad");
+  const [selectedState, setSelectedState] = useState("Telangana");
+  const [selectedCategory, setSelectedCategory] = useState({
+    name: "",
+    slug: "",
+    id: "",
+  });
+  const [selectedArea, setSelectedArea] = useState("");
+  const [selectedPincode, setSelectedPincode] = useState("");
+  const [selectedSubArea, setSelectedSubArea] = useState("");
 
-  // Fetch categories
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await getAllCategories();
-        if (res.success && Array.isArray(res.data)) {
-          setCategories(res.data.filter((cat: any) => cat?.status === 1));
-        } else {
-          setError('Failed to fetch categories');
-        }
-      } catch (err) {
-        setError('Error fetching categories');
-      }
-    };
-    fetchCategories();
-  }, []);
+  const [formData, setFormData] = useState({
+    categoryId: "",
+    areaName: "",
+    city: "Hyderabad",
+    state: "Telangana",
+    pincode: "",
+    metaTitle: "",
+    metaDescription: "",
+    seoContent: "",
+  });
+
+  const [error, setError] = useState<string | null>(null);
+  const cityOptions = ["Hyderabad"];
 
   // Fetch pincode and area data
   useEffect(() => {
@@ -91,19 +60,19 @@ const AddMetaInfo: React.FC = () => {
         if (res.success && Array.isArray(res.data)) {
           setPincodeData(res.data);
         } else {
-          setError('Failed to fetch pincodes');
+          setError("Failed to fetch pincodes");
         }
       } catch (err) {
-        setError('Error fetching pincodes');
+        setError("Error fetching pincodes");
       }
     };
     fetchPincodeInfo();
   }, []);
 
-  // Update area options when pincodeData changes
+  // Update area options when pincodeData or selectedArea changes
   useEffect(() => {
-    const flattenedAreas = pincodeData.flatMap((p: any) =>
-      p.areas.map((area: any) => ({
+    const flattenedAreas = pincodeData.flatMap((p) =>
+      p.areas.map((area) => ({
         ...area,
         pincode: p.code,
         state: p.state,
@@ -111,50 +80,108 @@ const AddMetaInfo: React.FC = () => {
       }))
     );
     setAreaOptions(flattenedAreas);
-  }, [pincodeData]);
 
-  // Handle area selection
+    // Set subareas based on selected area
+    if (selectedArea) {
+      const matchedPincodeObj = pincodeData.find((p) =>
+        p.areas.some((a) => a.name === selectedArea)
+      );
+      if (matchedPincodeObj) {
+        const matchedArea = matchedPincodeObj.areas.find(
+          (a) => a.name === selectedArea
+        );
+        const subAreas = matchedArea?.subAreas || [];
+        setSubAreaOptions(
+          [...subAreas].sort((a, b) => a.name.localeCompare(b.name))
+        );
+      } else {
+        setSubAreaOptions([]);
+      }
+    }
+  }, [pincodeData, selectedArea]);
+
+  // Handle area selection and update subareas
   const handleAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const areaName = e.target.value;
     setSelectedArea(areaName);
-    const matchedPincodeObj = pincodeData.find((p: any) => p.areas.some((a: any) => a.name === areaName));
+
+    const matchedPincodeObj = pincodeData.find((p) =>
+      p.areas.some((a) => a.name === areaName)
+    );
+
     if (matchedPincodeObj) {
       setSelectedPincode(matchedPincodeObj.code);
       setSelectedState(matchedPincodeObj.state);
       setSelectedCity(matchedPincodeObj.city);
+
+      const matchedArea = matchedPincodeObj.areas.find(
+        (a) => a.name === areaName
+      );
+      const subAreas = matchedArea?.subAreas || [];
+      setSubAreaOptions(
+        [...subAreas].sort((a, b) => a.name.localeCompare(b.name))
+      );
+      setSelectedSubArea("");
     } else {
-      setSelectedPincode('');
+      setSelectedPincode("");
+      setSubAreaOptions([]);
+      setSelectedSubArea("");
     }
+
+    setFormData((prev) => ({
+      ...prev,
+      areaName,
+      city: matchedPincodeObj?.city || "Hyderabad",
+      state: matchedPincodeObj?.state || "Telangana",
+      pincode: matchedPincodeObj?.code || "",
+    }));
   };
 
-  // Handle category selection
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const index = e.target.selectedIndex - 1;
     if (index >= 0) {
       const cat = categories[index];
-      setSelectedCategory({ name: cat.category_name, slug: cat.category_slug, id: cat._id });
-      setFormData((prev) => ({ ...prev, categoryId: cat._id }));
+      setSelectedCategory({
+        name: cat.category_name,
+        slug: cat.category_slug,
+        id: cat._id,
+      });
+      setFormData((prev) => ({
+        ...prev,
+        categoryId: cat._id,
+      }));
     } else {
-      setSelectedCategory({ name: '', slug: '', id: '' });
-      setFormData((prev) => ({ ...prev, categoryId: '' }));
+      setSelectedCategory({ name: "", slug: "", id: "" });
+      setFormData((prev) => ({
+        ...prev,
+        categoryId: "",
+      }));
     }
   };
 
-  // Handle input changes for meta title/description
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  // Handle Quill content change
-  const handleQuillChange = (content: string) => {
-    setFormData((prev) => ({ ...prev, seoContent: content }));
+  const handleSeoContentChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      seoContent: value,
+    }));
   };
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
+
     try {
       if (
         !formData.categoryId ||
@@ -164,9 +191,10 @@ const AddMetaInfo: React.FC = () => {
         !formData.metaDescription ||
         !formData.seoContent
       ) {
-        setError('Please fill all required fields');
+        setError("Please fill all required fields");
         return;
       }
+
       const requestData = {
         categoryId: formData.categoryId,
         areaName: selectedArea,
@@ -177,230 +205,337 @@ const AddMetaInfo: React.FC = () => {
         meta_description: formData.metaDescription,
         seo_content: formData.seoContent,
       };
+
       const response = await createSeoContent(requestData);
+
       if (response?.success) {
-        alert('Meta Info added successfully!');
-        handleReset();
+        alert("Meta Info created successfully!");
+        navigate(-1);
       } else {
-        throw new Error(response?.message || 'Failed to submit');
+        throw new Error(response?.message || "Failed to create meta info");
       }
     } catch (error: any) {
-      const errorMessage = error?.message || 'An error occurred.';
+      console.error("Error creating meta info:", error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "An error occurred. Please try again later.";
       setError(errorMessage);
       alert(errorMessage);
     }
   };
 
-  // Handle form reset
   const handleReset = () => {
-    setSelectedCategory({ name: '', slug: '', id: '' });
-    setSelectedCity('Hyderabad');
-    setSelectedState('Telangana');
-    setSelectedPincode('');
-    setSelectedArea('');
     setFormData({
-      categoryId: '',
-      areaName: '',
-      city: '',
-      state: '',
-      pincode: '',
-      metaTitle: '',
-      metaDescription: '',
-      seoContent: '',
+      categoryId: "",
+      areaName: "",
+      city: "Hyderabad",
+      state: "Telangana",
+      pincode: "",
+      metaTitle: "",
+      metaDescription: "",
+      seoContent: "",
     });
+    setSelectedCity("Hyderabad");
+    setSelectedState("Telangana");
+    setSelectedArea("");
+    setSelectedPincode("");
+    setSelectedSubArea("");
+    setSelectedCategory({ name: "", slug: "", id: "" });
     setError(null);
-    const quillEditor = quillRef.current?.querySelector('.ql-editor') as HTMLElement;
-    if (quillEditor) quillEditor.innerHTML = '';
   };
 
-  // Generate and download Word document
-  const generateWordDocument = () => {
-    const doc = new Document({
-      sections: [
-        {
-          properties: {},
-          children: [
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: `SEO Content for ${selectedCategory.name} in ${selectedArea || 'Hyderabad'}`,
-                  bold: true,
-                  size: 28,
-                }),
-              ],
-              spacing: { after: 200 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: `Meta Title: ${formData.metaTitle}` })],
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: `Meta Description: ${formData.metaDescription}` })],
-              spacing: { after: 200 },
-            }),
-            ...parseHtmlToDocx(formData.seoContent),
-          ],
-        },
+  // JoditEditor configuration
+  const config = useMemo(
+    () => ({
+      height: 400,
+      buttons: [
+        "bold",
+        "italic",
+        "underline",
+        "|",
+        "ul",
+        "ol",
+        "|",
+        "link",
+        "table",
+        "|",
+        "font",
+        "fontsize",
+        "brush",
+        "|",
+        { name: "heading", list: ["h1", "h2", "h3", "h4", "h5", "h6"] },
+        "|",
+        "undo",
+        "redo",
       ],
-    });
-
-    Packer.toBlob(doc).then((blob) => {
-      // Use FileSaver or similar package to save blob
-      // For Windows, the following command opens the Save dialog:
-      // (You may need to install file-saver package)
-      // saveAs(blob, `SEO_Content_${selectedCategory.name}_${selectedArea}.docx`);
-      // For now, we use a temporary link:
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `SEO_Content_${selectedCategory.name}_${selectedArea}.docx`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-    });
-  };
-
-  // Parse HTML to DOCX elements (supports headings, paragraphs and basic tables)
-  const parseHtmlToDocx = (html: string): any[] => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    const elements = doc.body.children;
-    const docxElements: any[] = [];
-
-    Array.from(elements).forEach((element) => {
-      if (element.tagName.match(/^H[1-6]$/)) {
-        docxElements.push(
-          new Paragraph({
-            children: [new TextRun({ text: element.textContent || '', bold: true, size: 24 })],
-            spacing: { after: 100 },
-          })
-        );
-      } else if (element.tagName === 'P') {
-        docxElements.push(
-          new Paragraph({
-            children: [new TextRun({ text: element.textContent || '' })],
-            spacing: { after: 100 },
-          })
-        );
-      } else if (element.tagName === 'TABLE') {
-        const rows: TableRow[] = [];
-        const trs = element.querySelectorAll('tr');
-        trs.forEach((tr) => {
-          const cells: TableCell[] = [];
-          const tds = tr.querySelectorAll('td, th');
-          tds.forEach((td) => {
-            cells.push(
-              new TableCell({
-                children: [new Paragraph({ children: [new TextRun({ text: td.textContent || '' })] })],
-                width: { size: 25, type: WidthType.PERCENTAGE },
-              })
-            );
-          });
-          rows.push(new TableRow({ children: cells }));
-        });
-        docxElements.push(
-          new Table({
-            rows,
-            width: { size: 100, type: WidthType.PERCENTAGE },
-          })
-        );
-      }
-    });
-
-    return docxElements;
-  };
+      toolbarAdaptive: false,
+      placeholder: "Enter SEO content here...",
+      style: {
+        font: "16px Arial",
+      },
+      colors: {
+        text: [
+          "#000000",
+          "#FF0000",
+          "#00FF00",
+          "#0000FF",
+          "#FFFF00",
+          "#FF00FF",
+          "#00FFFF",
+        ],
+        background: [
+          "#FFFFFF",
+          "#FFCCCC",
+          "#CCFFCC",
+          "#CCCCFF",
+          "#FFFFCC",
+          "#FFCCFF",
+          "#CCFFFF",
+        ],
+      },
+      fonts: [
+        "Arial",
+        "Helvetica",
+        "Times New Roman",
+        "Courier New",
+        "Verdana",
+        "Georgia",
+        "Trebuchet MS",
+      ],
+      fontSize: ["8", "10", "12", "14", "16", "18", "24", "30", "36"],
+      iframe: false,
+      styleValues: {
+        "jodit-container": "border border-gray-300 rounded-lg shadow-sm",
+        "jodit-toolbar__box": "bg-gray-50 border-b border-gray-300 rounded-t-lg p-2",
+        "jodit-toolbar-button": "text-gray-700 hover:bg-blue-100 hover:text-blue-600 px-2 py-1 rounded transition",
+        "jodit-toolbar-button_active": "bg-blue-500 text-white",
+        "jodit-wysiwyg": "p-4 min-h-[400px] focus:outline-none focus:ring-2 focus:ring-blue-500",
+      },
+    }),
+    []
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div className="flex items-center gap-3">
-            <BookOpen className="h-6 w-6 text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Add Meta Info</h1>
+            <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
+              <BookOpen className="h-6 w-6 text-white" />
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              Add Meta Info
+            </h1>
           </div>
-          <button onClick={() => navigate(-1)} className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 bg-white rounded-lg shadow-sm">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+          >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {error && <div className="text-red-500 mb-4">{error}</div>}
+          {/* Search Selection Section */}
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+              <h2 className="text-lg font-semibold text-white">
+                Search Selection
+              </h2>
+            </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-lg font-semibold text-blue-600 mb-4">Search Selection</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category <span className="text-red-500">*</span>
-                </label>
+            <div className="p-6 space-y-6">
+              {error && <div className="text-red-500 mb-4">{error}</div>}
+              {categoriesLoading && <div className="text-gray-500 mb-4">Loading categories...</div>}
+              {categoriesError && <div className="text-red-500 mb-4">{categoriesError}</div>}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Category Dropdown */}
                 <div className="relative">
-                  <select className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" value={selectedCategory.name} onChange={handleCategoryChange} required>
-                    <option value="" disabled>Select Category</option>
-                    {categories.sort((a, b) => a.category_name.localeCompare(b.category_name)).map((cat, idx) => (
-                      <option key={idx} value={cat.category_name}>
-                        {cat.category_name}
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Category <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+                    value={selectedCategory.name}
+                    onChange={handleCategoryChange}
+                    required
+                  >
+                    <option value="" disabled>
+                      Select Category
+                    </option>
+                    {categories
+                      .filter((cat) => cat.status === 1)
+                      .sort((a, b) => a.category_name.toLowerCase().localeCompare(b.category_name.toLowerCase()))
+                      .map((cat, idx) => (
+                        <option key={idx} value={cat.category_name}>
+                          {cat.category_name}
+                        </option>
+                      ))}
+                  </select>
+                  <BiSolidCategory
+                    className="absolute left-3 top-[38px] text-blue-400"
+                    size={20}
+                  />
+                </div>
+
+                {/* City Dropdown */}
+                <div className="relative">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    City <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+                    value={selectedCity}
+                    onChange={(e) => setSelectedCity(e.target.value)}
+                    required
+                  >
+                    <option value="" disabled>
+                      Select City
+                    </option>
+                    {cityOptions.map((city, idx) => (
+                      <option key={idx} value={city}>
+                        {city}
                       </option>
                     ))}
                   </select>
-                  <BiSolidCategory className="absolute left-3 top-3 text-blue-400" size={20} />
+                  <MapPin
+                    className="absolute left-3 top-[38px] text-blue-400"
+                    size={20}
+                  />
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Area <span className="text-red-500">*</span>
-                </label>
+
+                {/* Area Dropdown */}
                 <div className="relative">
-                  <select className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" value={selectedArea} onChange={handleAreaChange} required>
-                    <option value="" disabled>Select Area</option>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Area <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+                    value={selectedArea}
+                    onChange={handleAreaChange}
+                    required
+                  >
+                    <option value="" disabled>
+                      Select Area
+                    </option>
                     {areaOptions
-                      .sort((a, b) => Number(a.pincode) - Number(b.pincode))
+                      .sort((a, b) => a.name.localeCompare(b.name))
                       .map((area, idx) => (
-                        <option key={`${area.pincode}-${idx}`} value={area.name}>
+                        <option key={idx} value={area.name}>
                           {area.name} - {area.pincode}
                         </option>
                       ))}
                   </select>
-                  <MapPin className="absolute left-3 top-3 text-blue-400" size={20} />
+                  <MapPin
+                    className="absolute left-3 top-[38px] text-blue-400"
+                    size={20}
+                  />
+                </div>
+
+                {/* Subarea Dropdown */}
+                <div className="relative">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Subarea
+                  </label>
+                  <select
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+                    value={selectedSubArea}
+                    onChange={(e) => setSelectedSubArea(e.target.value)}
+                    disabled={!subAreaOptions.length}
+                  >
+                    <option value="" disabled>
+                      Select Subarea
+                    </option>
+                    {subAreaOptions.map((sub, idx) => (
+                      <option key={sub._id || idx} value={sub.name}>
+                        {sub.name}
+                      </option>
+                    ))}
+                  </select>
+                  <MapPin
+                    className="absolute left-3 top-[38px] text-blue-400"
+                    size={20}
+                  />
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-lg font-semibold text-blue-600 mb-4">Meta Information</h2>
-            <div className="space-y-4">
-              <div>
+          {/* Meta Information */}
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+              <h2 className="text-lg font-semibold text-white">
+                Meta Information
+              </h2>
+            </div>
+
+            <div className="p-6 space-y-6">
+              <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
                   Meta Title <span className="text-red-500">*</span>
                 </label>
-                <input type="text" name="metaTitle" value={formData.metaTitle} onChange={handleInputChange} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Enter meta title" required />
+                <input
+                  type="text"
+                  name="metaTitle"
+                  value={formData.metaTitle}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Enter meta title"
+                  required
+                />
               </div>
-              <div>
+
+              <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
                   Meta Description <span className="text-red-500">*</span>
                 </label>
-                <textarea name="metaDescription" value={formData.metaDescription} onChange={handleInputChange} rows={3} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Enter meta description" required />
+                <textarea
+                  name="metaDescription"
+                  value={formData.metaDescription}
+                  onChange={handleInputChange}
+                  rows={3}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Enter meta description"
+                  required
+                />
               </div>
             </div>
           </div>
 
+          {/* SEO Content */}
           <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-lg font-semibold text-blue-600 mb-4">SEO Content</h2>
-            <div ref={quillRef}>
-              <ReactQuill theme="snow" value={formData.seoContent} onChange={handleQuillChange} modules={modules} formats={formats} className="h-96 mb-12" />
-            </div>
+            <h2 className="text-lg font-semibold text-blue-600 mb-4">
+              SEO Content
+            </h2>
+            <JoditEditor
+              ref={editor}
+              value={formData.seoContent}
+              config={config}
+              onChange={handleSeoContentChange}
+            />
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4">
-            <button type="button" onClick={handleReset} className="flex items-center gap-2 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
-              <RefreshCw className="h-5 w-5" />
-              Reset
-            </button>
-            <button type="submit" className="flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-              Add
-            </button>
-            <button type="button" onClick={generateWordDocument} className="flex items-center gap-2 px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">
-              Download Word Document
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex gap-3 w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={handleReset}
+                className="w-full sm:w-auto flex items-center gap-2 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+              >
+                <RefreshCw className="h-5 w-5" />
+                Reset
+              </button>
+            </div>
+            <button
+              type="submit"
+              className="w-full sm:w-auto flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              Create
             </button>
           </div>
         </form>
@@ -410,6 +545,1677 @@ const AddMetaInfo: React.FC = () => {
 };
 
 export default AddMetaInfo;
+// import { useState, useEffect, useMemo, useRef } from "react";
+// import { ArrowLeft, BookOpen, MapPin, RefreshCw } from "lucide-react";
+// import { BiSolidCategory } from "react-icons/bi";
+// import { getAllCategories, getAllPincodes, createSeoContent } from "../../api/apiMethods";
+// import JoditEditor from "jodit-react";
+// import HTMLReactParser from "html-react-parser";
+// import { useNavigate } from "react-router-dom";
+// import { Document, Packer, Paragraph, Table, TableRow, TableCell, WidthType, TextRun } from "docx";
+
+// const AddMetaInfo: React.FC = () => {
+//   const [categories, setCategories] = useState<any[]>([]);
+//   const [pincodeData, setPincodeData] = useState<any[]>([]);
+//   const [areaOptions, setAreaOptions] = useState<any[]>([]);
+//   const [selectedCategory, setSelectedCategory] = useState({
+//     name: "",
+//     slug: "",
+//     id: "",
+//   });
+//   const [selectedArea, setSelectedArea] = useState("");
+//   const [selectedPincode, setSelectedPincode] = useState("");
+//   const [selectedCity, setSelectedCity] = useState("Hyderabad");
+//   const [selectedState, setSelectedState] = useState("Telangana");
+//   const [formData, setFormData] = useState({
+//     categoryId: "",
+//     areaName: "",
+//     city: "",
+//     state: "",
+//     pincode: "",
+//     metaTitle: "",
+//     metaDescription: "",
+//     seoContent: "",
+//   });
+//   const [error, setError] = useState<string | null>(null);
+//   const editor = useRef(null);
+//   const navigate = useNavigate();
+
+//   // JoditEditor configuration
+//   const config = useMemo(
+//     () => ({
+//       height: 400,
+//       buttons: [
+//         "bold",
+//         "italic",
+//         "underline",
+//         "|",
+//         "ul",
+//         "ol",
+//         "|",
+//         "link",
+//         "table",
+//         "|",
+//         "font", // Font family
+//         "fontsize", // Font size
+//         "brush", // Text and background color
+//         "|",
+//         { name: "heading", list: ["h1", "h2", "h3", "h4", "h5", "h6"] }, // Heading levels
+//         "|",
+//         "undo",
+//         "redo",
+//       ],
+//       toolbarAdaptive: false,
+//       placeholder: "Enter SEO content here...",
+//       style: {
+//         font: "16px Arial", // Default font and size
+//       },
+//       colors: {
+//         // Custom color palette for text and background
+//         text: [
+//           "#000000",
+//           "#FF0000",
+//           "#00FF00",
+//           "#0000FF",
+//           "#FFFF00",
+//           "#FF00FF",
+//           "#00FFFF",
+//         ],
+//         background: [
+//           "#FFFFFF",
+//           "#FFCCCC",
+//           "#CCFFCC",
+//           "#CCCCFF",
+//           "#FFFFCC",
+//           "#FFCCFF",
+//           "#CCFFFF",
+//         ],
+//       },
+//       fonts: [
+//         "Arial",
+//         "Helvetica",
+//         "Times New Roman",
+//         "Courier New",
+//         "Verdana",
+//         "Georgia",
+//         "Trebuchet MS",
+//       ],
+//       fontSize: [
+//         "8",
+//         "10",
+//         "12",
+//         "14",
+//         "16",
+//         "18",
+//         "24",
+//         "30",
+//         "36",
+//       ],
+//       // Custom styles for JoditEditor UI
+//       iframe: false,
+//       styleValues: {
+//         "jodit-container": "border border-gray-300 rounded-lg shadow-sm",
+//         "jodit-toolbar__box": "bg-gray-50 border-b border-gray-300 rounded-t-lg p-2",
+//         "jodit-toolbar-button": "text-gray-700 hover:bg-blue-100 hover:text-blue-600 px-2 py-1 rounded transition",
+//         "jodit-toolbar-button_active": "bg-blue-500 text-white",
+//         "jodit-wysiwyg": "p-4 min-h-[400px] focus:outline-none focus:ring-2 focus:ring-blue-500",
+//       },
+//     }),
+//     []
+//   );
+
+//   // Fetch categories
+//   useEffect(() => {
+//     const fetchCategories = async () => {
+//       try {
+//         const res = await getAllCategories();
+//         if (res.success && Array.isArray(res.data)) {
+//           setCategories(res.data.filter((cat: any) => cat?.status === 1));
+//         } else {
+//           setError("Failed to fetch categories");
+//         }
+//       } catch (err) {
+//         setError("Error fetching categories");
+//       }
+//     };
+//     fetchCategories();
+//   }, []);
+
+//   // Fetch pincode and area data
+//   useEffect(() => {
+//     const fetchPincodeInfo = async () => {
+//       try {
+//         const res = await getAllPincodes();
+//         if (res.success && Array.isArray(res.data)) {
+//           setPincodeData(res.data);
+//         } else {
+//           setError("Failed to fetch pincodes");
+//         }
+//       } catch (err) {
+//         setError("Error fetching pincodes");
+//       }
+//     };
+//     fetchPincodeInfo();
+//   }, []);
+
+//   // Update area options when pincodeData changes
+//   useEffect(() => {
+//     const flattenedAreas = pincodeData.flatMap((p: any) =>
+//       p.areas.map((area: any) => ({
+//         ...area,
+//         pincode: p.code,
+//         state: p.state,
+//         city: p.city,
+//       }))
+//     );
+//     setAreaOptions(flattenedAreas);
+//   }, [pincodeData]);
+
+//   // Handle area selection
+//   const handleAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+//     const areaName = e.target.value;
+//     setSelectedArea(areaName);
+//     const matchedPincodeObj = pincodeData.find((p: any) =>
+//       p.areas.some((a: any) => a.name === areaName)
+//     );
+//     if (matchedPincodeObj) {
+//       setSelectedPincode(matchedPincodeObj.code);
+//       setSelectedState(matchedPincodeObj.state);
+//       setSelectedCity(matchedPincodeObj.city);
+//     } else {
+//       setSelectedPincode("");
+//     }
+//   };
+
+//   // Handle category selection
+//   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+//     const index = e.target.selectedIndex - 1;
+//     if (index >= 0) {
+//       const cat = categories[index];
+//       setSelectedCategory({
+//         name: cat.category_name,
+//         slug: cat.category_slug,
+//         id: cat._id,
+//       });
+//       setFormData((prev) => ({ ...prev, categoryId: cat._id }));
+//     } else {
+//       setSelectedCategory({ name: "", slug: "", id: "" });
+//       setFormData((prev) => ({ ...prev, categoryId: "" }));
+//     }
+//   };
+
+//   // Handle input changes for meta title/description
+//   const handleInputChange = (
+//     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+//   ) => {
+//     const { name, value } = e.target;
+//     setFormData((prev) => ({ ...prev, [name]: value }));
+//   };
+
+//   // Handle JoditEditor content change
+//   const handleJoditChange = (newContent: string) => {
+//     setFormData((prev) => ({ ...prev, seoContent: newContent }));
+//   };
+
+//   // Handle form submission
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setError("");
+//     try {
+//       if (
+//         !formData.categoryId ||
+//         !selectedArea ||
+//         !selectedPincode ||
+//         !formData.metaTitle ||
+//         !formData.metaDescription ||
+//         !formData.seoContent
+//       ) {
+//         setError("Please fill all required fields");
+//         return;
+//       }
+//       const requestData = {
+//         categoryId: formData.categoryId,
+//         areaName: selectedArea,
+//         city: selectedCity,
+//         state: selectedState,
+//         pincode: selectedPincode,
+//         meta_title: formData.metaTitle,
+//         meta_description: formData.metaDescription,
+//         seo_content: formData.seoContent,
+//       };
+//       const response = await createSeoContent(requestData);
+//       if (response?.success) {
+//         alert("Meta Info added successfully!");
+//         handleReset();
+//       } else {
+//         throw new Error(response?.message || "Failed to submit");
+//       }
+//     } catch (error: any) {
+//       const errorMessage = error?.message || "An error occurred.";
+//       setError(errorMessage);
+//       alert(errorMessage);
+//     }
+//   };
+
+//   // Handle form reset
+//   const handleReset = () => {
+//     setSelectedCategory({ name: "", slug: "", id: "" });
+//     setSelectedCity("Hyderabad");
+//     setSelectedState("Telangana");
+//     setSelectedPincode("");
+//     setSelectedArea("");
+//     setFormData({
+//       categoryId: "",
+//       areaName: "",
+//       city: "",
+//       state: "",
+//       pincode: "",
+//       metaTitle: "",
+//       metaDescription: "",
+//       seoContent: "",
+//     });
+//     setError(null);
+//   };
+
+//   // Generate and download Word document
+//   const generateWordDocument = () => {
+//     const doc = new Document({
+//       sections: [
+//         {
+//           properties: {},
+//           children: [
+//             new Paragraph({
+//               children: [
+//                 new TextRun({
+//                   text: `SEO Content for ${selectedCategory.name} in ${
+//                     selectedArea || "Hyderabad"
+//                   }`,
+//                   bold: true,
+//                   size: 28,
+//                 }),
+//               ],
+//               spacing: { after: 200 },
+//             }),
+//             new Paragraph({
+//               children: [
+//                 new TextRun({ text: `Meta Title: ${formData.metaTitle}` }),
+//               ],
+//               spacing: { after: 100 },
+//             }),
+//             new Paragraph({
+//               children: [
+//                 new TextRun({
+//                   text: `Meta Description: ${formData.metaDescription}`,
+//                 }),
+//               ],
+//               spacing: { after: 200 },
+//             }),
+//             ...parseHtmlToDocx(formData.seoContent),
+//           ],
+//         },
+//       ],
+//     });
+
+//     Packer.toBlob(doc).then((blob) => {
+//       const url = window.URL.createObjectURL(blob);
+//       const a = document.createElement("a");
+//       a.href = url;
+//       a.download = `SEO_Content_${selectedCategory.name}_${selectedArea}.docx`;
+//       a.click();
+//       window.URL.revokeObjectURL(url);
+//     });
+//   };
+
+//   // Parse HTML to DOCX elements (supports headings, paragraphs, tables, colors, and fonts)
+//   const parseHtmlToDocx = (html: string): any[] => {
+//     const parser = new DOMParser();
+//     const doc = parser.parseFromString(html, "text/html");
+//     const elements = doc.body.children;
+//     const docxElements: any[] = [];
+
+//     Array.from(elements).forEach((element) => {
+//       const style = element.getAttribute("style") || "";
+//       let font = "Arial";
+//       let size = 20; // Default size in half-points (10pt)
+//       let color = undefined;
+//       let bold = false;
+
+//       // Parse style attribute for font, size, and color
+//       if (style) {
+//         const fontMatch = style.match(/font-family:\s*([^;]+)/);
+//         const sizeMatch = style.match(/font-size:\s*(\d+)px/);
+//         const colorMatch = style.match(/color:\s*(#[0-9A-Fa-f]{6}|rgb\([^)]+\))/);
+//         const weightMatch = style.match(/font-weight:\s*bold/);
+
+//         if (fontMatch) font = fontMatch[1].replace(/['"]/g, "");
+//         if (sizeMatch) size = parseInt(sizeMatch[1]) * 2; // Convert px to half-points
+//         if (colorMatch) color = colorMatch[1].replace("#", "");
+//         if (weightMatch) bold = true;
+//       }
+
+//       if (element.tagName.match(/^H[1-6]$/)) {
+//         const level = parseInt(element.tagName.replace("H", ""));
+//         docxElements.push(
+//           new Paragraph({
+//             children: [
+//               new TextRun({
+//                 text: element.textContent || "",
+//                 bold: true,
+//                 size: 24 - level * 2, // Decrease size for lower headings
+//                 font,
+//                 color,
+//               }),
+//             ],
+//             spacing: { after: 100 },
+//           })
+//         );
+//       } else if (element.tagName === "P") {
+//         docxElements.push(
+//           new Paragraph({
+//             children: [
+//               new TextRun({
+//                 text: element.textContent || "",
+//                 font,
+//                 size,
+//                 color,
+//                 bold,
+//               }),
+//             ],
+//             spacing: { after: 100 },
+//           })
+//         );
+//       } else if (element.tagName === "TABLE") {
+//         const rows: TableRow[] = [];
+//         const trs = element.querySelectorAll("tr");
+//         trs.forEach((tr) => {
+//           const cells: TableCell[] = [];
+//           const tds = tr.querySelectorAll("td, th");
+//           tds.forEach((td) => {
+//             const tdStyle = td.getAttribute("style") || "";
+//             let tdColor = undefined;
+//             if (tdStyle) {
+//               const bgMatch = tdStyle.match(/background-color:\s*(#[0-9A-Fa-f]{6}|rgb\([^)]+\))/);
+//               if (bgMatch) tdColor = bgMatch[1].replace("#", "");
+//             }
+//             cells.push(
+//               new TableCell({
+//                 children: [
+//                   new Paragraph({
+//                     children: [
+//                       new TextRun({
+//                         text: td.textContent || "",
+//                         font,
+//                         size,
+//                         color,
+//                         bold,
+//                       }),
+//                     ],
+//                   }),
+//                 ],
+//                 width: { size: 25, type: WidthType.PERCENTAGE },
+//                 shading: tdColor ? { fill: tdColor } : undefined,
+//               })
+//             );
+//           });
+//           rows.push(new TableRow({ children: cells }));
+//         });
+//         docxElements.push(
+//           new Table({
+//             rows,
+//             width: { size: 100, type: WidthType.PERCENTAGE },
+//           })
+//         );
+//       }
+//     });
+
+//     return docxElements;
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+//       <div className="max-w-4xl mx-auto">
+//         <div className="flex items-center justify-between mb-8">
+//           <div className="flex items-center gap-3">
+//             <BookOpen className="h-6 w-6 text-blue-600" />
+//             <h1 className="text-3xl font-bold text-gray-900">Add Meta Info</h1>
+//           </div>
+//           <button
+//             onClick={() => navigate(-1)}
+//             className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 bg-white rounded-lg shadow-sm"
+//           >
+//             <ArrowLeft className="h-4 w-4 mr-2" />
+//             Back
+//           </button>
+//         </div>
+
+//         <form onSubmit={handleSubmit} className="space-y-8">
+//           {error && <div className="text-red-500 mb-4">{error}</div>}
+
+//           <div className="bg-white rounded-xl shadow-lg p-6">
+//             <h2 className="text-lg font-semibold text-blue-600 mb-4">
+//               Search Selection
+//             </h2>
+//             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700 mb-1">
+//                   Category <span className="text-red-500">*</span>
+//                 </label>
+//                 <div className="relative">
+//                   <select
+//                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+//                     value={selectedCategory.name}
+//                     onChange={handleCategoryChange}
+//                     required
+//                   >
+//                     <option value="" disabled>
+//                       Select Category
+//                     </option>
+//                     {categories
+//                       .sort((a, b) =>
+//                         a.category_name.localeCompare(b.category_name)
+//                       )
+//                       .map((cat, idx) => (
+//                         <option key={idx} value={cat.category_name}>
+//                           {cat.category_name}
+//                         </option>
+//                       ))}
+//                   </select>
+//                   <BiSolidCategory
+//                     className="absolute left-3 top-3 text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+//               </div>
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700 mb-1">
+//                   Area <span className="text-red-500">*</span>
+//                 </label>
+//                 <div className="relative">
+//                   <select
+//                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+//                     value={selectedArea}
+//                     onChange={handleAreaChange}
+//                     required
+//                   >
+//                     <option value="" disabled>
+//                       Select Area
+//                     </option>
+//                     {areaOptions
+//                       .sort((a, b) => Number(a.pincode) - Number(b.pincode))
+//                       .map((area, idx) => (
+//                         <option
+//                           key={`${area.pincode}-${idx}`}
+//                           value={area.name}
+//                         >
+//                           {area.name} - {area.pincode}
+//                         </option>
+//                       ))}
+//                   </select>
+//                   <MapPin
+//                     className="absolute left-3 top-3 text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+
+//           <div className="bg-white rounded-xl shadow-lg p-6">
+//             <h2 className="text-lg font-semibold text-blue-600 mb-4">
+//               Meta Information
+//             </h2>
+//             <div className="space-y-4">
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700">
+//                   Meta Title <span className="text-red-500">*</span>
+//                 </label>
+//                 <input
+//                   type="text"
+//                   name="metaTitle"
+//                   value={formData.metaTitle}
+//                   onChange={handleInputChange}
+//                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+//                   placeholder="Enter meta title"
+//                   required
+//                 />
+//               </div>
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700">
+//                   Meta Description <span className="text-red-500">*</span>
+//                 </label>
+//                 <textarea
+//                   name="metaDescription"
+//                   value={formData.metaDescription}
+//                   onChange={handleInputChange}
+//                   rows={3}
+//                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+//                   placeholder="Enter meta description"
+//                   required
+//                 />
+//               </div>
+//             </div>
+//           </div>
+
+//           <div className="bg-white rounded-xl shadow-lg p-6">
+//             <h2 className="text-lg font-semibold text-blue-600 mb-4">
+//               SEO Content
+//             </h2>
+//             <JoditEditor
+//               ref={editor}
+//               value={formData.seoContent}
+//               config={config}
+//               onChange={handleJoditChange}
+//             />
+//             <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+//               {HTMLReactParser(formData.seoContent)}
+//             </div>
+//           </div>
+
+//           <div className="flex flex-col sm:flex-row gap-4">
+//             <button
+//               type="button"
+//               onClick={handleReset}
+//               className="flex items-center gap-2 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+//             >
+//               <RefreshCw className="h-5 w-5" />
+//               Reset
+//             </button>
+//             <button
+//               type="submit"
+//               className="flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+//             >
+//               Add
+//             </button>
+//             <button
+//               type="button"
+//               onClick={generateWordDocument}
+//               className="flex items-center gap-2 px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+//             >
+//               Download Word Document
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AddMetaInfo;
+// import { useState, useEffect, useMemo, useRef } from "react";
+// import { ArrowLeft, BookOpen, MapPin, RefreshCw } from "lucide-react";
+// import { BiSolidCategory } from "react-icons/bi";
+// import { getAllCategories, getAllPincodes, createSeoContent } from "../../api/apiMethods";
+// import JoditEditor from "jodit-react";
+// import HTMLReactParser from "html-react-parser";
+// import { useNavigate } from "react-router-dom";
+// import { Document, Packer, Paragraph, Table, TableRow, TableCell, WidthType, TextRun } from "docx";
+
+// const AddMetaInfo: React.FC = () => {
+//   const [categories, setCategories] = useState<any[]>([]);
+//   const [pincodeData, setPincodeData] = useState<any[]>([]);
+//   const [areaOptions, setAreaOptions] = useState<any[]>([]);
+//   const [selectedCategory, setSelectedCategory] = useState({
+//     name: "",
+//     slug: "",
+//     id: "",
+//   });
+//   const [selectedArea, setSelectedArea] = useState("");
+//   const [selectedPincode, setSelectedPincode] = useState("");
+//   const [selectedCity, setSelectedCity] = useState("Hyderabad");
+//   const [selectedState, setSelectedState] = useState("Telangana");
+//   const [formData, setFormData] = useState({
+//     categoryId: "",
+//     areaName: "",
+//     city: "",
+//     state: "",
+//     pincode: "",
+//     metaTitle: "",
+//     metaDescription: "",
+//     seoContent: "",
+//   });
+//   const [error, setError] = useState<string | null>(null);
+//   const editor = useRef(null);
+//   const navigate = useNavigate();
+
+//   // JoditEditor configuration
+//   const config = useMemo(
+//     () => ({
+//       height: 400,
+//       buttons: [
+//         "bold",
+//         "italic",
+//         "underline",
+//         "|",
+//         "ul",
+//         "ol",
+//         "|",
+//         "link",
+//         "table",
+//         "|",
+//         "font", // Font family
+//         "fontsize", // Font size
+//         "brush", // Text and background color
+//         "|",
+//         { name: "heading", list: ["h1", "h2", "h3", "h4", "h5", "h6"] }, // Heading levels
+//         "|",
+//         "undo",
+//         "redo",
+//       ],
+//       toolbarAdaptive: false,
+//       placeholder: "Enter SEO content here...",
+//       style: {
+//         font: "16px Arial", // Default font and size
+//       },
+//       colors: {
+//         // Custom color palette for text and background
+//         text: [
+//           "#000000",
+//           "#FF0000",
+//           "#00FF00",
+//           "#0000FF",
+//           "#FFFF00",
+//           "#FF00FF",
+//           "#00FFFF",
+//         ],
+//         background: [
+//           "#FFFFFF",
+//           "#FFCCCC",
+//           "#CCFFCC",
+//           "#CCCCFF",
+//           "#FFFFCC",
+//           "#FFCCFF",
+//           "#CCFFFF",
+//         ],
+//       },
+//       fonts: [
+//         "Arial",
+//         "Helvetica",
+//         "Times New Roman",
+//         "Courier New",
+//         "Verdana",
+//         "Georgia",
+//         "Trebuchet MS",
+//       ],
+//       fontSize: [
+//         "8",
+//         "10",
+//         "12",
+//         "14",
+//         "16",
+//         "18",
+//         "24",
+//         "30",
+//         "36",
+//       ],
+//     }),
+//     []
+//   );
+
+//   // Fetch categories
+//   useEffect(() => {
+//     const fetchCategories = async () => {
+//       try {
+//         const res = await getAllCategories();
+//         if (res.success && Array.isArray(res.data)) {
+//           setCategories(res.data.filter((cat: any) => cat?.status === 1));
+//         } else {
+//           setError("Failed to fetch categories");
+//         }
+//       } catch (err) {
+//         setError("Error fetching categories");
+//       }
+//     };
+//     fetchCategories();
+//   }, []);
+
+//   // Fetch pincode and area data
+//   useEffect(() => {
+//     const fetchPincodeInfo = async () => {
+//       try {
+//         const res = await getAllPincodes();
+//         if (res.success && Array.isArray(res.data)) {
+//           setPincodeData(res.data);
+//         } else {
+//           setError("Failed to fetch pincodes");
+//         }
+//       } catch (err) {
+//         setError("Error fetching pincodes");
+//       }
+//     };
+//     fetchPincodeInfo();
+//   }, []);
+
+//   // Update area options when pincodeData changes
+//   useEffect(() => {
+//     const flattenedAreas = pincodeData.flatMap((p: any) =>
+//       p.areas.map((area: any) => ({
+//         ...area,
+//         pincode: p.code,
+//         state: p.state,
+//         city: p.city,
+//       }))
+//     );
+//     setAreaOptions(flattenedAreas);
+//   }, [pincodeData]);
+
+//   // Handle area selection
+//   const handleAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+//     const areaName = e.target.value;
+//     setSelectedArea(areaName);
+//     const matchedPincodeObj = pincodeData.find((p: any) =>
+//       p.areas.some((a: any) => a.name === areaName)
+//     );
+//     if (matchedPincodeObj) {
+//       setSelectedPincode(matchedPincodeObj.code);
+//       setSelectedState(matchedPincodeObj.state);
+//       setSelectedCity(matchedPincodeObj.city);
+//     } else {
+//       setSelectedPincode("");
+//     }
+//   };
+
+//   // Handle category selection
+//   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+//     const index = e.target.selectedIndex - 1;
+//     if (index >= 0) {
+//       const cat = categories[index];
+//       setSelectedCategory({
+//         name: cat.category_name,
+//         slug: cat.category_slug,
+//         id: cat._id,
+//       });
+//       setFormData((prev) => ({ ...prev, categoryId: cat._id }));
+//     } else {
+//       setSelectedCategory({ name: "", slug: "", id: "" });
+//       setFormData((prev) => ({ ...prev, categoryId: "" }));
+//     }
+//   };
+
+//   // Handle input changes for meta title/description
+//   const handleInputChange = (
+//     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+//   ) => {
+//     const { name, value } = e.target;
+//     setFormData((prev) => ({ ...prev, [name]: value }));
+//   };
+
+//   // Handle JoditEditor content change
+//   const handleJoditChange = (newContent: string) => {
+//     setFormData((prev) => ({ ...prev, seoContent: newContent }));
+//   };
+
+//   // Handle form submission
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setError("");
+//     try {
+//       if (
+//         !formData.categoryId ||
+//         !selectedArea ||
+//         !selectedPincode ||
+//         !formData.metaTitle ||
+//         !formData.metaDescription ||
+//         !formData.seoContent
+//       ) {
+//         setError("Please fill all required fields");
+//         return;
+//       }
+//       const requestData = {
+//         categoryId: formData.categoryId,
+//         areaName: selectedArea,
+//         city: selectedCity,
+//         state: selectedState,
+//         pincode: selectedPincode,
+//         meta_title: formData.metaTitle,
+//         meta_description: formData.metaDescription,
+//         seo_content: formData.seoContent,
+//       };
+//       const response = await createSeoContent(requestData);
+//       if (response?.success) {
+//         alert("Meta Info added successfully!");
+//         handleReset();
+//       } else {
+//         throw new Error(response?.message || "Failed to submit");
+//       }
+//     } catch (error: any) {
+//       const errorMessage = error?.message || "An error occurred.";
+//       setError(errorMessage);
+//       alert(errorMessage);
+//     }
+//   };
+
+//   // Handle form reset
+//   const handleReset = () => {
+//     setSelectedCategory({ name: "", slug: "", id: "" });
+//     setSelectedCity("Hyderabad");
+//     setSelectedState("Telangana");
+//     setSelectedPincode("");
+//     setSelectedArea("");
+//     setFormData({
+//       categoryId: "",
+//       areaName: "",
+//       city: "",
+//       state: "",
+//       pincode: "",
+//       metaTitle: "",
+//       metaDescription: "",
+//       seoContent: "",
+//     });
+//     setError(null);
+//   };
+
+//   // Generate and download Word document
+//   const generateWordDocument = () => {
+//     const doc = new Document({
+//       sections: [
+//         {
+//           properties: {},
+//           children: [
+//             new Paragraph({
+//               children: [
+//                 new TextRun({
+//                   text: `SEO Content for ${selectedCategory.name} in ${
+//                     selectedArea || "Hyderabad"
+//                   }`,
+//                   bold: true,
+//                   size: 28,
+//                 }),
+//               ],
+//               spacing: { after: 200 },
+//             }),
+//             new Paragraph({
+//               children: [
+//                 new TextRun({ text: `Meta Title: ${formData.metaTitle}` }),
+//               ],
+//               spacing: { after: 100 },
+//             }),
+//             new Paragraph({
+//               children: [
+//                 new TextRun({
+//                   text: `Meta Description: ${formData.metaDescription}`,
+//                 }),
+//               ],
+//               spacing: { after: 200 },
+//             }),
+//             ...parseHtmlToDocx(formData.seoContent),
+//           ],
+//         },
+//       ],
+//     });
+
+//     Packer.toBlob(doc).then((blob) => {
+//       const url = window.URL.createObjectURL(blob);
+//       const a = document.createElement("a");
+//       a.href = url;
+//       a.download = `SEO_Content_${selectedCategory.name}_${selectedArea}.docx`;
+//       a.click();
+//       window.URL.revokeObjectURL(url);
+//     });
+//   };
+
+//   // Parse HTML to DOCX elements (supports headings, paragraphs, tables, colors, and fonts)
+//   const parseHtmlToDocx = (html: string): any[] => {
+//     const parser = new DOMParser();
+//     const doc = parser.parseFromString(html, "text/html");
+//     const elements = doc.body.children;
+//     const docxElements: any[] = [];
+
+//     Array.from(elements).forEach((element) => {
+//       const style = element.getAttribute("style") || "";
+//       let font = "Arial";
+//       let size = 20; // Default size in half-points (10pt)
+//       let color = undefined;
+//       let bold = false;
+
+//       // Parse style attribute for font, size, and color
+//       if (style) {
+//         const fontMatch = style.match(/font-family:\s*([^;]+)/);
+//         const sizeMatch = style.match(/font-size:\s*(\d+)px/);
+//         const colorMatch = style.match(/color:\s*(#[0-9A-Fa-f]{6}|rgb\([^)]+\))/);
+//         const weightMatch = style.match(/font-weight:\s*bold/);
+
+//         if (fontMatch) font = fontMatch[1].replace(/['"]/g, "");
+//         if (sizeMatch) size = parseInt(sizeMatch[1]) * 2; // Convert px to half-points
+//         if (colorMatch) color = colorMatch[1].replace("#", "");
+//         if (weightMatch) bold = true;
+//       }
+
+//       if (element.tagName.match(/^H[1-6]$/)) {
+//         const level = parseInt(element.tagName.replace("H", ""));
+//         docxElements.push(
+//           new Paragraph({
+//             children: [
+//               new TextRun({
+//                 text: element.textContent || "",
+//                 bold: true,
+//                 size: 24 - level * 2, // Decrease size for lower headings
+//                 font,
+//                 color,
+//               }),
+//             ],
+//             spacing: { after: 100 },
+//           })
+//         );
+//       } else if (element.tagName === "P") {
+//         docxElements.push(
+//           new Paragraph({
+//             children: [
+//               new TextRun({
+//                 text: element.textContent || "",
+//                 font,
+//                 size,
+//                 color,
+//                 bold,
+//               }),
+//             ],
+//             spacing: { after: 100 },
+//           })
+//         );
+//       } else if (element.tagName === "TABLE") {
+//         const rows: TableRow[] = [];
+//         const trs = element.querySelectorAll("tr");
+//         trs.forEach((tr) => {
+//           const cells: TableCell[] = [];
+//           const tds = tr.querySelectorAll("td, th");
+//           tds.forEach((td) => {
+//             const tdStyle = td.getAttribute("style") || "";
+//             let tdColor = undefined;
+//             if (tdStyle) {
+//               const bgMatch = tdStyle.match(/background-color:\s*(#[0-9A-Fa-f]{6}|rgb\([^)]+\))/);
+//               if (bgMatch) tdColor = bgMatch[1].replace("#", "");
+//             }
+//             cells.push(
+//               new TableCell({
+//                 children: [
+//                   new Paragraph({
+//                     children: [
+//                       new TextRun({
+//                         text: td.textContent || "",
+//                         font,
+//                         size,
+//                         color,
+//                         bold,
+//                       }),
+//                     ],
+//                   }),
+//                 ],
+//                 width: { size: 25, type: WidthType.PERCENTAGE },
+//                 shading: tdColor ? { fill: tdColor } : undefined,
+//               })
+//             );
+//           });
+//           rows.push(new TableRow({ children: cells }));
+//         });
+//         docxElements.push(
+//           new Table({
+//             rows,
+//             width: { size: 100, type: WidthType.PERCENTAGE },
+//           })
+//         );
+//       }
+//     });
+
+//     return docxElements;
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+//       <div className="max-w-4xl mx-auto">
+//         <div className="flex items-center justify-between mb-8">
+//           <div className="flex items-center gap-3">
+//             <BookOpen className="h-6 w-6 text-blue-600" />
+//             <h1 className="text-3xl font-bold text-gray-900">Add Meta Info</h1>
+//           </div>
+//           <button
+//             onClick={() => navigate(-1)}
+//             className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 bg-white rounded-lg shadow-sm"
+//           >
+//             <ArrowLeft className="h-4 w-4 mr-2" />
+//             Back
+//           </button>
+//         </div>
+
+//         <form onSubmit={handleSubmit} className="space-y-8">
+//           {error && <div className="text-red-500 mb-4">{error}</div>}
+
+//           <div className="bg-white rounded-xl shadow-lg p-6">
+//             <h2 className="text-lg font-semibold text-blue-600 mb-4">
+//               Search Selection
+//             </h2>
+//             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700 mb-1">
+//                   Category <span className="text-red-500">*</span>
+//                 </label>
+//                 <div className="relative">
+//                   <select
+//                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+//                     value={selectedCategory.name}
+//                     onChange={handleCategoryChange}
+//                     required
+//                   >
+//                     <option value="" disabled>
+//                       Select Category
+//                     </option>
+//                     {categories
+//                       .sort((a, b) =>
+//                         a.category_name.localeCompare(b.category_name)
+//                       )
+//                       .map((cat, idx) => (
+//                         <option key={idx} value={cat.category_name}>
+//                           {cat.category_name}
+//                         </option>
+//                       ))}
+//                   </select>
+//                   <BiSolidCategory
+//                     className="absolute left-3 top-3 text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+//               </div>
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700 mb-1">
+//                   Area <span className="text-red-500">*</span>
+//                 </label>
+//                 <div className="relative">
+//                   <select
+//                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+//                     value={selectedArea}
+//                     onChange={handleAreaChange}
+//                     required
+//                   >
+//                     <option value="" disabled>
+//                       Select Area
+//                     </option>
+//                     {areaOptions
+//                       .sort((a, b) => Number(a.pincode) - Number(b.pincode))
+//                       .map((area, idx) => (
+//                         <option
+//                           key={`${area.pincode}-${idx}`}
+//                           value={area.name}
+//                         >
+//                           {area.name} - {area.pincode}
+//                         </option>
+//                       ))}
+//                   </select>
+//                   <MapPin
+//                     className="absolute left-3 top-3 text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+
+//           <div className="bg-white rounded-xl shadow-lg p-6">
+//             <h2 className="text-lg font-semibold text-blue-600 mb-4">
+//               Meta Information
+//             </h2>
+//             <div className="space-y-4">
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700">
+//                   Meta Title <span className="text-red-500">*</span>
+//                 </label>
+//                 <input
+//                   type="text"
+//                   name="metaTitle"
+//                   value={formData.metaTitle}
+//                   onChange={handleInputChange}
+//                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+//                   placeholder="Enter meta title"
+//                   required
+//                 />
+//               </div>
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700">
+//                   Meta Description <span className="text-red-500">*</span>
+//                 </label>
+//                 <textarea
+//                   name="metaDescription"
+//                   value={formData.metaDescription}
+//                   onChange={handleInputChange}
+//                   rows={3}
+//                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+//                   placeholder="Enter meta description"
+//                   required
+//                 />
+//               </div>
+//             </div>
+//           </div>
+
+//           <div className="bg-white rounded-xl shadow-lg p-6">
+//             <h2 className="text-lg font-semibold text-blue-600 mb-4">
+//               SEO Content
+//             </h2>
+//             <JoditEditor
+//               ref={editor}
+//               value={formData.seoContent}
+//               config={config}
+//               onChange={handleJoditChange}
+//             />
+//             <div className="mt-4">{HTMLReactParser(formData.seoContent)}</div>
+//           </div>
+
+//           <div className="flex flex-col sm:flex-row gap-4">
+//             <button
+//               type="button"
+//               onClick={handleReset}
+//               className="flex items-center gap-2 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+//             >
+//               <RefreshCw className="h-5 w-5" />
+//               Reset
+//             </button>
+//             <button
+//               type="submit"
+//               className="flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+//             >
+//               Add
+//             </button>
+//             <button
+//               type="button"
+//               onClick={generateWordDocument}
+//               className="flex items-center gap-2 px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
+//             >
+//               Download Word Document
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AddMetaInfo;
+// import { useState, useEffect, useMemo, useRef } from "react";
+// import { ArrowLeft, BookOpen, MapPin, RefreshCw } from "lucide-react";
+// import { BiSolidCategory } from "react-icons/bi";
+// import { getAllCategories, getAllPincodes, createSeoContent } from "../../api/apiMethods";
+// import JoditEditor from "jodit-react";
+// import HTMLReactParser from "html-react-parser";
+// import { useNavigate } from "react-router-dom";
+// import { Document, Packer, Paragraph, Table, TableRow, TableCell, WidthType, TextRun } from "docx";
+
+// const AddMetaInfo: React.FC = () => {
+//   const [categories, setCategories] = useState<any[]>([]);
+//   const [pincodeData, setPincodeData] = useState<any[]>([]);
+//   const [areaOptions, setAreaOptions] = useState<any[]>([]);
+//   const [selectedCategory, setSelectedCategory] = useState({
+//     name: "",
+//     slug: "",
+//     id: "",
+//   });
+//   const [selectedArea, setSelectedArea] = useState("");
+//   const [selectedPincode, setSelectedPincode] = useState("");
+//   const [selectedCity, setSelectedCity] = useState("Hyderabad");
+//   const [selectedState, setSelectedState] = useState("Telangana");
+//   const [formData, setFormData] = useState({
+//     categoryId: "",
+//     areaName: "",
+//     city: "",
+//     state: "",
+//     pincode: "",
+//     metaTitle: "",
+//     metaDescription: "",
+//     seoContent: "",
+//   });
+//   const [error, setError] = useState<string | null>(null);
+//   const editor = useRef(null);
+//   const navigate = useNavigate();
+
+//   // JoditEditor configuration
+//   const config = useMemo(
+//     () => ({
+//       height: 400,
+//       buttons: [
+//         "bold",
+//         "italic",
+//         "underline",
+//         "|",
+//         "ul",
+//         "ol",
+//         "|",
+//         "link",
+//         "table",
+//         "|",
+//         "undo",
+//         "redo",
+//       ],
+//       toolbarAdaptive: false,
+//       placeholder: "Enter SEO content here...",
+//     }),
+//     []
+//   );
+
+//   // Fetch categories
+//   useEffect(() => {
+//     const fetchCategories = async () => {
+//       try {
+//         const res = await getAllCategories();
+//         if (res.success && Array.isArray(res.data)) {
+//           setCategories(res.data.filter((cat: any) => cat?.status === 1));
+//         } else {
+//           setError("Failed to fetch categories");
+//         }
+//       } catch (err) {
+//         setError("Error fetching categories");
+//       }
+//     };
+//     fetchCategories();
+//   }, []);
+
+//   // Fetch pincode and area data
+//   useEffect(() => {
+//     const fetchPincodeInfo = async () => {
+//       try {
+//         const res = await getAllPincodes();
+//         if (res.success && Array.isArray(res.data)) {
+//           setPincodeData(res.data);
+//         } else {
+//           setError("Failed to fetch pincodes");
+//         }
+//       } catch (err) {
+//         setError("Error fetching pincodes");
+//       }
+//     };
+//     fetchPincodeInfo();
+//   }, []);
+
+//   // Update area options when pincodeData changes
+//   useEffect(() => {
+//     const flattenedAreas = pincodeData.flatMap((p: any) =>
+//       p.areas.map((area: any) => ({
+//         ...area,
+//         pincode: p.code,
+//         state: p.state,
+//         city: p.city,
+//       }))
+//     );
+//     setAreaOptions(flattenedAreas);
+//   }, [pincodeData]);
+
+//   // Handle area selection
+//   const handleAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+//     const areaName = e.target.value;
+//     setSelectedArea(areaName);
+//     const matchedPincodeObj = pincodeData.find((p: any) =>
+//       p.areas.some((a: any) => a.name === areaName)
+//     );
+//     if (matchedPincodeObj) {
+//       setSelectedPincode(matchedPincodeObj.code);
+//       setSelectedState(matchedPincodeObj.state);
+//       setSelectedCity(matchedPincodeObj.city);
+//     } else {
+//       setSelectedPincode("");
+//     }
+//   };
+
+//   // Handle category selection
+//   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+//     const index = e.target.selectedIndex - 1;
+//     if (index >= 0) {
+//       const cat = categories[index];
+//       setSelectedCategory({
+//         name: cat.category_name,
+//         slug: cat.category_slug,
+//         id: cat._id,
+//       });
+//       setFormData((prev) => ({ ...prev, categoryId: cat._id }));
+//     } else {
+//       setSelectedCategory({ name: "", slug: "", id: "" });
+//       setFormData((prev) => ({ ...prev, categoryId: "" }));
+//     }
+//   };
+
+//   // Handle input changes for meta title/description
+//   const handleInputChange = (
+//     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+//   ) => {
+//     const { name, value } = e.target;
+//     setFormData((prev) => ({ ...prev, [name]: value }));
+//   };
+
+//   // Handle JoditEditor content change
+//   const handleJoditChange = (newContent: string) => {
+//     setFormData((prev) => ({ ...prev, seoContent: newContent }));
+//   };
+
+//   // Handle form submission
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setError("");
+//     try {
+//       if (
+//         !formData.categoryId ||
+//         !selectedArea ||
+//         !selectedPincode ||
+//         !formData.metaTitle ||
+//         !formData.metaDescription ||
+//         !formData.seoContent
+//       ) {
+//         setError("Please fill all required fields");
+//         return;
+//       }
+//       const requestData = {
+//         categoryId: formData.categoryId,
+//         areaName: selectedArea,
+//         city: selectedCity,
+//         state: selectedState,
+//         pincode: selectedPincode,
+//         meta_title: formData.metaTitle,
+//         meta_description: formData.metaDescription,
+//         seo_content: formData.seoContent,
+//       };
+//       const response = await createSeoContent(requestData);
+//       if (response?.success) {
+//         alert("Meta Info added successfully!");
+//         handleReset();
+//       } else {
+//         throw new Error(response?.message || "Failed to submit");
+//       }
+//     } catch (error: any) {
+//       const errorMessage = error?.message || "An error occurred.";
+//       setError(errorMessage);
+//       alert(errorMessage);
+//     }
+//   };
+
+//   // Handle form reset
+//   const handleReset = () => {
+//     setSelectedCategory({ name: "", slug: "", id: "" });
+//     setSelectedCity("Hyderabad");
+//     setSelectedState("Telangana");
+//     setSelectedPincode("");
+//     setSelectedArea("");
+//     setFormData({
+//       categoryId: "",
+//       areaName: "",
+//       city: "",
+//       state: "",
+//       pincode: "",
+//       metaTitle: "",
+//       metaDescription: "",
+//       seoContent: "",
+//     });
+//     setError(null);
+//   };
+
+//   // Generate and download Word document
+//   const generateWordDocument = () => {
+//     const doc = new Document({
+//       sections: [
+//         {
+//           properties: {},
+//           children: [
+//             new Paragraph({
+//               children: [
+//                 new TextRun({
+//                   text: `SEO Content for ${selectedCategory.name} in ${
+//                     selectedArea || "Hyderabad"
+//                   }`,
+//                   bold: true,
+//                   size: 28,
+//                 }),
+//               ],
+//               spacing: { after: 200 },
+//             }),
+//             new Paragraph({
+//               children: [
+//                 new TextRun({ text: `Meta Title: ${formData.metaTitle}` }),
+//               ],
+//               spacing: { after: 100 },
+//             }),
+//             new Paragraph({
+//               children: [
+//                 new TextRun({
+//                   text: `Meta Description: ${formData.metaDescription}`,
+//                 }),
+//               ],
+//               spacing: { after: 200 },
+//             }),
+//             ...parseHtmlToDocx(formData.seoContent),
+//           ],
+//         },
+//       ],
+//     });
+
+//     Packer.toBlob(doc).then((blob) => {
+//       const url = window.URL.createObjectURL(blob);
+//       const a = document.createElement("a");
+//       a.href = url;
+//       a.download = `SEO_Content_${selectedCategory.name}_${selectedArea}.docx`;
+//       a.click();
+//       window.URL.revokeObjectURL(url);
+//     });
+//   };
+
+//   // Parse HTML to DOCX elements (supports headings, paragraphs and basic tables)
+//   const parseHtmlToDocx = (html: string): any[] => {
+//     const parser = new DOMParser();
+//     const doc = parser.parseFromString(html, "text/html");
+//     const elements = doc.body.children;
+//     const docxElements: any[] = [];
+
+//     Array.from(elements).forEach((element) => {
+//       if (element.tagName.match(/^H[1-6]$/)) {
+//         docxElements.push(
+//           new Paragraph({
+//             children: [
+//               new TextRun({
+//                 text: element.textContent || "",
+//                 bold: true,
+//                 size: 24,
+//               }),
+//             ],
+//             spacing: { after: 100 },
+//           })
+//         );
+//       } else if (element.tagName === "P") {
+//         docxElements.push(
+//           new Paragraph({
+//             children: [new TextRun({ text: element.textContent || "" })],
+//             spacing: { after: 100 },
+//           })
+//         );
+//       } else if (element.tagName === "TABLE") {
+//         const rows: TableRow[] = [];
+//         const trs = element.querySelectorAll("tr");
+//         trs.forEach((tr) => {
+//           const cells: TableCell[] = [];
+//           const tds = tr.querySelectorAll("td, th");
+//           tds.forEach((td) => {
+//             cells.push(
+//               new TableCell({
+//                 children: [
+//                   new Paragraph({
+//                     children: [new TextRun({ text: td.textContent || "" })],
+//                   }),
+//                 ],
+//                 width: { size: 25, type: WidthType.PERCENTAGE },
+//               })
+//             );
+//           });
+//           rows.push(new TableRow({ children: cells }));
+//         });
+//         docxElements.push(
+//           new Table({
+//             rows,
+//             width: { size: 100, type: WidthType.PERCENTAGE },
+//           })
+//         );
+//       }
+//     });
+
+//     return docxElements;
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+//       <div className="max-w-4xl mx-auto">
+//         <div className="flex items-center justify-between mb-8">
+//           <div className="flex items-center gap-3">
+//             <BookOpen className="h-6 w-6 text-blue-600" />
+//             <h1 className="text-3xl font-bold text-gray-900">Add Meta Info</h1>
+//           </div>
+//           <button
+//             onClick={() => navigate(-1)}
+//             className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 bg-white rounded-lg shadow-sm"
+//           >
+//             <ArrowLeft className="h-4 w-4 mr-2" />
+//             Back
+//           </button>
+//         </div>
+
+//         <form onSubmit={handleSubmit} className="space-y-8">
+//           {error && <div className="text-red-500 mb-4">{error}</div>}
+
+//           <div className="bg-white rounded-xl shadow-lg p-6">
+//             <h2 className="text-lg font-semibold text-blue-600 mb-4">
+//               Search Selection
+//             </h2>
+//             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700 mb-1">
+//                   Category <span className="text-red-500">*</span>
+//                 </label>
+//                 <div className="relative">
+//                   <select
+//                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+//                     value={selectedCategory.name}
+//                     onChange={handleCategoryChange}
+//                     required
+//                   >
+//                     <option value="" disabled>
+//                       Select Category
+//                     </option>
+//                     {categories
+//                       .sort((a, b) =>
+//                         a.category_name.localeCompare(b.category_name)
+//                       )
+//                       .map((cat, idx) => (
+//                         <option key={idx} value={cat.category_name}>
+//                           {cat.category_name}
+//                         </option>
+//                       ))}
+//                   </select>
+//                   <BiSolidCategory
+//                     className="absolute left-3 top-3 text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+//               </div>
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700 mb-1">
+//                   Area <span className="text-red-500">*</span>
+//                 </label>
+//                 <div className="relative">
+//                   <select
+//                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+//                     value={selectedArea}
+//                     onChange={handleAreaChange}
+//                     required
+//                   >
+//                     <option value="" disabled>
+//                       Select Area
+//                     </option>
+//                     {areaOptions
+//                       .sort((a, b) => Number(a.pincode) - Number(b.pincode))
+//                       .map((area, idx) => (
+//                         <option
+//                           key={`${area.pincode}-${idx}`}
+//                           value={area.name}
+//                         >
+//                           {area.name} - {area.pincode}
+//                         </option>
+//                       ))}
+//                   </select>
+//                   <MapPin
+//                     className="absolute left-3 top-3 text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+
+//           <div className="bg-white rounded-xl shadow-lg p-6">
+//             <h2 className="text-lg font-semibold text-blue-600 mb-4">
+//               Meta Information
+//             </h2>
+//             <div className="space-y-4">
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700">
+//                   Meta Title <span className="text-red-500">*</span>
+//                 </label>
+//                 <input
+//                   type="text"
+//                   name="metaTitle"
+//                   value={formData.metaTitle}
+//                   onChange={handleInputChange}
+//                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+//                   placeholder="Enter meta title"
+//                   required
+//                 />
+//               </div>
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700">
+//                   Meta Description <span className="text-red-500">*</span>
+//                 </label>
+//                 <textarea
+//                   name="metaDescription"
+//                   value={formData.metaDescription}
+//                   onChange={handleInputChange}
+//                   rows={3}
+//                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+//                   placeholder="Enter meta description"
+//                   required
+//                 />
+//               </div>
+//             </div>
+//           </div>
+
+//           <div className="bg-white rounded-xl shadow-lg p-6">
+//             <h2 className="text-lg font-semibold text-blue-600 mb-4">
+//               SEO Content
+//             </h2>
+//             <JoditEditor
+//               ref={editor}
+//               value={formData.seoContent}
+//               config={config}
+//               onChange={handleJoditChange}
+//             />
+//             <div className="mt-4">{HTMLReactParser(formData.seoContent)}</div>
+//           </div>
+
+//           <div className="flex flex-col sm:flex-row gap-4">
+//             <button
+//               type="button"
+//               onClick={handleReset}
+//               className="flex items-center gap-2 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+//             >
+//               <RefreshCw className="h-5 w-5" />
+//               Reset
+//             </button>
+//             <button
+//               type="submit"
+//               className="flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+//             >
+//               Add
+//             </button>
+//             <button
+//               type="button"
+//               onClick={generateWordDocument}
+//               className="flex items-center gap-2 px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
+//             >
+//               Download Word Document
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AddMetaInfo;
 // import React, { useState, useEffect, useMemo } from "react";
 // import { ArrowLeft, BookOpen, MapPin, RefreshCw, Image, Table, Type, Code, List, AlignLeft, Link, Youtube, FileText } from "lucide-react";
 // import { BiSolidCategory } from "react-icons/bi";
@@ -454,7 +2260,7 @@ export default AddMetaInfo;
 //   const [youtubeUrl, setYoutubeUrl] = useState("");
 //   const [contentTemplates, setContentTemplates] = useState([]);
 //   const [selectedTemplate, setSelectedTemplate] = useState("");
-  
+
 //   const cityOptions = ["Hyderabad"];
 //   const navigate = useNavigate();
 
@@ -569,7 +2375,7 @@ export default AddMetaInfo;
 //       if (quill) {
 //         const img = `<img src="${imageUrl}" alt="${imageAlt || 'Image'}" style="max-width: 100%; height: auto;" />`;
 //         const cursorPosition = window.getSelection()?.getRangeAt(0);
-        
+
 //         if (cursorPosition) {
 //           const div = document.createElement('div');
 //           div.innerHTML = img;
@@ -577,7 +2383,7 @@ export default AddMetaInfo;
 //         } else {
 //           quill.innerHTML += img;
 //         }
-        
+
 //         handleQuillChange(quill.innerHTML);
 //         setIsImageModalOpen(false);
 //         setImageUrl("");
@@ -593,7 +2399,7 @@ export default AddMetaInfo;
 //       if (quill) {
 //         const link = `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer">${linkText || linkUrl}</a>`;
 //         const cursorPosition = window.getSelection()?.getRangeAt(0);
-        
+
 //         if (cursorPosition) {
 //           const div = document.createElement('div');
 //           div.innerHTML = link;
@@ -601,7 +2407,7 @@ export default AddMetaInfo;
 //         } else {
 //           quill.innerHTML += link;
 //         }
-        
+
 //         handleQuillChange(quill.innerHTML);
 //         setIsLinkModalOpen(false);
 //         setLinkUrl("");
@@ -614,21 +2420,21 @@ export default AddMetaInfo;
 //   const insertYoutubeVideo = () => {
 //     if (youtubeUrl) {
 //       const videoId = youtubeUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
-      
+
 //       if (videoId && videoId[1]) {
 //         const quill = document.querySelector('.ql-editor') as HTMLElement;
 //         if (quill) {
 //           const iframe = `
 //             <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; margin: 1rem 0;">
-//               <iframe 
-//                 src="https://www.youtube.com/embed/${videoId[1]}" 
-//                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
-//                 allowfullscreen 
+//               <iframe
+//                 src="https://www.youtube.com/embed/${videoId[1]}"
+//                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+//                 allowfullscreen
 //                 title="YouTube Video">
 //               </iframe>
 //             </div>
 //           `;
-          
+
 //           quill.innerHTML += iframe;
 //           handleQuillChange(quill.innerHTML);
 //           setIsYoutubeModalOpen(false);
@@ -1015,7 +2821,7 @@ export default AddMetaInfo;
 //                 <label className="block text-sm font-medium text-gray-700">
 //                   SEO Content <span className="text-red-500">*</span>
 //                 </label>
-                
+
 //                 {/* Template Selection */}
 //                 {contentTemplates.length > 0 && (
 //                   <div className="mb-4 flex flex-wrap gap-2">
@@ -1040,7 +2846,7 @@ export default AddMetaInfo;
 //                     </button>
 //                   </div>
 //                 )}
-                
+
 //                 <ReactQuill
 //                   theme="snow"
 //                   value={formData.seoContent}
@@ -4140,7 +5946,7 @@ export default AddMetaInfo;
 //                 <RefreshCw className="h-5 w-5" />
 //                 Reset
 //               </button>
-//             </div>
+//             </div> 
 //             <button
 //               type="submit"
 //               className="w-full sm:w-auto flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
