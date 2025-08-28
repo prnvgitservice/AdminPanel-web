@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, Edit, Eye, Trash2, Plus, Tag, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { getAllBlogs } from "../../api/apiMethods";
+import { deleteBlog, getAllBlogs } from "../../api/apiMethods";
 
 interface BlogPost {
   _id: string;
@@ -40,9 +40,16 @@ const AllBlogs: React.FC = () => {
     navigate(`/blogs/edit/${post._id}`, { state: post });
   };
 
-  const handleDelete = (postId: string) => {
+  const handleDelete = async (postId: string) => {
     if (window.confirm("Are you sure you want to delete this blog post?")) {
-      setBlogs(blogs.filter((blog) => blog._id !== postId));
+        const response = await deleteBlog(postId);
+        if (response.success) {
+          const updatedBlogs = await getAllBlogs();
+          setBlogs(updatedBlogs.data);
+        }
+        else{
+          alert("Failed to delete the blog post.");
+        }
       // Note: You might want to add an API call here to delete the blog from the backend
     }
   };
