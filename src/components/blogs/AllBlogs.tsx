@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { blogPosts } from "./blogData";
-import { Calendar, Edit, Eye, Trash2, Plus } from "lucide-react";
+import { Calendar, Edit, Eye, Trash2, Plus, Tag, Wrench, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BlogPost } from "./types";
 
@@ -36,17 +36,19 @@ const AllBlogs: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center">
-          <span className="w-1 h-12 bg-gradient-to-b from-blue-500 to-purple-500 mr-4"></span>
-          <h1 className="text-4xl font-bold text-gray-900">All Blogs</h1>
+        <div className="flex items-center gap-3">
+         <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
+              <FileText className="h-5 w-5 text-white" />
+            </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">All Blogs</h1>
         </div>
-        <button
-          onClick={() => navigate('/blogs/add')}
-          className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Add Blog
-        </button>
+       <button
+                    onClick={() => navigate("/categories/add")}
+                    className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Blog
+                  </button>
       </div>
 
       {isEditMode && selectedBlog ? (
@@ -83,17 +85,19 @@ const AllBlogs: React.FC = () => {
                   {post.title}
                 </h3>
                 
-                <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                {/* <p className="text-gray-600 text-sm mb-4 line-clamp-3">
                   {post.excerpt}
-                </p>
+                </p> */}
 
                 <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
                   <div className="flex items-center">
                     <Calendar size={14} className="mr-2" />
                     <span className="font-medium">{post.date}</span>
                   </div>
-                  <div className="flex flex-wrap gap-1">
-                    {post.tags.slice(0, 2).map((tag, index) => (
+                  <div className="flex flex-wrap gap-1 items-center">
+                     <Tag size={14} className="" />
+                    {post.tags.slice(0, 1).map((tag, index) => (
+                      
                       <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
                         {tag}
                       </span>
@@ -104,21 +108,21 @@ const AllBlogs: React.FC = () => {
                 <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                   <button
                     onClick={() => handleView(post)}
-                    className="flex items-center px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    className="text-sm flex items-center px-3 py-2 text-green-600 hover:bg-blue-50 rounded-lg transition-colors"
                   >
                     <Eye className="w-4 h-4 mr-1" />
                     View
                   </button>
                   <button
                     onClick={() => handleEdit(post)}
-                    className="flex items-center px-3 py-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                    className="text-sm flex items-center px-3 py-2 text-blue-600 hover:bg-green-50 rounded-lg transition-colors"
                   >
                     <Edit className="w-4 h-4 mr-1" />
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(post.id)}
-                    className="flex items-center px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    className="text-sm flex items-center px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                   >
                     <Trash2 className="w-4 h-4 mr-1" />
                     Delete
@@ -165,21 +169,12 @@ const EditBlogForm: React.FC<{
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Edit Blog Post</h2>
-        <button
-          onClick={onCancel}
-          className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          Cancel
-        </button>
-      </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Title
+              Blog Title
             </label>
             <input
               type="text"
@@ -192,7 +187,7 @@ const EditBlogForm: React.FC<{
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Category
+              Service
             </label>
             <input
               type="text"
@@ -206,20 +201,7 @@ const EditBlogForm: React.FC<{
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Excerpt
-          </label>
-          <textarea
-            value={formData.excerpt}
-            onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            rows={3}
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Tags (comma separated)
+            Tags
           </label>
           <input
             type="text"
@@ -233,74 +215,22 @@ const EditBlogForm: React.FC<{
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Image URL
-            </label>
-            <input
-              type="url"
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Hero Image URL
-            </label>
-            <input
-              type="url"
-              value={formData.heroImage}
-              onChange={(e) => setFormData({ ...formData, heroImage: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              required
-            />
-          </div>
-        </div>
-
         <div>
-          <div className="flex items-center justify-between mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Content Paragraphs
-            </label>
-            <button
-              type="button"
-              onClick={addContentParagraph}
-              className="flex items-center px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Add Paragraph
-            </button>
-          </div>
-          
-          <div className="space-y-4">
-            {formData.content.map((paragraph, index) => (
-              <div key={index} className="flex items-start space-x-2">
-                <textarea
-                  value={paragraph}
-                  onChange={(e) => handleContentChange(index, e.target.value)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows={3}
-                  placeholder={`Paragraph ${index + 1}`}
-                />
-                {formData.content.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeContentParagraph(index)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Description
+          </label>
+          <textarea
+            value={formData.excerpt}
+            onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            rows={3}
+            required
+          />
         </div>
 
-        <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+      
+
+        <div className="flex items-center justify-end space-x-4 pt-6 border-gray-200">
           <button
             type="button"
             onClick={onCancel}
