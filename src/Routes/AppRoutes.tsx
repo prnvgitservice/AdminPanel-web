@@ -39,10 +39,8 @@ import AddMetaInfo from "../components/metaInfo/AddMetaInfo";
 // Import the new components for blogs and get in touch
 import GetInTouch from "../components/enquiries/GetInTouch";
 import AllBlogs from "../components/blogs/AllBlogs";
-import AddBlog from "../components/blogs/AddBlog";
-import ViewBlog from "../components/blogs/ViewBlog";
-import BlogDetailPage from "../components/blogs/BlogDetailPage";
-import BlogListPage from "../components/blogs/BlogListPage";
+import AddBlog from "../components/blogs/BlogForm";
+import BlogForm from "../components/blogs/BlogForm";
 
 // Placeholder component for routes not yet implemented
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
@@ -83,11 +81,10 @@ const AppRoutes: React.FC = () => {
         <Route path="/meta-info/edit/:id" element={<EditMetaInfo />} />
 
         {/* Blogs: Routes for managing blog content */}
-        <Route path="/blogs" element={<BlogListPage />} />
+        <Route path="/blogs" element={<AllBlogs />} />
         <Route path="/blogs/all" element={<AllBlogs />} />
-        <Route path="/blogs/add" element={<AddBlog />} />
-        <Route path="/blog/:id" element={<ViewBlog />} />
-        <Route path="/blog-detail/:id" element={<BlogDetailPage />} />
+        <Route path="/blogs/add" element={<BlogForm />} />
+        <Route path="/blogs/edit/:id" element={<BlogForm isEdit={true} />} />
 
         {/* Subscriptions: Routes for managing subscription plans */}
         <Route path="/subscription" element={<SubscriptionPage />} />
