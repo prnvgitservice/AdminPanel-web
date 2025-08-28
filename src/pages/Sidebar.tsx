@@ -126,7 +126,7 @@ const menuItems: MenuItem[] = [
   // Sub-item: View franchise requests
   { key: 'franchise-requests', label: 'Franchise Requests', icon: <Crown className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/franchise-requests' },
   // Sub-item: Get in Touch
-  { key: 'get-in-touch', label: 'Get In Touch', icon: <Mail className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/enquiries/get-in-touch' },
+  { key: 'get-in-touch', label: 'Get In Touch', icon: <Mail className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/get-in-touch' },
   
   // Sitemap: Parent item for managing the sitemap
   { key: 'sitemap', label: 'Sitemap', icon: <Cable className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/sitemap' },

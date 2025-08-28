@@ -157,8 +157,8 @@ const AppRoutes: React.FC = () => {
         <Route path="/bookings/guest" element={<AllGuestBookings />} />
 
         {/* Enquiries: Routes for managing enquiries */}
-        <Route path="/enquiries/franchise-requests" element={<FranchiseRequest />} />
-        <Route path="/enquiries/get-in-touch" element={<GetInTouch />} />
+        <Route path="/franchise-requests" element={<FranchiseRequest />} />
+        <Route path="/get-in-touch" element={<GetInTouch />} />
 
         {/* Notifications: Routes for notification-related actions */}
         <Route
