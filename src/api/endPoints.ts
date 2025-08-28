@@ -191,6 +191,26 @@ const endpoints: any = {
       return `/api/getInTouch/getInTouchContacts?offset=${params.offset}&limit=${params.limit}`;  // Corrected URL to match sample API
     }
   },
+
+  getAllBlogs: {
+    method: "get",
+    url: () => `/api/blog/getAllBlogs`
+  },
+
+  createBlog: {
+    method: "post",
+    url: () => `/api/blog/create`
+  },
+
+  updateBlog: {
+    method: "put",
+    url: () => `/api/blog/update`
+  },
+
+  deleteBlog: {
+    method: "delete",
+    url: (blogId: string) => `/api/blog/delete/${blogId}`
+  }
 };
 
 export default endpoints;

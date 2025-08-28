@@ -58,3 +58,11 @@ export const getAllSearchContents = (data: any) => apiRequest("getAllSearchConte
 export const deleteCategorySearchDetails = (id: string) => apiRequest("deleteCategorySearchDetails", null, id);
 
 export const getInTouch = (data: {offset: number, limit: number}) => apiRequest("getInTouch", null, data);
+
+export const getAllBlogs = (data: any) => apiRequest("getAllBlogs", data);
+
+export const createBlog = (data: any) => apiRequest("createBlog", data);
+
+export const updateBlog = (data: any) => apiRequest("updateBlog", data);
+
+export const deleteBlog = (blogId: string, data: any) => apiRequest("deleteBlog", data, blogId);

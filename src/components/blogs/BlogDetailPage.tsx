@@ -1,6 +1,5 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { blogPosts } from './blogData';
 import { Calendar, Tag } from 'lucide-react';
 
 const BlogDetailPage: React.FC = () => {
