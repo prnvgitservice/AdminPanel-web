@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { ArrowLeft, BookOpen, MapPin, RefreshCw } from "lucide-react";
 import { BiSolidCategory } from "react-icons/bi";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getAllPincodes, updateCagegorySearchDetails } from "../../api/apiMethods";
 import { useCategoryContext } from "../Context/CategoryContext";
+import JoditEditor from "jodit-react";
+import HTMLReactParser from "html-react-parser/lib/index";
 
 interface SearchContent {
   id: string;
@@ -37,6 +37,7 @@ const EditMetaInfo: React.FC = () => {
   const searchContent = location?.state?.content as SearchContent;
   const { categories, loading: categoriesLoading, error: categoriesError } = useCategoryContext();
   const navigate = useNavigate();
+    const editor = useRef(null);
 
   // States for dropdowns
   const [pincodeData, setPincodeData] = useState([]);
@@ -312,27 +313,88 @@ const EditMetaInfo: React.FC = () => {
     setError(null);
   };
 
-  // Quill editor modules and formats
-  const modules = {
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ["bold", "italic", "underline", "strike"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["link"],
-      ["clean"],
-    ],
-  };
-
-  const formats = [
-    "header",
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "list",
-    "bullet",
-    "link",
-  ];
+  // JoditEditor configuration
+    const config = useMemo(
+      () => ({
+        height: 400,
+        buttons: [
+          "bold",
+          "italic",
+          "underline",
+          "|",
+          "ul",
+          "ol",
+          "|",
+          "link",
+          "table",
+          "|",
+          "font", // Font family
+          "fontsize", // Font size
+          "brush", // Text and background color
+          "|",
+          { name: "heading", list: ["h1", "h2", "h3", "h4", "h5", "h6"] }, // Heading levels
+          "|",
+          "undo",
+          "redo",
+        ],
+        toolbarAdaptive: false,
+        placeholder: "Enter SEO content here...",
+        style: {
+          font: "16px Arial", // Default font and size
+        },
+        colors: {
+          // Custom color palette for text and background
+          text: [
+            "#000000",
+            "#FF0000",
+            "#00FF00",
+            "#0000FF",
+            "#FFFF00",
+            "#FF00FF",
+            "#00FFFF",
+          ],
+          background: [
+            "#FFFFFF",
+            "#FFCCCC",
+            "#CCFFCC",
+            "#CCCCFF",
+            "#FFFFCC",
+            "#FFCCFF",
+            "#CCFFFF",
+          ],
+        },
+        fonts: [
+          "Arial",
+          "Helvetica",
+          "Times New Roman",
+          "Courier New",
+          "Verdana",
+          "Georgia",
+          "Trebuchet MS",
+        ],
+        fontSize: [
+          "8",
+          "10",
+          "12",
+          "14",
+          "16",
+          "18",
+          "24",
+          "30",
+          "36",
+        ],
+        // Custom styles for JoditEditor UI
+        iframe: false,
+        styleValues: {
+          "jodit-container": "border border-gray-300 rounded-lg shadow-sm",
+          "jodit-toolbar__box": "bg-gray-50 border-b border-gray-300 rounded-t-lg p-2",
+          "jodit-toolbar-button": "text-gray-700 hover:bg-blue-100 hover:text-blue-600 px-2 py-1 rounded transition",
+          "jodit-toolbar-button_active": "bg-blue-500 text-white",
+          "jodit-wysiwyg": "p-4 min-h-[400px] focus:outline-none focus:ring-2 focus:ring-blue-500",
+        },
+      }),
+      []
+    );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
@@ -526,7 +588,21 @@ const EditMetaInfo: React.FC = () => {
           </div>
 
           {/* SEO Content */}
-          <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <h2 className="text-lg font-semibold text-blue-600 mb-4">
+              SEO Content
+            </h2>
+            <JoditEditor
+              ref={editor}
+              value={formData.seoContent}
+              config={config}
+              onChange={handleSeoContentChange}
+            />
+            <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+              {HTMLReactParser(formData.seoContent)}
+            </div>
+          </div>
+          {/* <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
             <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
               <h2 className="text-lg font-semibold text-white">SEO Content</h2>
             </div>
@@ -546,7 +622,7 @@ const EditMetaInfo: React.FC = () => {
                 />
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
