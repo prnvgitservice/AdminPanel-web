@@ -1,118 +1,161 @@
-import React from 'react';
-import { useLocation } from 'react-router-dom';
-import { Calendar, Tag, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { ArrowLeft, FileText, Calendar, Tag } from "lucide-react";
+
+interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  content: string[];
+  category: string;
+  date: string;
+  image: string;
+  heroImage: string;
+  tags: string[];
+}
 
 const ViewBlog: React.FC = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const post = location.state;
+  const { state } = useLocation();
+  const blog = state as BlogPost | undefined;
 
-  if (!post) {
+  if (!blog) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Blog Post Not Found</h1>
-          <p className="text-gray-600 text-lg">The blog post you're looking for doesn't exist.</p>
-        </div>
+      <div className="text-center py-6 text-red-600">
+        No blog data available. Please select a blog.
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-      {/* Back Button */}
-      <div className="max-w-4xl mx-auto px-4 pt-8">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center text-blue-600 hover:text-blue-800 transition-colors mb-6"
-        >
-          <ArrowLeft className="w-5 h-5 mr-2" />
-          Back to Blogs
-        </button>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-gradient-to-r from-blue-500 to-blue-600 rounded-md">
+              <FileText className="h-5 w-5 text-white" />
+            </div>
+            <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
+              {blog.title}
+            </h1>
+          </div>
+          <button
+            onClick={() => {
+              navigate("/blogs/all");
+            }}
+            className="flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm rounded-md hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+          >
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back
+          </button>
+        </div>
 
-      {/* Hero Image Section */}
-      <div className="relative w-full h-[500px] mb-8">
-        <img 
-          src={post.heroImage} 
-          alt={post.title}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end">
-          <div className="w-full p-8 md:p-12">
-            <div className="max-w-4xl mx-auto text-white">
-              <span className="inline-block bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 rounded-full text-sm font-semibold mb-4">
-                {post.category}
+        {/* Blog Details Card */}
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+          <div className="relative">
+            <div className="flex justify-center items-center">
+              <img
+                src={blog.heroImage}
+                alt={blog.title}
+                className="max-w-full h-64 rounded-md mb-4 object-cover"
+              />
+            </div>
+            <div className="absolute top-4 right-4">
+              <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800">
+                {blog.category}
               </span>
-              <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight">
-                {post.title}
-              </h1>
-              <p className="text-xl opacity-90 max-w-3xl leading-relaxed">
-                {post.excerpt}
-              </p>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Content Section */}
-      <div className="max-w-4xl mx-auto px-4 pb-16">
-        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
-          {/* Meta Information */}
-          <div className="flex flex-wrap items-center gap-6 mb-8 pb-6 border-b border-gray-200">
-            <div className="flex items-center text-gray-600">
-              <Calendar size={20} className="mr-3" />
-              <span className="font-semibold text-lg">{post.date}</span>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-sm font-medium text-gray-700">
+                  Blog Title
+                </h2>
+                <p className="text-gray-900 font-semibold text-lg">
+                  {blog.title}
+                </p>
+              </div>
+              <div className="flex items-center text-sm text-gray-500">
+                <Calendar className="h-4 w-4 mr-1" />
+                {blog.date}
+              </div>
             </div>
-            <div className="flex items-center">
-              <Tag size={20} className="mr-3 text-gray-600" />
+
+            <div>
+              <h2 className="text-sm font-bold text-gray-700">Category</h2>
+              <p className="text-gray-900">{blog.category}</p>
+            </div>
+
+            <div>
+              <h2 className="text-sm font-bold text-gray-700">Excerpt</h2>
+              <p className="text-gray-600 text-sm">
+                {blog.excerpt}
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-sm font-bold text-gray-700 mb-2">Tags</h2>
               <div className="flex flex-wrap gap-2">
-                {post.tags.map((tag: string, index: number) => (
+                {blog.tags.map((tag, index) => (
                   <span 
                     key={index}
-                    className="bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold"
+                    className="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full"
                   >
+                    <Tag className="h-3 w-3 mr-1" />
                     {tag}
                   </span>
                 ))}
               </div>
             </div>
-          </div>
 
-          {/* Article Content */}
-          <article className="prose prose-xl max-w-none">
-            {post.content.map((paragraph: string, index: number) => (
-              <div key={index} className="mb-6">
-                {paragraph.includes(':') && paragraph.length < 100 && !paragraph.includes('https://') ? (
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-8 border-l-4 border-gradient-to-b from-blue-500 to-purple-500 pl-6">
-                    {paragraph}
-                  </h3>
-                ) : (
-                  <p className="text-gray-700 leading-relaxed text-lg mb-4">
-                    {paragraph}
-                  </p>
-                )}
+            <div>
+              <h2 className="text-sm font-bold text-gray-700 mb-3">Content</h2>
+              <div className="prose prose-sm max-w-none">
+                {blog.content.map((paragraph, index) => (
+                  <div key={index} className="mb-4">
+                    {paragraph.includes(':') && paragraph.length < 100 && !paragraph.includes('https://') ? (
+                      <h3 className="text-lg font-bold text-gray-900 mb-2 border-l-4 border-blue-500 pl-4">
+                        {paragraph}
+                      </h3>
+                    ) : (
+                      <p className="text-gray-700 leading-relaxed text-sm mb-3">
+                        {paragraph}
+                      </p>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
-          </article>
+            </div>
 
-          {/* Call to Action */}
-          <div className="mt-16 pt-8 border-t border-gray-200">
-            <div className="bg-gradient-to-r from-blue-50 via-purple-50 to-blue-50 p-8 rounded-2xl">
-              <h4 className="text-3xl font-bold text-gray-900 mb-4">
-                Need Professional Help?
-              </h4>
-              <p className="text-gray-700 text-xl mb-6 leading-relaxed">
-                PRNV Services provides expert solutions for all your home maintenance needs. 
-                Contact our professional team for reliable and affordable services.
-              </p>
-              <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-10 py-4 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                Contact PRNV Services
-              </button>
+            <div>
+              <h2 className="text-sm font-bold text-gray-700">Card Image</h2>
+              <div className="mt-2">
+                <img
+                  src={blog.image}
+                  alt={`${blog.title} card`}
+                  className="w-32 h-24 rounded-md object-cover border border-gray-200"
+                />
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Call to Action */}
+        {/* <div className="mt-6 bg-gradient-to-r from-blue-50 via-purple-50 to-blue-50 rounded-xl p-6">
+          <h4 className="text-xl font-bold text-gray-900 mb-3">
+            Need Professional Help?
+          </h4>
+          <p className="text-gray-700 mb-4 leading-relaxed">
+            PRNV Services provides expert solutions for all your home maintenance needs. 
+            Contact our professional team for reliable and affordable services.
+          </p>
+          <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+            Contact PRNV Services
+          </button>
+        </div> */}
       </div>
     </div>
   );

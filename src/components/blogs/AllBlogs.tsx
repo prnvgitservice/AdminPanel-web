@@ -43,7 +43,7 @@ const AllBlogs: React.FC = () => {
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">All Blogs</h1>
         </div>
        <button
-                    onClick={() => navigate("/categories/add")}
+                    onClick={() => navigate("/blogs/add")}
                     className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                   >
                     <Plus className="h-4 w-4 mr-2" />
