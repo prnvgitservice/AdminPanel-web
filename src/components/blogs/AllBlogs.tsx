@@ -34,9 +34,8 @@ const AllBlogs: React.FC = () => {
   }, []);
 
   const handleView = (post: BlogPost) => {
-    navigate(`/blog/${post._id}`, { state: post });
+    navigate(`/blogs/view/${post._id}`, { state: post });
   };
-
   const handleEdit = (post: BlogPost) => {
     navigate(`/blogs/edit/${post._id}`, { state: post });
   };
@@ -48,14 +47,6 @@ const AllBlogs: React.FC = () => {
     }
   };
 
-  const handleSave = (updatedBlog: BlogPost) => {
-    setBlogs(
-      blogs.map((blog) => (blog._id === updatedBlog._id ? updatedBlog : blog))
-    );
-    setIsEditMode(false);
-    setSelectedBlog(null);
-    // Note: You might want to add an API call here to update the blog in the backend
-  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -87,7 +78,7 @@ const AllBlogs: React.FC = () => {
                 <img
                   src={post.image}
                   alt={post.title}
-                  className="w-full h-48 object-cover"
+                  className="h-48 mx-auto object-cover"
                 />
               ) : (
                 <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
@@ -102,7 +93,7 @@ const AllBlogs: React.FC = () => {
             </div>
 
             <div className="p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+              <h3 className="text-xl font-bold text-gray-900 hover:text-blue-600 cursor-pointer mb-3 line-clamp-2" onClick={() => handleView(post)}>
                 {post.title}
               </h3>
 

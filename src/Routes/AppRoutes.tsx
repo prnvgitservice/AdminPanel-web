@@ -41,6 +41,7 @@ import GetInTouch from "../components/enquiries/GetInTouch";
 import AllBlogs from "../components/blogs/AllBlogs";
 import AddBlog from "../components/blogs/BlogForm";
 import BlogForm from "../components/blogs/BlogForm";
+import ViewBlog from "../components/blogs/ViewBlog";
 
 // Placeholder component for routes not yet implemented
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
@@ -85,6 +86,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/blogs/all" element={<AllBlogs />} />
         <Route path="/blogs/add" element={<BlogForm />} />
         <Route path="/blogs/edit/:id" element={<BlogForm isEdit={true} />} />
+        <Route path="/blogs/view/:id" element={<ViewBlog />} />
 
         {/* Subscriptions: Routes for managing subscription plans */}
         <Route path="/subscription" element={<SubscriptionPage />} />

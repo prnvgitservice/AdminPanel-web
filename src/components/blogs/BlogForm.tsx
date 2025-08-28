@@ -48,19 +48,6 @@ const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false }) => {
   });
   const [isDragging, setIsDragging] = useState(false);
 
-  // Suggested tags for autocomplete
-  const suggestedTags = [
-    'Technology',
-    'Programming',
-    'Web Development',
-    'React',
-    'JavaScript',
-    'Blogging',
-    'SEO',
-    'Tutorial',
-    'Tips',
-    'Guide',
-  ];
 
   // JoditEditor configuration
   const config = useMemo(
@@ -398,20 +385,6 @@ const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false }) => {
               {fieldErrors.tags && (
                 <p className="text-red-500 text-sm mt-1 animate-slide-in">{fieldErrors.tags}</p>
               )}
-              <div className="mt-2 flex flex-wrap gap-2">
-                {suggestedTags
-                  .filter(tag => !formData.tags.includes(tag) && tag.toLowerCase().includes(tagInput.toLowerCase()))
-                  .map(tag => (
-                    <button
-                      key={tag}
-                      type="button"
-                      onClick={() => addSuggestedTag(tag)}
-                      className="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded-full hover:bg-blue-200 hover:text-blue-800 transition-all duration-200"
-                    >
-                      {tag}
-                    </button>
-                  ))}
-              </div>
             </div>
 
             {/* Image Upload */}
