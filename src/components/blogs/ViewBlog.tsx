@@ -37,7 +37,7 @@ const ViewBlog: React.FC = () => {
               <FileText className="h-5 w-5 text-white" />
             </div>
             <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
-              {blog.title}
+              {blog.category}
             </h1>
           </div>
           <button
@@ -71,9 +71,7 @@ const ViewBlog: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-sm font-medium text-gray-700">
-                  Blog Title
-                </h2>
+                <h2 className="text-sm font-medium text-gray-700">Blog Title</h2>
                 <p className="text-gray-900 font-semibold text-lg">
                   {blog.title}
                 </p>
@@ -85,15 +83,8 @@ const ViewBlog: React.FC = () => {
             </div>
 
             <div>
-              <h2 className="text-sm font-bold text-gray-700">Category</h2>
+              <h2 className="text-sm font-bold text-gray-700">Service Name</h2>
               <p className="text-gray-900">{blog.category}</p>
-            </div>
-
-            <div>
-              <h2 className="text-sm font-bold text-gray-700">Excerpt</h2>
-              <p className="text-gray-600 text-sm">
-                {blog.excerpt}
-              </p>
             </div>
 
             <div>
@@ -112,7 +103,7 @@ const ViewBlog: React.FC = () => {
             </div>
 
             <div>
-              <h2 className="text-sm font-bold text-gray-700 mb-3">Content</h2>
+              <h2 className="text-sm font-bold text-gray-700 mb-3">Description</h2>
               <div className="prose prose-sm max-w-none">
                 {blog.content.map((paragraph, index) => (
                   <div key={index} className="mb-4">
@@ -127,17 +118,6 @@ const ViewBlog: React.FC = () => {
                     )}
                   </div>
                 ))}
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-sm font-bold text-gray-700">Card Image</h2>
-              <div className="mt-2">
-                <img
-                  src={blog.image}
-                  alt={`${blog.title} card`}
-                  className="w-32 h-24 rounded-md object-cover border border-gray-200"
-                />
               </div>
             </div>
           </div>
