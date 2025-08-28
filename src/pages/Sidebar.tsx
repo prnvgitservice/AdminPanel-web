@@ -7,7 +7,8 @@ import {
   Crown, 
   MailQuestion,
   UserCog,
-  Cable
+  Cable,
+  Mail
 } from 'lucide-react';
 
 interface MenuItem {
@@ -44,6 +45,11 @@ const menuItems: MenuItem[] = [
   { key: 'all-services', label: 'All Services', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/services/all' },
   // Sub-item: Add a new service
   { key: 'add-service', label: 'Add Service', icon: <Plus className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/services/add' },
+
+  // Blogs: Separate parent item for managing blogs
+  { key: 'blogs', label: 'Blogs', icon: <FileText className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/blogs' },
+  { key: 'all-blogs', label: 'All Blogs', icon: <List className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/blogs/all' },
+  { key: 'add-blog', label: 'Add Blog', icon: <Plus className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/blogs/add' },
 
   // Meta Info: Parent item for managing metadata (e.g., SEO or content details)
   { key: 'meta-info', label: 'Meta Info', icon: <BookOpen className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/meta-info' },
@@ -119,7 +125,9 @@ const menuItems: MenuItem[] = [
   { key: 'enquiries', label: 'Enquiries', icon: <MailQuestion className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/enquiries' },
   // Sub-item: View franchise requests
   { key: 'franchise-requests', label: 'Franchise Requests', icon: <Crown className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/franchise-requests' },
-
+  // Sub-item: Get in Touch
+  { key: 'get-in-touch', label: 'Get In Touch', icon: <Mail className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/enquiries/get-in-touch' },
+  
   // Sitemap: Parent item for managing the sitemap
   { key: 'sitemap', label: 'Sitemap', icon: <Cable className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/sitemap' },
 ];
@@ -133,6 +141,9 @@ const menuHierarchy: MenuHierarchy[] = [
 
   // Services: Parent with sub-items for managing services
   { key: 'services', subItems: ['all-services', 'add-service'] },
+
+  // Blogs: Separate parent with sub-items for managing blogs
+  { key: 'blogs', subItems: ['all-blogs', 'add-blog'] },
 
   // Meta Info: Parent with sub-items for managing metadata
   { key: 'meta-info', subItems: ['all-meta-info', 'add-meta-info'] },
@@ -156,8 +167,8 @@ const menuHierarchy: MenuHierarchy[] = [
   // Bookings: Parent with sub-items for managing bookings
   { key: 'bookings', subItems: ['all-bookings', 'guest-bookings'] },
 
-  // Enquiries: Parent with sub-item for franchise requests
-  { key: 'enquiries', subItems: ['franchise-requests'] },
+  // Enquiries: Parent with sub-items for enquiry-related actions
+  { key: 'enquiries', subItems: ['franchise-requests', 'get-in-touch'] },
 
   // Reviews: Parent with sub-item for managing reviews
   { key: 'reviews', subItems: ['all-reviews'] },

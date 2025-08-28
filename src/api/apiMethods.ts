@@ -1,3 +1,6 @@
+// API Methods file (unchanged, as no errors found here)
+// File: apiMethods.ts (or similar)
+
 import apiRequest from "./apiRequest";
 
 export const getAllCategories = (data: any) => apiRequest("getAllCategories", data);
@@ -53,3 +56,5 @@ export const updateCagegorySearchDetails = (data: any) => apiRequest("updateCage
 export const getAllSearchContents = (data: any) => apiRequest("getAllSearchContents", null, data);
 
 export const deleteCategorySearchDetails = (id: string) => apiRequest("deleteCategorySearchDetails", null, id);
+
+export const getInTouch = (data: {offset: number, limit: number}) => apiRequest("getInTouch", null, data);
