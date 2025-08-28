@@ -62,9 +62,9 @@ const ViewBlog: React.FC = () => {
               />
             </div>
             <div className="absolute top-4 right-4">
-              <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800">
+              {/* <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800">
                 {blog.category}
-              </span>
+              </span> */}
             </div>
           </div>
 
@@ -103,7 +103,7 @@ const ViewBlog: React.FC = () => {
             </div>
 
             <div>
-              <h2 className="text-sm font-bold text-gray-700 mb-3">Description</h2>
+              <h2 className="text-sm font-bold text-gray-700 mb-3"> Blog Description</h2>
               <div className="prose prose-sm max-w-none">
                 {blog.content.map((paragraph, index) => (
                   <div key={index} className="mb-4">
