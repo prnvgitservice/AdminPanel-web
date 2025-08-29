@@ -1,32 +1,29 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft, BookOpen, MapPin, RefreshCw } from "lucide-react";
 import { BiSolidCategory } from "react-icons/bi";
-import { useNavigate } from "react-router-dom";
-import { getAllPincodes, createSeoContent } from "../../api/apiMethods";
-import { useCategoryContext } from "../Context/CategoryContext";
+import {
+  getAllCategories,
+  getAllPincodes as fetchPincodes,
+  createSeoContent,
+} from "../../api/apiMethods";
 import JoditEditor from "jodit-react";
 
-interface Category {
-  _id: string;
-  category_name: string;
-  category_image: string | null;
-  category_slug: string;
-  meta_title: string;
-  meta_description: string;
-  status: number;
+interface AddCategoryProps {
+  onBack: () => void;
+  isEdit?: boolean;
+  categoryId?: number | null;
 }
 
-const AddMetaInfo: React.FC = () => {
-  const { categories, loading: categoriesLoading, error: categoriesError } = useCategoryContext();
-  const navigate = useNavigate();
+const AddMetaInfo: React.FC<AddCategoryProps> = ({
+  onBack,
+  isEdit = false,
+  categoryId,
+}) => {
   const editor = useRef(null);
-
-  // States for dropdowns
+  const [categories, setCategories] = useState([]);
   const [pincodeData, setPincodeData] = useState([]);
   const [areaOptions, setAreaOptions] = useState([]);
   const [subAreaOptions, setSubAreaOptions] = useState([]);
-
-  // Selected values
   const [selectedCity, setSelectedCity] = useState("Hyderabad");
   const [selectedState, setSelectedState] = useState("Telangana");
   const [selectedCategory, setSelectedCategory] = useState({
@@ -37,26 +34,68 @@ const AddMetaInfo: React.FC = () => {
   const [selectedArea, setSelectedArea] = useState("");
   const [selectedPincode, setSelectedPincode] = useState("");
   const [selectedSubArea, setSelectedSubArea] = useState("");
-
   const [formData, setFormData] = useState({
     categoryId: "",
     areaName: "",
-    city: "Hyderabad",
-    state: "Telangana",
+    city: "",
+    state: "",
     pincode: "",
     metaTitle: "",
     metaDescription: "",
     seoContent: "",
   });
-
   const [error, setError] = useState<string | null>(null);
   const cityOptions = ["Hyderabad"];
 
-  // Fetch pincode and area data
+  const config = {
+    readonly: false,
+    placeholder: "Start typing your SEO content...",
+    minHeight: 300,
+    buttons: [
+      "bold",
+      "italic",
+      "underline",
+      "|",
+      "ul",
+      "ol",
+      "|",
+      "link",
+      "table",
+      "|",
+      "undo",
+      "redo",
+      "|",
+      "source",
+      "fullsize",
+    ],
+    enableDragAndDropFileToEditor: true,
+    uploader: { insertImageAsBase64URI: true },
+    removeButtons: ["image", "file"],
+    style: {
+      fontFamily: "Arial, sans-serif",
+    },
+  };
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await getAllCategories();
+        if (res.success && Array.isArray(res.data)) {
+          setCategories(res.data.filter((cat) => cat?.status === 1));
+        } else {
+          setError("Failed to fetch categories");
+        }
+      } catch (err) {
+        setError("Error fetching categories");
+      }
+    };
+    fetchCategories();
+  }, []);
+
   useEffect(() => {
     const fetchPincodeInfo = async () => {
       try {
-        const res = await getAllPincodes();
+        const res = await fetchPincodes();
         if (res.success && Array.isArray(res.data)) {
           setPincodeData(res.data);
         } else {
@@ -69,7 +108,6 @@ const AddMetaInfo: React.FC = () => {
     fetchPincodeInfo();
   }, []);
 
-  // Update area options when pincodeData or selectedArea changes
   useEffect(() => {
     const flattenedAreas = pincodeData.flatMap((p) =>
       p.areas.map((area) => ({
@@ -80,40 +118,18 @@ const AddMetaInfo: React.FC = () => {
       }))
     );
     setAreaOptions(flattenedAreas);
+  }, [pincodeData]);
 
-    // Set subareas based on selected area
-    if (selectedArea) {
-      const matchedPincodeObj = pincodeData.find((p) =>
-        p.areas.some((a) => a.name === selectedArea)
-      );
-      if (matchedPincodeObj) {
-        const matchedArea = matchedPincodeObj.areas.find(
-          (a) => a.name === selectedArea
-        );
-        const subAreas = matchedArea?.subAreas || [];
-        setSubAreaOptions(
-          [...subAreas].sort((a, b) => a.name.localeCompare(b.name))
-        );
-      } else {
-        setSubAreaOptions([]);
-      }
-    }
-  }, [pincodeData, selectedArea]);
-
-  // Handle area selection and update subareas
-  const handleAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleAreaChange = (e) => {
     const areaName = e.target.value;
     setSelectedArea(areaName);
-
     const matchedPincodeObj = pincodeData.find((p) =>
       p.areas.some((a) => a.name === areaName)
     );
-
     if (matchedPincodeObj) {
       setSelectedPincode(matchedPincodeObj.code);
       setSelectedState(matchedPincodeObj.state);
       setSelectedCity(matchedPincodeObj.city);
-
       const matchedArea = matchedPincodeObj.areas.find(
         (a) => a.name === areaName
       );
@@ -127,17 +143,9 @@ const AddMetaInfo: React.FC = () => {
       setSubAreaOptions([]);
       setSelectedSubArea("");
     }
-
-    setFormData((prev) => ({
-      ...prev,
-      areaName,
-      city: matchedPincodeObj?.city || "Hyderabad",
-      state: matchedPincodeObj?.state || "Telangana",
-      pincode: matchedPincodeObj?.code || "",
-    }));
   };
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleCategoryChange = (e) => {
     const index = e.target.selectedIndex - 1;
     if (index >= 0) {
       const cat = categories[index];
@@ -181,7 +189,6 @@ const AddMetaInfo: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
     try {
       if (
         !formData.categoryId ||
@@ -194,7 +201,6 @@ const AddMetaInfo: React.FC = () => {
         setError("Please fill all required fields");
         return;
       }
-
       const requestData = {
         categoryId: formData.categoryId,
         areaName: selectedArea,
@@ -205,17 +211,24 @@ const AddMetaInfo: React.FC = () => {
         meta_description: formData.metaDescription,
         seo_content: formData.seoContent,
       };
-
       const response = await createSeoContent(requestData);
-
       if (response?.success) {
-        alert("Meta Info created successfully!");
-        navigate(-1);
+        alert("Meta Info added Successfully!");
+        setFormData({
+          categoryId: "",
+          areaName: "",
+          city: "",
+          state: "",
+          pincode: "",
+          metaTitle: "",
+          metaDescription: "",
+          seoContent: "",
+        });
       } else {
-        throw new Error(response?.message || "Failed to create meta info");
+        throw new Error(response?.message || "Failed to submit review");
       }
     } catch (error: any) {
-      console.error("Error creating meta info:", error);
+      console.error("Error submitting review:", error);
       const errorMessage =
         error?.response?.data?.message ||
         error?.message ||
@@ -226,111 +239,40 @@ const AddMetaInfo: React.FC = () => {
   };
 
   const handleReset = () => {
+    setSelectedCategory({ name: "", slug: "", id: "" });
+    setSelectedCity("Hyderabad");
+    setSelectedState("Telangana");
+    setSelectedPincode("");
+    setSelectedArea("");
+    setSelectedSubArea("");
+    setSubAreaOptions([]);
     setFormData({
       categoryId: "",
       areaName: "",
-      city: "Hyderabad",
-      state: "Telangana",
+      city: "",
+      state: "",
       pincode: "",
       metaTitle: "",
       metaDescription: "",
       seoContent: "",
     });
-    setSelectedCity("Hyderabad");
-    setSelectedState("Telangana");
-    setSelectedArea("");
-    setSelectedPincode("");
-    setSelectedSubArea("");
-    setSelectedCategory({ name: "", slug: "", id: "" });
     setError(null);
   };
-
-  // JoditEditor configuration
-  const config = useMemo(
-    () => ({
-      height: 400,
-      buttons: [
-        "bold",
-        "italic",
-        "underline",
-        "|",
-        "ul",
-        "ol",
-        "|",
-        "link",
-        "table",
-        "|",
-        "font",
-        "fontsize",
-        "brush",
-        "|",
-        { name: "heading", list: ["h1", "h2", "h3", "h4", "h5", "h6"] },
-        "|",
-        "undo",
-        "redo",
-      ],
-      toolbarAdaptive: false,
-      placeholder: "Enter SEO content here...",
-      style: {
-        font: "16px Arial",
-      },
-      colors: {
-        text: [
-          "#000000",
-          "#FF0000",
-          "#00FF00",
-          "#0000FF",
-          "#FFFF00",
-          "#FF00FF",
-          "#00FFFF",
-        ],
-        background: [
-          "#FFFFFF",
-          "#FFCCCC",
-          "#CCFFCC",
-          "#CCCCFF",
-          "#FFFFCC",
-          "#FFCCFF",
-          "#CCFFFF",
-        ],
-      },
-      fonts: [
-        "Arial",
-        "Helvetica",
-        "Times New Roman",
-        "Courier New",
-        "Verdana",
-        "Georgia",
-        "Trebuchet MS",
-      ],
-      fontSize: ["8", "10", "12", "14", "16", "18", "24", "30", "36"],
-      iframe: false,
-      styleValues: {
-        "jodit-container": "border border-gray-300 rounded-lg shadow-sm",
-        "jodit-toolbar__box": "bg-gray-50 border-b border-gray-300 rounded-t-lg p-2",
-        "jodit-toolbar-button": "text-gray-700 hover:bg-blue-100 hover:text-blue-600 px-2 py-1 rounded transition",
-        "jodit-toolbar-button_active": "bg-blue-500 text-white",
-        "jodit-wysiwyg": "p-4 min-h-[400px] focus:outline-none focus:ring-2 focus:ring-blue-500",
-      },
-    }),
-    []
-  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
               <BookOpen className="h-6 w-6 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              Add Meta Info
+              {isEdit ? "Edit Meta Info" : "Add Meta Info"}
             </h1>
           </div>
           <button
-            onClick={() => navigate(-1)}
+            onClick={onBack}
             className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -339,21 +281,15 @@ const AddMetaInfo: React.FC = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Search Selection Section */}
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
             <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
               <h2 className="text-lg font-semibold text-white">
                 Search Selection
               </h2>
             </div>
-
             <div className="p-6 space-y-6">
               {error && <div className="text-red-500 mb-4">{error}</div>}
-              {categoriesLoading && <div className="text-gray-500 mb-4">Loading categories...</div>}
-              {categoriesError && <div className="text-red-500 mb-4">{categoriesError}</div>}
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Category Dropdown */}
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Category <span className="text-red-500">*</span>
@@ -368,8 +304,11 @@ const AddMetaInfo: React.FC = () => {
                       Select Category
                     </option>
                     {categories
-                      .filter((cat) => cat.status === 1)
-                      .sort((a, b) => a.category_name.toLowerCase().localeCompare(b.category_name.toLowerCase()))
+                      .sort((a, b) =>
+                        a.category_name
+                          .toLowerCase()
+                          .localeCompare(b.category_name.toLowerCase())
+                      )
                       .map((cat, idx) => (
                         <option key={idx} value={cat.category_name}>
                           {cat.category_name}
@@ -381,8 +320,6 @@ const AddMetaInfo: React.FC = () => {
                     size={20}
                   />
                 </div>
-
-                {/* City Dropdown */}
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     City <span className="text-red-500">*</span>
@@ -407,8 +344,6 @@ const AddMetaInfo: React.FC = () => {
                     size={20}
                   />
                 </div>
-
-                {/* Area Dropdown */}
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Area <span className="text-red-500">*</span>
@@ -423,9 +358,13 @@ const AddMetaInfo: React.FC = () => {
                       Select Area
                     </option>
                     {areaOptions
-                      .sort((a, b) => a.name.localeCompare(b.name))
+                      ?.slice()
+                      .sort((a, b) => Number(a.pincode) - Number(b.pincode))
                       .map((area, idx) => (
-                        <option key={idx} value={area.name}>
+                        <option
+                          key={`${area.pincode}-${idx}`}
+                          value={area.name}
+                        >
                           {area.name} - {area.pincode}
                         </option>
                       ))}
@@ -435,8 +374,6 @@ const AddMetaInfo: React.FC = () => {
                     size={20}
                   />
                 </div>
-
-                {/* Subarea Dropdown */}
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Subarea
@@ -464,15 +401,12 @@ const AddMetaInfo: React.FC = () => {
               </div>
             </div>
           </div>
-
-          {/* Meta Information */}
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
             <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
               <h2 className="text-lg font-semibold text-white">
                 Meta Information
               </h2>
             </div>
-
             <div className="p-6 space-y-6">
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
@@ -488,7 +422,6 @@ const AddMetaInfo: React.FC = () => {
                   required
                 />
               </div>
-
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
                   Meta Description <span className="text-red-500">*</span>
@@ -505,21 +438,25 @@ const AddMetaInfo: React.FC = () => {
               </div>
             </div>
           </div>
-
-          {/* SEO Content */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-lg font-semibold text-blue-600 mb-4">
-              SEO Content
-            </h2>
-            <JoditEditor
-              ref={editor}
-              value={formData.seoContent}
-              config={config}
-              onChange={handleSeoContentChange}
-            />
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+              <h2 className="text-lg font-semibold text-white">SEO Content</h2>
+            </div>
+            <div className="p-6">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  SEO Content <span className="text-red-500">*</span>
+                </label>
+                <JoditEditor
+                  ref={editor}
+                  value={formData.seoContent}
+                  config={config}
+                  onBlur={handleSeoContentChange}
+                  onChange={(newContent) => {}}
+                />
+              </div>
+            </div>
           </div>
-
-          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex gap-3 w-full sm:w-auto">
               <button
@@ -535,7 +472,7 @@ const AddMetaInfo: React.FC = () => {
               type="submit"
               className="w-full sm:w-auto flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
-              Create
+              {isEdit ? "Update" : "Add"}
             </button>
           </div>
         </form>
@@ -545,6 +482,1051 @@ const AddMetaInfo: React.FC = () => {
 };
 
 export default AddMetaInfo;
+// import React, { useState, useEffect, useRef, useCallback } from "react";
+// import { ArrowLeft, BookOpen, MapPin, RefreshCw } from "lucide-react";
+// import { BiSolidCategory } from "react-icons/bi";
+// import {
+//   getAllCategories,
+//   getAllPincodes as fetchPincodes,
+//   createSeoContent,
+// } from "../../api/apiMethods";
+// import JoditEditor from "jodit-react";
+
+// interface AddCategoryProps {
+//   onBack: () => void;
+//   isEdit?: boolean;
+//   categoryId?: number | null;
+// }
+
+// const AddMetaInfo: React.FC<AddCategoryProps> = ({
+//   onBack,
+//   isEdit = false,
+//   categoryId,
+// }) => {
+//   const editor = useRef(null);
+//   // States for dropdowns
+//   const [categories, setCategories] = useState([]);
+//   const [pincodeData, setPincodeData] = useState([]);
+//   const [areaOptions, setAreaOptions] = useState([]);
+//   const [subAreaOptions, setSubAreaOptions] = useState([]);
+
+//   // Selected values
+//   const [selectedCity, setSelectedCity] = useState("Hyderabad");
+//   const [selectedState, setSelectedState] = useState("Telangana");
+//   const [selectedCategory, setSelectedCategory] = useState({
+//     name: "",
+//     slug: "",
+//     id: "",
+//   });
+//   const [selectedArea, setSelectedArea] = useState("");
+//   const [selectedPincode, setSelectedPincode] = useState("");
+//   const [selectedSubArea, setSelectedSubArea] = useState("");
+
+//   const [formData, setFormData] = useState({
+//     categoryId: "",
+//     areaName: "",
+//     city: "",
+//     state: "",
+//     pincode: "",
+//     metaTitle: "",
+//     metaDescription: "",
+//     seoContent: "",
+//   });
+
+//   const [error, setError] = useState<string | null>(null);
+//   const cityOptions = ["Hyderabad"];
+
+//   // Fetch categories
+//   useEffect(() => {
+//     const fetchCategories = async () => {
+//       try {
+//         const res = await getAllCategories();
+//         if (res.success && Array.isArray(res.data)) {
+//           setCategories(res.data.filter((cat) => cat?.status === 1));
+//         } else {
+//           setError("Failed to fetch categories");
+//         }
+//       } catch (err) {
+//         setError("Error fetching categories");
+//       }
+//     };
+//     fetchCategories();
+//   }, []);
+
+//   // Fetch pincode and area data
+//   useEffect(() => {
+//     const fetchPincodeInfo = async () => {
+//       try {
+//         const res = await fetchPincodes();
+//         if (res.success && Array.isArray(res.data)) {
+//           setPincodeData(res.data);
+//         } else {
+//           setError("Failed to fetch pincodes");
+//         }
+//       } catch (err) {
+//         setError("Error fetching pincodes");
+//       }
+//     };
+//     fetchPincodeInfo();
+//   }, []);
+
+//   // Update area options when pincodeData is available
+//   useEffect(() => {
+//     const flattenedAreas = pincodeData.flatMap((p) =>
+//       p.areas.map((area) => ({
+//         ...area,
+//         pincode: p.code,
+//         state: p.state,
+//         city: p.city,
+//       }))
+//     );
+//     setAreaOptions(flattenedAreas);
+//   }, [pincodeData]);
+
+//   // Handle area selection and update subareas
+//   const handleAreaChange = (e) => {
+//     const areaName = e.target.value;
+//     setSelectedArea(areaName);
+
+//     // Find area and related pincode
+//     const matchedPincodeObj = pincodeData.find((p) =>
+//       p.areas.some((a) => a.name === areaName)
+//     );
+
+//     if (matchedPincodeObj) {
+//       setSelectedPincode(matchedPincodeObj.code);
+//       setSelectedState(matchedPincodeObj.state);
+//       setSelectedCity(matchedPincodeObj.city);
+
+//       const matchedArea = matchedPincodeObj.areas.find(
+//         (a) => a.name === areaName
+//       );
+//       const subAreas = matchedArea?.subAreas || [];
+
+//       setSubAreaOptions(
+//         [...subAreas].sort((a, b) => a.name.localeCompare(b.name))
+//       );
+//       setSelectedSubArea("");
+//     } else {
+//       setSelectedPincode("");
+//       setSubAreaOptions([]);
+//       setSelectedSubArea("");
+//     }
+//   };
+
+//   const handleCategoryChange = (e) => {
+//     const index = e.target.selectedIndex - 1;
+//     if (index >= 0) {
+//       const cat = categories[index];
+//       setSelectedCategory({
+//         name: cat.category_name,
+//         slug: cat.category_slug,
+//         id: cat._id,
+//       });
+//       setFormData((prev) => ({
+//         ...prev,
+//         categoryId: cat._id,
+//       }));
+//     } else {
+//       setSelectedCategory({ name: "", slug: "", id: "" });
+//       setFormData((prev) => ({
+//         ...prev,
+//         categoryId: "",
+//       }));
+//     }
+//   };
+
+//   const handleInputChange = (
+//     e: React.ChangeEvent<
+//       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+//     >
+//   ) => {
+//     const { name, value } = e.target;
+//     setFormData((prev) => ({
+//       ...prev,
+//       [name]: value,
+//     }));
+//   };
+
+//   // Fixed SEO content handler
+//   const handleSeoContentChange = useCallback((value: string) => {
+//     setFormData((prev) => ({
+//       ...prev,
+//       seoContent: value,
+//     }));
+//   }, []);
+
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setError("");
+
+//     try {
+//       if (
+//         !formData.categoryId ||
+//         !selectedArea ||
+//         !selectedPincode ||
+//         !formData.metaTitle ||
+//         !formData.metaDescription ||
+//         !formData.seoContent
+//       ) {
+//         setError("Please fill all required fields");
+//         return;
+//       }
+
+//       const requestData = {
+//         categoryId: formData.categoryId,
+//         areaName: selectedArea,
+//         city: selectedCity,
+//         state: selectedState,
+//         pincode: selectedPincode,
+//         meta_title: formData.metaTitle,
+//         meta_description: formData.metaDescription,
+//         seo_content: formData.seoContent,
+//       };
+
+//       const response = await createSeoContent(requestData);
+
+//       if (response?.success) {
+//         alert("Meta Info added Successfully!");
+//         setFormData({
+//           categoryId: "",
+//           areaName: "",
+//           city: "",
+//           state: "",
+//           pincode: "",
+//           metaTitle: "",
+//           metaDescription: "",
+//           seoContent: "",
+//         });
+//       } else {
+//         throw new Error(response?.message || "Failed to submit review");
+//       }
+//     } catch (error: any) {
+//       console.error("Error submitting review:", error);
+//       const errorMessage =
+//         error?.response?.data?.message ||
+//         error?.message ||
+//         "An error occurred. Please try again later.";
+//       setError(errorMessage);
+//       alert(errorMessage);
+//     }
+//   };
+
+//   const handleReset = () => {
+//     setSelectedCategory({ name: "", slug: "", id: "" });
+//     setSelectedCity("Hyderabad");
+//     setSelectedState("Telangana");
+//     setSelectedPincode("");
+//     setSelectedArea("");
+//     setSelectedSubArea("");
+//     setSubAreaOptions([]);
+//     setFormData({
+//       categoryId: "",
+//       areaName: "",
+//       city: "",
+//       state: "",
+//       pincode: "",
+//       metaTitle: "",
+//       metaDescription: "",
+//       seoContent: "",
+//     });
+//     setError(null);
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
+//       <div className="max-w-4xl mx-auto">
+//         {/* Header */}
+//         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+//           <div className="flex items-center gap-3">
+//             <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
+//               <BookOpen className="h-6 w-6 text-white" />
+//             </div>
+//             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+//               {isEdit ? "Edit Meta Info" : "Add Meta Info"}
+//             </h1>
+//           </div>
+//           <button
+//             onClick={onBack}
+//             className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+//           >
+//             <ArrowLeft className="h-4 w-4 mr-2" />
+//             Back
+//           </button>
+//         </div>
+
+//         <form onSubmit={handleSubmit} className="space-y-8">
+//           {/* Search Selection Section */}
+//           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+//             <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+//               <h2 className="text-lg font-semibold text-white">
+//                 Search Selection
+//               </h2>
+//             </div>
+
+//             <div className="p-6 space-y-6">
+//               {error && <div className="text-red-500 mb-4">{error}</div>}
+
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//                 {/* Category Dropdown */}
+//                 <div className="relative">
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     Category <span className="text-red-500">*</span>
+//                   </label>
+//                   <select
+//                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+//                     value={selectedCategory.name}
+//                     onChange={handleCategoryChange}
+//                     required
+//                   >
+//                     <option value="" disabled>
+//                       Select Category
+//                     </option>
+//                     {categories
+//                       .sort((a, b) => a.category_name.toLowerCase().localeCompare(b.category_name.toLowerCase()))
+//                       .map((cat, idx) => (
+//                         <option key={idx} value={cat.category_name}>
+//                           {cat.category_name}
+//                         </option>
+//                       ))}
+//                   </select>
+//                   <BiSolidCategory
+//                     className="absolute left-3 top-[38px] text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+
+//                 {/* City Dropdown */}
+//                 <div className="relative">
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     City <span className="text-red-500">*</span>
+//                   </label>
+//                   <select
+//                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+//                     value={selectedCity}
+//                     onChange={(e) => setSelectedCity(e.target.value)}
+//                     required
+//                   >
+//                     <option value="" disabled>
+//                       Select City
+//                     </option>
+//                     {cityOptions.map((city, idx) => (
+//                       <option key={idx} value={city}>
+//                         {city}
+//                       </option>
+//                     ))}
+//                   </select>
+//                   <MapPin
+//                     className="absolute left-3 top-[38px] text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+
+//                 {/* Area Dropdown */}
+//                 <div className="relative">
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     Area <span className="text-red-500">*</span>
+//                   </label>
+//                   <select
+//                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+//                     value={selectedArea}
+//                     onChange={handleAreaChange}
+//                     required
+//                   >
+//                     <option value="" disabled>
+//                       Select Area
+//                     </option>
+//                     {areaOptions
+//                       .sort((a, b) => a.name.localeCompare(b.name))
+//                       .map((area, idx) => (
+//                         <option key={idx} value={area.name}>
+//                           {area.name} - {area.pincode}
+//                         </option>
+//                       ))}
+//                   </select>
+//                   <MapPin
+//                     className="absolute left-3 top-[38px] text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+
+//                 {/* Subarea Dropdown */}
+//                 <div className="relative">
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     Subarea
+//                   </label>
+//                   <select
+//                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+//                     value={selectedSubArea}
+//                     onChange={(e) => setSelectedSubArea(e.target.value)}
+//                     disabled={!subAreaOptions.length}
+//                   >
+//                     <option value="" disabled>
+//                       Select Subarea
+//                     </option>
+//                     {subAreaOptions.map((sub, idx) => (
+//                       <option key={sub._id || idx} value={sub.name}>
+//                         {sub.name}
+//                       </option>
+//                     ))}
+//                   </select>
+//                   <MapPin
+//                     className="absolute left-3 top-[38px] text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Meta Information */}
+//           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+//             <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+//               <h2 className="text-lg font-semibold text-white">
+//                 Meta Information
+//               </h2>
+//             </div>
+
+//             <div className="p-6 space-y-6">
+//               <div className="space-y-2">
+//                 <label className="block text-sm font-medium text-gray-700">
+//                   Meta Title <span className="text-red-500">*</span>
+//                 </label>
+//                 <input
+//                   type="text"
+//                   name="metaTitle"
+//                   value={formData.metaTitle}
+//                   onChange={handleInputChange}
+//                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+//                   placeholder="Enter meta title"
+//                   required
+//                 />
+//               </div>
+
+//               <div className="space-y-2">
+//                 <label className="block text-sm font-medium text-gray-700">
+//                   Meta Description <span className="text-red-500">*</span>
+//                 </label>
+//                 <textarea
+//                   name="metaDescription"
+//                   value={formData.metaDescription}
+//                   onChange={handleInputChange}
+//                   rows={3}
+//                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+//                   placeholder="Enter meta description"
+//                   required
+//                 />
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* SEO Content */}
+//           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+//             <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+//               <h2 className="text-lg font-semibold text-white">SEO Content</h2>
+//             </div>
+
+//             <div className="p-6">
+//               <div className="space-y-2">
+//                 <label className="block text-sm font-medium text-gray-700">
+//                   SEO Content <span className="text-red-500">*</span>
+//                 </label>
+//                 <JoditEditor
+//                   ref={editor}
+//                   value={formData.seoContent}
+//                   onBlur={handleSeoContentChange} // Use onBlur instead of onChange for better performance
+//                   onChange={handleSeoContentChange} // Keep onChange as well for real-time updates
+//                   config={{
+//                     placeholder: 'Enter SEO content...',
+//                     height: 400,
+//                     buttons: [
+//                       'bold', 'italic', 'underline', 'strikethrough',
+//                       '|', 'ul', 'ol', 'outdent', 'indent',
+//                       '|', 'font', 'fontsize', 'brush', 'paragraph',
+//                       '|', 'image', 'video', 'table', 'link',
+//                       '|', 'align', 'undo', 'redo', '|', 'preview'
+//                     ]
+//                   }}
+//                   className="mt-1"
+//                 />
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Action Buttons */}
+//           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+//             <div className="flex gap-3 w-full sm:w-auto">
+//               <button
+//                 type="button"
+//                 onClick={handleReset}
+//                 className="w-full sm:w-auto flex items-center gap-2 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+//               >
+//                 <RefreshCw className="h-5 w-5" />
+//                 Reset
+//               </button>
+//             </div>
+//             <button
+//               type="submit"
+//               className="w-full sm:w-auto flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+//             >
+//               {isEdit ? "Update" : "Add"}
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AddMetaInfo;
+// import React, { useState, useEffect, useRef, useMemo } from "react";
+// import { ArrowLeft, BookOpen, MapPin, RefreshCw } from "lucide-react";
+// import { BiSolidCategory } from "react-icons/bi";
+// import { useNavigate } from "react-router-dom";
+// import { getAllPincodes, createSeoContent } from "../../api/apiMethods";
+// import { useCategoryContext } from "../Context/CategoryContext";
+// import JoditEditor from "jodit-react";
+
+// interface Category {
+//   _id: string;
+//   category_name: string;
+//   category_image: string | null;
+//   category_slug: string;
+//   meta_title: string;
+//   meta_description: string;
+//   status: number;
+// }
+
+// const AddMetaInfo: React.FC = () => {
+//   const { categories, loading: categoriesLoading, error: categoriesError } = useCategoryContext();
+//   const navigate = useNavigate();
+//   const editor = useRef(null);
+
+//   // States for dropdowns
+//   const [pincodeData, setPincodeData] = useState([]);
+//   const [areaOptions, setAreaOptions] = useState([]);
+//   const [subAreaOptions, setSubAreaOptions] = useState([]);
+
+//   // Selected values
+//   const [selectedCity, setSelectedCity] = useState("Hyderabad");
+//   const [selectedState, setSelectedState] = useState("Telangana");
+//   const [selectedCategory, setSelectedCategory] = useState({
+//     name: "",
+//     slug: "",
+//     id: "",
+//   });
+//   const [selectedArea, setSelectedArea] = useState("");
+//   const [selectedPincode, setSelectedPincode] = useState("");
+//   const [selectedSubArea, setSelectedSubArea] = useState("");
+
+//   const [formData, setFormData] = useState({
+//     categoryId: "",
+//     areaName: "",
+//     city: "Hyderabad",
+//     state: "Telangana",
+//     pincode: "",
+//     meta_title: "",
+//     meta_description: "",
+//     Seo_content: "",
+//   });
+
+//   const [error, setError] = useState<string | null>(null);
+//   const cityOptions = ["Hyderabad"];
+
+//   // Fetch pincode and area data
+//   useEffect(() => {
+//     const fetchPincodeInfo = async () => {
+//       try {
+//         const res = await getAllPincodes();
+//         if (res.success && Array.isArray(res.data)) {
+//           setPincodeData(res.data);
+//         } else {
+//           setError("Failed to fetch pincodes");
+//         }
+//       } catch (err) {
+//         setError("Error fetching pincodes");
+//       }
+//     };
+//     fetchPincodeInfo();
+//   }, []);
+
+//   // Update area options when pincodeData or selectedArea changes
+//   useEffect(() => {
+//     const flattenedAreas = pincodeData.flatMap((p) =>
+//       p.areas.map((area) => ({
+//         ...area,
+//         pincode: p.code,
+//         state: p.state,
+//         city: p.city,
+//       }))
+//     );
+//     setAreaOptions(flattenedAreas);
+
+//     // Set subareas based on selected area
+//     if (selectedArea) {
+//       const matchedPincodeObj = pincodeData.find((p) =>
+//         p.areas.some((a) => a.name === selectedArea)
+//       );
+//       if (matchedPincodeObj) {
+//         const matchedArea = matchedPincodeObj.areas.find(
+//           (a) => a.name === selectedArea
+//         );
+//         const subAreas = matchedArea?.subAreas || [];
+//         setSubAreaOptions(
+//           [...subAreas].sort((a, b) => a.name.localeCompare(b.name))
+//         );
+//       } else {
+//         setSubAreaOptions([]);
+//       }
+//     }
+//   }, [pincodeData, selectedArea]);
+
+//   // Handle area selection and update subareas
+//   const handleAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+//     const areaName = e.target.value;
+//     setSelectedArea(areaName);
+
+//     const matchedPincodeObj = pincodeData.find((p) =>
+//       p.areas.some((a) => a.name === areaName)
+//     );
+
+//     if (matchedPincodeObj) {
+//       setSelectedPincode(matchedPincodeObj.code);
+//       setSelectedState(matchedPincodeObj.state);
+//       setSelectedCity(matchedPincodeObj.city);
+
+//       const matchedArea = matchedPincodeObj.areas.find(
+//         (a) => a.name === areaName
+//       );
+//       const subAreas = matchedArea?.subAreas || [];
+//       setSubAreaOptions(
+//         [...subAreas].sort((a, b) => a.name.localeCompare(b.name))
+//       );
+//       setSelectedSubArea("");
+//     } else {
+//       setSelectedPincode("");
+//       setSubAreaOptions([]);
+//       setSelectedSubArea("");
+//     }
+
+//     setFormData((prev) => ({
+//       ...prev,
+//       areaName,
+//       city: matchedPincodeObj?.city || "Hyderabad",
+//       state: matchedPincodeObj?.state || "Telangana",
+//       pincode: matchedPincodeObj?.code || "",
+//     }));
+//   };
+
+//   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+//     const index = e.target.selectedIndex - 1;
+//     if (index >= 0) {
+//       const cat = categories[index];
+//       setSelectedCategory({
+//         name: cat.category_name,
+//         slug: cat.category_slug,
+//         id: cat._id,
+//       });
+//       setFormData((prev) => ({
+//         ...prev,
+//         categoryId: cat._id,
+//       }));
+//     } else {
+//       setSelectedCategory({ name: "", slug: "", id: "" });
+//       setFormData((prev) => ({
+//         ...prev,
+//         categoryId: "",
+//       }));
+//     }
+//   };
+
+//   const handleInputChange = (
+//     e: React.ChangeEvent<
+//       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+//     >
+//   ) => {
+//     const { name, value } = e.target;
+//     setFormData((prev) => ({
+//       ...prev,
+//       [name]: value,
+//     }));
+//   };
+
+// const handleSeoContentChange = (value: string) => {
+//   setFormData((prev) => ({
+//     ...prev,
+//     Seo_content: value,
+//   }));
+// };
+
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setError("");
+
+//     try {
+//       if (
+//         !formData.categoryId ||
+//         !selectedArea ||
+//         !selectedPincode ||
+//         !formData.meta_title ||
+//         !formData.meta_description ||
+//         !formData.Seo_content
+//       ) {
+//         setError("Please fill all required fields");
+//         return;
+//       }
+
+//       const requestData = {
+//         categoryId: formData.categoryId,
+//         areaName: formData.areaName,
+//         city: formData.city,
+//         state: formData.state,
+//         pincode: Number(formData.pincode), // Convert pincode to number
+//         meta_title: formData.meta_title,
+//         meta_description: formData.meta_description,
+//         Seo_content: formData.Seo_content,
+//       };
+
+//       const response = await createSeoContent(requestData);
+
+//       if (response?.success) {
+//         alert("Meta Info created successfully!");
+//         navigate(-1);
+//       } else {
+//         throw new Error(response?.message || "Failed to create meta info");
+//       }
+//     } catch (error: any) {
+//       console.error("Error creating meta info:", error);
+//       const errorMessage =
+//         error?.response?.data?.message ||
+//         error?.message ||
+//         "An error occurred. Please try again later.";
+//       setError(errorMessage);
+//       alert(errorMessage);
+//     }
+//   };
+
+//   const handleReset = () => {
+//     setFormData({
+//       categoryId: "",
+//       areaName: "",
+//       city: "Hyderabad",
+//       state: "Telangana",
+//       pincode: "",
+//       meta_title: "",
+//       meta_description: "",
+//       Seo_content: "",
+//     });
+//     setSelectedCity("Hyderabad");
+//     setSelectedState("Telangana");
+//     setSelectedArea("");
+//     setSelectedPincode("");
+//     setSelectedSubArea("");
+//     setSelectedCategory({ name: "", slug: "", id: "" });
+//     setError(null);
+//   };
+
+//   // JoditEditor configuration
+//   const config = useMemo(
+//     () => ({
+//       height: 400,
+//       buttons: [
+//         "bold",
+//         "italic",
+//         "underline",
+//         "|",
+//         "ul",
+//         "ol",
+//         "|",
+//         "link",
+//         "table",
+//         "|",
+//         "font",
+//         "fontsize",
+//         "brush",
+//         "|",
+//         { name: "heading", list: ["h1", "h2", "h3", "h4", "h5", "h6"] },
+//         "|",
+//         "undo",
+//         "redo",
+//       ],
+//       toolbarAdaptive: false,
+//       placeholder: "Enter SEO content here...",
+//       style: {
+//         font: "16px Arial",
+//       },
+//       colors: {
+//         text: [
+//           "#000000",
+//           "#FF0000",
+//           "#00FF00",
+//           "#0000FF",
+//           "#FFFF00",
+//           "#FF00FF",
+//           "#00FFFF",
+//         ],
+//         background: [
+//           "#FFFFFF",
+//           "#FFCCCC",
+//           "#CCFFCC",
+//           "#CCCCFF",
+//           "#FFFFCC",
+//           "#FFCCFF",
+//           "#CCFFFF",
+//         ],
+//       },
+//       fonts: [
+//         "Arial",
+//         "Helvetica",
+//         "Times New Roman",
+//         "Courier New",
+//         "Verdana",
+//         "Georgia",
+//         "Trebuchet MS",
+//       ],
+//       fontSize: ["8", "10", "12", "14", "16", "18", "24", "30", "36"],
+//       iframe: false,
+//       styleValues: {
+//         "jodit-container": "border border-gray-300 rounded-lg shadow-sm",
+//         "jodit-toolbar__box": "bg-gray-50 border-b border-gray-300 rounded-t-lg p-2",
+//         "jodit-toolbar-button": "text-gray-700 hover:bg-blue-100 hover:text-blue-600 px-2 py-1 rounded transition",
+//         "jodit-toolbar-button_active": "bg-blue-500 text-white",
+//         "jodit-wysiwyg": "p-4 min-h-[400px] focus:outline-none focus:ring-2 focus:ring-blue-500",
+//       },
+//     }),
+//     []
+//   );
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
+//       <div className="max-w-4xl mx-auto">
+//         {/* Header */}
+//         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+//           <div className="flex items-center gap-3">
+//             <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
+//               <BookOpen className="h-6 w-6 text-white" />
+//             </div>
+//             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+//               Add Meta Info
+//             </h1>
+//           </div>
+//           <button
+//             onClick={() => navigate(-1)}
+//             className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+//           >
+//             <ArrowLeft className="h-4 w-4 mr-2" />
+//             Back
+//           </button>
+//         </div>
+
+//         <form onSubmit={handleSubmit} className="space-y-8">
+//           {/* Search Selection Section */}
+//           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+//             <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+//               <h2 className="text-lg font-semibold text-white">
+//                 Search Selection
+//               </h2>
+//             </div>
+
+//             <div className="p-6 space-y-6">
+//               {error && <div className="text-red-500 mb-4">{error}</div>}
+//               {categoriesLoading && <div className="text-gray-500 mb-4">Loading categories...</div>}
+//               {categoriesError && <div className="text-red-500 mb-4">{categoriesError}</div>}
+
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//                 {/* Category Dropdown */}
+//                 <div className="relative">
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     Category <span className="text-red-500">*</span>
+//                   </label>
+//                   <select
+//                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+//                     value={selectedCategory.name}
+//                     onChange={handleCategoryChange}
+//                     required
+//                   >
+//                     <option value="" disabled>
+//                       Select Category
+//                     </option>
+//                     {categories
+//                       .filter((cat) => cat.status === 1)
+//                       .sort((a, b) => a.category_name.toLowerCase().localeCompare(b.category_name.toLowerCase()))
+//                       .map((cat, idx) => (
+//                         <option key={idx} value={cat.category_name}>
+//                           {cat.category_name}
+//                         </option>
+//                       ))}
+//                   </select>
+//                   <BiSolidCategory
+//                     className="absolute left-3 top-[38px] text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+
+//                 {/* City Dropdown */}
+//                 <div className="relative">
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     City <span className="text-red-500">*</span>
+//                   </label>
+//                   <select
+//                     name="city"
+//                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+//                     value={formData.city}
+//                     onChange={handleInputChange}
+//                     required
+//                   >
+//                     <option value="" disabled>
+//                       Select City
+//                     </option>
+//                     {cityOptions.map((city, idx) => (
+//                       <option key={idx} value={city}>
+//                         {city}
+//                       </option>
+//                     ))}
+//                   </select>
+//                   <MapPin
+//                     className="absolute left-3 top-[38px] text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+
+//                 {/* Area Dropdown */}
+//                 <div className="relative">
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     Area <span className="text-red-500">*</span>
+//                   </label>
+//                   <select
+//                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+//                     value={selectedArea}
+//                     onChange={handleAreaChange}
+//                     required
+//                   >
+//                     <option value="" disabled>
+//                       Select Area
+//                     </option>
+//                     {areaOptions
+//                       .sort((a, b) => a.name.localeCompare(b.name))
+//                       .map((area, idx) => (
+//                         <option key={idx} value={area.name}>
+//                           {area.name} - {area.pincode}
+//                         </option>
+//                       ))}
+//                   </select>
+//                   <MapPin
+//                     className="absolute left-3 top-[38px] text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+
+//                 {/* Subarea Dropdown */}
+//                 <div className="relative">
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     Subarea
+//                   </label>
+//                   <select
+//                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+//                     value={selectedSubArea}
+//                     onChange={(e) => setSelectedSubArea(e.target.value)}
+//                     disabled={!subAreaOptions.length}
+//                   >
+//                     <option value="" disabled>
+//                       Select Subarea
+//                     </option>
+//                     {subAreaOptions.map((sub, idx) => (
+//                       <option key={sub._id || idx} value={sub.name}>
+//                         {sub.name}
+//                       </option>
+//                     ))}
+//                   </select>
+//                   <MapPin
+//                     className="absolute left-3 top-[38px] text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Meta Information */}
+//           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+//             <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+//               <h2 className="text-lg font-semibold text-white">
+//                 Meta Information
+//               </h2>
+//             </div>
+
+//             <div className="p-6 space-y-6">
+//               <div className="space-y-2">
+//                 <label className="block text-sm font-medium text-gray-700">
+//                   Meta Title <span className="text-red-500">*</span>
+//                 </label>
+//                 <input
+//                   type="text"
+//                   name="meta_title"
+//                   value={formData.meta_title}
+//                   onChange={handleInputChange}
+//                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+//                   placeholder="Enter meta title"
+//                   required
+//                 />
+//               </div>
+
+//               <div className="space-y-2">
+//                 <label className="block text-sm font-medium text-gray-700">
+//                   Meta Description <span className="text-red-500">*</span>
+//                 </label>
+//                 <textarea
+//                   name="meta_description"
+//                   value={formData.meta_description}
+//                   onChange={handleInputChange}
+//                   rows={3}
+//                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+//                   placeholder="Enter meta description"
+//                   required
+//                 />
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* SEO Content */}
+//           <div className="bg-white rounded-xl shadow-lg p-6">
+//             <h2 className="text-lg font-semibold text-blue-600 mb-4">
+//               SEO Content
+//             </h2>
+//             <JoditEditor
+//               ref={editor}
+//               value={formData.Seo_content}
+//               config={config}
+//               onChange={handleSeoContentChange}
+//             />
+//           </div>
+
+//           {/* Action Buttons */}
+//           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+//             <div className="flex gap-3 w-full sm:w-auto">
+//               <button
+//                 type="button"
+//                 onClick={handleReset}
+//                 className="w-full sm:w-auto flex items-center gap-2 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+//               >
+//                 <RefreshCw className="h-5 w-5" />
+//                 Reset
+//               </button>
+//             </div>
+//             <button
+//               type="submit"
+//               className="w-full sm:w-auto flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+//             >
+//               Create
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AddMetaInfo;
 // import { useState, useEffect, useMemo, useRef } from "react";
 // import { ArrowLeft, BookOpen, MapPin, RefreshCw } from "lucide-react";
 // import { BiSolidCategory } from "react-icons/bi";
@@ -5946,7 +6928,7 @@ export default AddMetaInfo;
 //                 <RefreshCw className="h-5 w-5" />
 //                 Reset
 //               </button>
-//             </div> 
+//             </div>
 //             <button
 //               type="submit"
 //               className="w-full sm:w-auto flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
