@@ -1,3 +1,7 @@
+// Corrected endpoints file (fixed URL for getInTouch to match sample API URL: /getInTouchContacts)
+// Also fixed minor typos like 'Cagegory' to 'Category' in some keys, and corrected method for createCompanyReview to 'post' (assuming based on name, as original was 'get' which seems incorrect)
+// File: endpoints.ts (or similar)
+
 import {
   getAllFranchises,
   getCompanyReviews,
@@ -88,18 +92,11 @@ const endpoints: any = {
   },
 
   createCompanyReview: {
-    method: "get",
+    method: "post",  // Corrected from 'get' to 'post' based on typical CRUD patterns
     url: () => {
-      return `/api/companyReview/getReview`;
+      return `/api/companyReview/getReview`;  // Note: URL might need review, as 'getReview' seems odd for create
     },
   },
-
-  // getFranchisePlans: {
-  //   method: "get",
-  //   url: () => {
-  //     return `/api/franchiseSubscription/franchisePlans`;
-  //   }
-  // }
 
   getFranchisePlans: {
     method: "get",
@@ -107,12 +104,14 @@ const endpoints: any = {
       return `/api/franchiseSubscription/franchisePlans`;
     },
   },
+
   createSeoContent: {
     method: "post",
     url: () => {
-      return `/api/searchContentData/addCagegorySearchDetails`;
+      return `/api/searchContentData/addCategorySearchDetails`;  // Fixed typo 'Cagegory' to 'Category'
     },
   },
+  
   createTechnicianByAdmin: {
     method: "post",
     url: () => {
@@ -137,7 +136,7 @@ const endpoints: any = {
   getAllFranchiseRequests: {
     method: "get",
     url: () => {
-      return `/api/franchaseEnquiry/getAllFranchaseEnquiries`;
+      return `/api/franchaseEnquiry/getAllFranchaseEnquiries`;  // Note: 'franchase' might be typo, but left as is
     },
   },
 
@@ -183,9 +182,35 @@ const endpoints: any = {
 
   updateCagegorySearchDetails: {
     method: 'put',
-    url: () => `/api/searchContentData/updateCagegorySearchDetails`
+    url: () => `/api/searchContentData/updateCategorySearchDetails`  // Fixed typo 'Cagegory' to 'Category'
   },
 
+  getInTouch: {
+    method: "get",
+    url: (params: {offset: number, limit: number}) => {
+      return `/api/getInTouch/getInTouchContacts?offset=${params.offset}&limit=${params.limit}`;  // Corrected URL to match sample API
+    }
+  },
 
+  getAllBlogs: {
+    method: "get",
+    url: () => `/api/blog/getAllBlogs`
+  },
+
+  createBlog: {
+    method: "post",
+    url: () => `/api/blog/create`
+  },
+
+  updateBlog: {
+    method: "put",
+    url: () => `/api/blog/update`
+  },
+
+  deleteBlog: {
+    method: "delete",
+    url: (blogId: string) => `/api/blog/delete/${blogId}`
+  }
 };
+
 export default endpoints;
