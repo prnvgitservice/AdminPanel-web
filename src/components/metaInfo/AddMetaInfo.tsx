@@ -44,51 +44,34 @@ const AddMetaInfo: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const cityOptions = ["Hyderabad"];
 
-  // Fetch categories
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await getAllCategories();
-        if (res.success && Array.isArray(res.data)) {
-          setCategories(res.data.filter((cat) => cat?.status === 1));
-        } else {
-          setError("Failed to fetch categories");
-        }
-      } catch (err) {
-        setError("Error fetching categories");
-      }
-    }; 
-    fetchCategories();
-  }, []);
-
-  // const config = {
-  //   readonly: false,
-  //   placeholder: "Start typing your SEO content...",
-  //   minHeight: 300,
-  //   buttons: [
-  //     "bold",
-  //     "italic",
-  //     "underline",
-  //     "|",
-  //     "ul",
-  //     "ol",
-  //     "|",
-  //     "link",
-  //     "table",
-  //     "|",
-  //     "undo",
-  //     "redo",
-  //     "|",
-  //     "source",
-  //     "fullsize",
-  //   ],
-  //   enableDragAndDropFileToEditor: true,
-  //   uploader: { insertImageAsBase64URI: true },
-  //   removeButtons: ["image", "file"],
-  //   style: {
-  //     fontFamily: "Arial, sans-serif",
-  //   },
-  // };
+  const config = {
+    readonly: false,
+    placeholder: "Start typing your SEO content...",
+    minHeight: 300,
+    buttons: [
+      "bold",
+      "italic",
+      "underline",
+      "|",
+      "ul",
+      "ol",
+      "|",
+      "link",
+      "table",
+      "|",
+      "undo",
+      "redo",
+      "|",
+      "source",
+      "fullsize",
+    ],
+    enableDragAndDropFileToEditor: true,
+    uploader: { insertImageAsBase64URI: true },
+    removeButtons: ["image", "file"],
+    style: {
+      fontFamily: "Arial, sans-serif",
+    },
+  };
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -269,76 +252,6 @@ const AddMetaInfo: React.FC = () => {
     setError(null);
   };
 
-  // JoditEditor configuration
-  const config = useMemo(
-    () => ({
-      height: 400,
-      buttons: [
-        "bold",
-        "italic",
-        "underline",
-        "|",
-        "ul",
-        "ol",
-        "|",
-        "link",
-        "table",
-        "|",
-        "font",
-        "fontsize",
-        "brush",
-        "|",
-        { name: "heading", list: ["h1", "h2", "h3", "h4", "h5", "h6"] },
-        "|",
-        "undo",
-        "redo",
-      ],
-      toolbarAdaptive: false,
-      placeholder: "Enter SEO content here...",
-      style: {
-        font: "16px Arial",
-      },
-      colors: {
-        text: [
-          "#000000",
-          "#FF0000",
-          "#00FF00",
-          "#0000FF",
-          "#FFFF00",
-          "#FF00FF",
-          "#00FFFF",
-        ],
-        background: [
-          "#FFFFFF",
-          "#FFCCCC",
-          "#CCFFCC",
-          "#CCCCFF",
-          "#FFFFCC",
-          "#FFCCFF",
-          "#CCFFFF",
-        ],
-      },
-      fonts: [
-        "Arial",
-        "Helvetica",
-        "Times New Roman",
-        "Courier New",
-        "Verdana",
-        "Georgia",
-        "Trebuchet MS",
-      ],
-      fontSize: ["8", "10", "12", "14", "16", "18", "24", "30", "36"],
-      iframe: false,
-      styleValues: {
-        "jodit-container": "border border-gray-300 rounded-lg shadow-sm",
-        "jodit-toolbar__box": "bg-gray-50 border-b border-gray-300 rounded-t-lg p-2",
-        "jodit-toolbar-button": "text-gray-700 hover:bg-blue-100 hover:text-blue-600 px-2 py-1 rounded transition",
-        "jodit-toolbar-button_active": "bg-blue-500 text-white",
-        "jodit-wysiwyg": "p-4 min-h-[400px] focus:outline-none focus:ring-2 focus:ring-blue-500",
-      },
-    }),
-    []
-  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
@@ -349,11 +262,11 @@ const AddMetaInfo: React.FC = () => {
               <BookOpen className="h-6 w-6 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-             Add Meta Info
+              Add Meta Info
             </h1>
           </div>
           <button
-            onClick={()=>navigate('/meta-info/all')}
+            onClick={() => navigate('/meta-info/all')}
             className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -426,34 +339,34 @@ const AddMetaInfo: React.FC = () => {
                   />
                 </div>
                 <div className="relative">
-  <label className="block text-sm font-medium text-gray-700 mb-1">
-    Area <span className="text-red-500">*</span>
-  </label>
-  <select
-    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
-    value={selectedArea}
-    onChange={handleAreaChange}
-    required
-  >
-    <option value="" disabled>
-      Select Area
-    </option>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Area <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+                    value={selectedArea}
+                    onChange={handleAreaChange}
+                    required
+                  >
+                    <option value="" disabled>
+                      Select Area
+                    </option>
 
-    {areaOptions
-      ?.slice()
-      .sort((a, b) => Number(a.pincode) - Number(b.pincode))
-      .map((area, idx) => (
-        <option key={`${area.pincode}-${idx}`} value={area.name}>
-          {area.name} - {area.pincode}
-        </option>
-      ))}
-  </select>
+                    {areaOptions
+                      ?.slice()
+                      .sort((a, b) => Number(a.pincode) - Number(b.pincode))
+                      .map((area, idx) => (
+                        <option key={`${area.pincode}-${idx}`} value={area.name}>
+                          {area.name} - {area.pincode}
+                        </option>
+                      ))}
+                  </select>
 
-  <MapPin
-    className="absolute left-3 top-[38px] text-blue-400"
-    size={20}
-  />
-</div>
+                  <MapPin
+                    className="absolute left-3 top-[38px] text-blue-400"
+                    size={20}
+                  />
+                </div>
 
                 {/* <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
