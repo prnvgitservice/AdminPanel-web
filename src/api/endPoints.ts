@@ -105,10 +105,10 @@ const endpoints: any = {
     },
   },
 
-  createSeoContent: {
+    createSeoContent: {
     method: "post",
     url: () => {
-      return `/api/searchContentData/addCategorySearchDetails`;  // Fixed typo 'Cagegory' to 'Category'
+      return `/api/searchContentData/addCagegorySearchDetails`;
     },
   },
   
