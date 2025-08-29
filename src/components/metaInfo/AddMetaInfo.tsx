@@ -7,18 +7,9 @@ import {
   createSeoContent,
 } from "../../api/apiMethods";
 import JoditEditor from "jodit-react";
+import { useNavigate } from "react-router-dom";
 
-interface AddCategoryProps {
-  onBack: () => void;
-  isEdit?: boolean;
-  categoryId?: number | null;
-}
-
-const AddMetaInfo: React.FC<AddCategoryProps> = ({
-  onBack,
-  isEdit = false,
-  categoryId,
-}) => {
+const AddMetaInfo: React.FC = () => {
   const editor = useRef(null);
   const [categories, setCategories] = useState([]);
   const [pincodeData, setPincodeData] = useState([]);
@@ -46,6 +37,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
   });
   const [error, setError] = useState<string | null>(null);
   const cityOptions = ["Hyderabad"];
+  const navigate = useNavigate();
 
   const config = {
     readonly: false,
@@ -268,11 +260,11 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
               <BookOpen className="h-6 w-6 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              {isEdit ? "Edit Meta Info" : "Add Meta Info"}
+              Add Meta Info
             </h1>
           </div>
           <button
-            onClick={onBack}
+            onClick={() => { navigate('/meta-info/all'); }}
             className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -472,7 +464,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
               type="submit"
               className="w-full sm:w-auto flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
-              {isEdit ? "Update" : "Add"}
+              Add
             </button>
           </div>
         </form>
