@@ -70,7 +70,7 @@ const AddMetaInfo: React.FC<AddCategoryProps> = ({
     ],
     enableDragAndDropFileToEditor: true,
     uploader: { insertImageAsBase64URI: true },
-    removeButtons: ["image", "file"],
+    removeButtons: ["image", "file"], 
     style: {
       fontFamily: "Arial, sans-serif",
     },
