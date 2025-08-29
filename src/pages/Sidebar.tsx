@@ -7,7 +7,8 @@ import {
   Crown, 
   MailQuestion,
   UserCog,
-  Cable
+  Cable,
+  Mail
 } from 'lucide-react';
 
 interface MenuItem {
@@ -119,7 +120,6 @@ const menuItems: MenuItem[] = [
   { key: 'enquiries', label: 'Enquiries', icon: <MailQuestion className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/enquiries' },
   // Sub-item: View franchise requests
   { key: 'franchise-requests', label: 'Franchise Requests', icon: <Crown className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/franchise-requests' },
-
   // Sitemap: Parent item for managing the sitemap
   { key: 'sitemap', label: 'Sitemap', icon: <Cable className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/sitemap' },
 ];
