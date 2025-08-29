@@ -6,11 +6,11 @@ import { getAllPincodes, createSeoContent } from "../../api/apiMethods";
 import { useCategoryContext } from "../Context/CategoryContext";
 import JoditEditor from "jodit-react";
 
-interface AddCategoryProps {
-  onBack: () => void;
-  isEdit?: boolean;
-  categoryId?: number | null;
-}
+// interface AddCategoryProps {
+//   onBack: () => void;
+//   isEdit?: boolean;
+//   categoryId?: number | null;
+// }
 
 const AddMetaInfo: React.FC = () => {
   const { categories, loading: categoriesLoading, error: categoriesError } = useCategoryContext();
@@ -57,38 +57,38 @@ const AddMetaInfo: React.FC = () => {
       } catch (err) {
         setError("Error fetching categories");
       }
-    };
+    }; 
     fetchCategories();
   }, []);
 
-  const config = {
-    readonly: false,
-    placeholder: "Start typing your SEO content...",
-    minHeight: 300,
-    buttons: [
-      "bold",
-      "italic",
-      "underline",
-      "|",
-      "ul",
-      "ol",
-      "|",
-      "link",
-      "table",
-      "|",
-      "undo",
-      "redo",
-      "|",
-      "source",
-      "fullsize",
-    ],
-    enableDragAndDropFileToEditor: true,
-    uploader: { insertImageAsBase64URI: true },
-    removeButtons: ["image", "file"],
-    style: {
-      fontFamily: "Arial, sans-serif",
-    },
-  };
+  // const config = {
+  //   readonly: false,
+  //   placeholder: "Start typing your SEO content...",
+  //   minHeight: 300,
+  //   buttons: [
+  //     "bold",
+  //     "italic",
+  //     "underline",
+  //     "|",
+  //     "ul",
+  //     "ol",
+  //     "|",
+  //     "link",
+  //     "table",
+  //     "|",
+  //     "undo",
+  //     "redo",
+  //     "|",
+  //     "source",
+  //     "fullsize",
+  //   ],
+  //   enableDragAndDropFileToEditor: true,
+  //   uploader: { insertImageAsBase64URI: true },
+  //   removeButtons: ["image", "file"],
+  //   style: {
+  //     fontFamily: "Arial, sans-serif",
+  //   },
+  // };
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -349,11 +349,11 @@ const AddMetaInfo: React.FC = () => {
               <BookOpen className="h-6 w-6 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              {isEdit ? "Edit Meta Info" : "Add Meta Info"}
+             Add Meta Info
             </h1>
           </div>
           <button
-            onClick={onBack}
+            onClick={()=>navigate('/meta-info/all')}
             className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -598,6 +598,7 @@ const AddMetaInfo: React.FC = () => {
 };
 
 export default AddMetaInfo;
+
 // import { useState, useEffect, useMemo, useRef } from "react";
 // import { ArrowLeft, BookOpen, MapPin, RefreshCw } from "lucide-react";
 // import { BiSolidCategory } from "react-icons/bi";
