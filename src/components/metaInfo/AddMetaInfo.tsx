@@ -1,22 +1,17 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft, BookOpen, MapPin, RefreshCw } from "lucide-react";
 import { BiSolidCategory } from "react-icons/bi";
-import { useNavigate } from "react-router-dom";
-import { getAllPincodes, createSeoContent } from "../../api/apiMethods";
-import { useCategoryContext } from "../Context/CategoryContext";
+import {
+  getAllCategories,
+  getAllPincodes as fetchPincodes,
+  createSeoContent,
+} from "../../api/apiMethods";
 import JoditEditor from "jodit-react";
-
-// interface AddCategoryProps {
-//   onBack: () => void;
-//   isEdit?: boolean;
-//   categoryId?: number | null;
-// }
+import { useNavigate } from "react-router-dom";
 
 const AddMetaInfo: React.FC = () => {
-  const { categories, loading: categoriesLoading, error: categoriesError } = useCategoryContext();
   const editor = useRef(null);
-
-  // States for dropdowns
+  const [categories, setCategories] = useState([]);
   const [pincodeData, setPincodeData] = useState([]);
   const [areaOptions, setAreaOptions] = useState([]);
   const [subAreaOptions, setSubAreaOptions] = useState([]);
@@ -67,7 +62,7 @@ const AddMetaInfo: React.FC = () => {
     ],
     enableDragAndDropFileToEditor: true,
     uploader: { insertImageAsBase64URI: true },
-    removeButtons: ["image", "file"],
+    removeButtons: ["image", "file"], 
     style: {
       fontFamily: "Arial, sans-serif",
     },
@@ -105,7 +100,6 @@ const AddMetaInfo: React.FC = () => {
     fetchPincodeInfo();
   }, []);
 
-  // Update area options when pincodeData or selectedArea changes
   useEffect(() => {
     const flattenedAreas = pincodeData.flatMap((p) =>
       p.areas.map((area) => ({
@@ -118,11 +112,9 @@ const AddMetaInfo: React.FC = () => {
     setAreaOptions(flattenedAreas);
   }, [pincodeData]);
 
-  // Handle area selection and update subareas
-  const handleAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleAreaChange = (e) => {
     const areaName = e.target.value;
     setSelectedArea(areaName);
-
     const matchedPincodeObj = pincodeData.find((p) =>
       p.areas.some((a) => a.name === areaName)
     );
@@ -134,7 +126,6 @@ const AddMetaInfo: React.FC = () => {
         (a) => a.name === areaName
       );
       const subAreas = matchedArea?.subAreas || [];
-
       setSubAreaOptions(
         [...subAreas].sort((a, b) => a.name.localeCompare(b.name))
       );
@@ -190,7 +181,6 @@ const AddMetaInfo: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
     try {
       if (
         !formData.categoryId ||
@@ -215,8 +205,17 @@ const AddMetaInfo: React.FC = () => {
       };
       const response = await createSeoContent(requestData);
       if (response?.success) {
-        alert("Meta Info created successfully!");
-        navigate(-1);
+        alert("Meta Info added Successfully!");
+        setFormData({
+          categoryId: "",
+          areaName: "",
+          city: "",
+          state: "",
+          pincode: "",
+          metaTitle: "",
+          metaDescription: "",
+          seoContent: "",
+        });
       } else {
         throw new Error(response?.message || "Failed to submit review");
       }
@@ -252,7 +251,6 @@ const AddMetaInfo: React.FC = () => {
     setError(null);
   };
 
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
@@ -283,9 +281,6 @@ const AddMetaInfo: React.FC = () => {
             </div>
             <div className="p-6 space-y-6">
               {error && <div className="text-red-500 mb-4">{error}</div>}
-              {categoriesLoading && <div className="text-gray-500 mb-4">Loading categories...</div>}
-              {categoriesError && <div className="text-red-500 mb-4">{categoriesError}</div>}
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -301,8 +296,11 @@ const AddMetaInfo: React.FC = () => {
                       Select Category
                     </option>
                     {categories
-                      .filter((cat) => cat.status === 1)
-                      .sort((a, b) => a.category_name.toLowerCase().localeCompare(b.category_name.toLowerCase()))
+                      .sort((a, b) =>
+                        a.category_name
+                          .toLowerCase()
+                          .localeCompare(b.category_name.toLowerCase())
+                      )
                       .map((cat, idx) => (
                         <option key={idx} value={cat.category_name}>
                           {cat.category_name}
@@ -351,36 +349,6 @@ const AddMetaInfo: React.FC = () => {
                     <option value="" disabled>
                       Select Area
                     </option>
-
-                    {areaOptions
-                      ?.slice()
-                      .sort((a, b) => Number(a.pincode) - Number(b.pincode))
-                      .map((area, idx) => (
-                        <option key={`${area.pincode}-${idx}`} value={area.name}>
-                          {area.name} - {area.pincode}
-                        </option>
-                      ))}
-                  </select>
-
-                  <MapPin
-                    className="absolute left-3 top-[38px] text-blue-400"
-                    size={20}
-                  />
-                </div>
-
-                {/* <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Area <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
-                    value={selectedArea}
-                    onChange={handleAreaChange}
-                    required
-                  >
-                    <option value="" disabled>
-                      Select Area 
-                    </option>
                     {areaOptions
                       ?.slice()
                       .sort((a, b) => Number(a.pincode) - Number(b.pincode))
@@ -398,8 +366,6 @@ const AddMetaInfo: React.FC = () => {
                     size={20}
                   />
                 </div>
-
-                {/* Subarea Dropdown */}
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Subarea
@@ -464,22 +430,25 @@ const AddMetaInfo: React.FC = () => {
               </div>
             </div>
           </div>
-
-          {/* SEO Content */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-lg font-semibold text-blue-600 mb-4">
-              SEO Content
-            </h2>
-            <JoditEditor
-              ref={editor}
-              value={formData.seoContent}
-              config={config}
-              onBlur={handleSeoContentChange}
-              onChange={(Content) =>{}}
-            />
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+              <h2 className="text-lg font-semibold text-white">SEO Content</h2>
+            </div>
+            <div className="p-6">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  SEO Content <span className="text-red-500">*</span>
+                </label>
+                <JoditEditor
+                  ref={editor}
+                  value={formData.seoContent}
+                  config={config}
+                  onBlur={handleSeoContentChange}
+                  onChange={(newContent) => {}}
+                />
+              </div>
+            </div>
           </div>
-
-          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex gap-3 w-full sm:w-auto">
               <button
@@ -490,19 +459,12 @@ const AddMetaInfo: React.FC = () => {
                 <RefreshCw className="h-5 w-5" />
                 Reset
               </button>
-              {/* <button
-                type="button"
-                onClick={onBack}
-                className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-              >
-                Cancel
-              </button> */}
             </div>
             <button
               type="submit"
               className="w-full sm:w-auto flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
-              Create
+              Add
             </button>
           </div>
         </form>
@@ -512,7 +474,6 @@ const AddMetaInfo: React.FC = () => {
 };
 
 export default AddMetaInfo;
-
 // import { useState, useEffect, useMemo, useRef } from "react";
 // import { ArrowLeft, BookOpen, MapPin, RefreshCw } from "lucide-react";
 // import { BiSolidCategory } from "react-icons/bi";
