@@ -14,7 +14,6 @@ import JoditEditor from "jodit-react";
 
 const AddMetaInfo: React.FC = () => {
   const { categories, loading: categoriesLoading, error: categoriesError } = useCategoryContext();
-  const navigate = useNavigate();
   const editor = useRef(null);
 
   // States for dropdowns
@@ -43,6 +42,7 @@ const AddMetaInfo: React.FC = () => {
   });
   const [error, setError] = useState<string | null>(null);
   const cityOptions = ["Hyderabad"];
+  const navigate = useNavigate();
 
   const config = {
     readonly: false,
@@ -266,7 +266,7 @@ const AddMetaInfo: React.FC = () => {
             </h1>
           </div>
           <button
-            onClick={() => navigate('/meta-info/all')}
+            onClick={() => { navigate('/meta-info/all'); }}
             className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -474,7 +474,8 @@ const AddMetaInfo: React.FC = () => {
               ref={editor}
               value={formData.seoContent}
               config={config}
-              onChange={handleSeoContentChange}
+              onBlur={handleSeoContentChange}
+              onChange={(Content) =>{}}
             />
           </div>
 
