@@ -347,51 +347,118 @@ const EditMetaInfo: React.FC = () => {
     const config = {
   readonly: false,
   placeholder: "Start typing your SEO content...",
-  minHeight: 300,
+  minHeight: 400,
   buttons: [
     "bold",
     "italic",
     "underline",
+    "strikethrough",
     "|",
-    "ul",
-    "ol",
+    "h1",
+    "h2",
+    "h3",
+    "|",
+    {
+      name: "ul",
+      tooltip: "Insert Unordered List",
+      icon: "ul",
+      list: {
+        disc: "Disc",
+        circle: "Circle",
+        square: "Square",
+      },
+      exec: (editor, event, { control }) => {
+        const style = control.args ? control.args[0] : "disc";
+        editor.execCommand("insertUnorderedList");
+        const ul = editor.selection.getNode()?.closest("ul");
+        if (ul) {
+          ul.style.listStyleType = style;
+          console.log(`Applied UL style: ${style}, HTML: ${ul.outerHTML}`);
+        } else {
+          console.warn("No UL found after inserting unordered list");
+        }
+      },
+    },
+    {
+      name: "ol",
+      tooltip: "Insert Ordered List",
+      icon: "ol",
+      list: {
+        decimal: "Numbers",
+        "upper-roman": "Upper Roman",
+        "lower-alpha": "Lower Alpha",
+        "lower-roman": "Lower Roman",
+        "upper-alpha": "Upper Alpha",
+      },
+      exec: (editor, event, { control }) => {
+        const style = control.args ? control.args[0] : "decimal";
+        editor.execCommand("insertOrderedList");
+        const ol = editor.selection.getNode()?.closest("ol");
+        if (ol) {
+          ol.style.listStyleType = style;
+          console.log(`Applied OL style: ${style}, HTML: ${ol.outerHTML}`);
+        } else {
+          console.warn("No OL found after inserting ordered list");
+        }
+      },
+    },
     "|",
     "link",
+    "image",
     "table",
     "|",
     "undo",
     "redo",
     "|",
+    "align",
+    "font",
+    "fontsize",
+    "|",
     "source",
     "fullsize",
   ],
   enableDragAndDropFileToEditor: true,
-  copyFormat: true, // Preserve formatting within editor
-  pasteFromWord: true, // Handle Word content
-  pasteFromWordClean: true, // Aggressively clean Word-specific tags
-  askBeforePasteHTML: false, // No prompt for HTML pasting
-  askBeforePasteFromWord: false, // No prompt for Word pasting
-  defaultActionOnPaste: "insert_only_html", // Prefer HTML content over plain text
-  pastePlain: false, // Retain formatting
+  copyFormat: true,
+  pasteFromWord: true,
+  pasteFromWordClean: true,
+  askBeforePasteHTML: false,
+  askBeforePasteFromWord: false,
+  defaultActionOnPaste: "insert_as_html",
+  pastePlain: false,
   cleanHTML: {
-    cleanOnPaste: true, // Remove unwanted tags/styles
-    removeEmptyElements: true, // Remove empty tags
-    fillEmptyParagraph: false, // Avoid extra paragraphs
-    replaceOldTags: true, // Replace deprecated tags (e.g., <b> to <strong>)
-    cleanWordHTML: true, // Enhanced Word HTML cleanup
+    cleanOnPaste: true,
+    removeEmptyElements: false,
+    fillEmptyParagraph: false,
+    replaceOldTags: true,
+    cleanWordHTML: true,
+    allowTags: {
+      ul: { "list-style-type": true, class: true, style: true },
+      ol: { "list-style-type": true, class: true, style: true },
+      li: { class: true, style: true },
+      p: { class: true, style: true },
+      span: { class: true, style: true },
+      div: { class: true, style: true },
+      b: true,
+      strong: true,
+      i: true,
+      em: true,
+      a: { href: true, target: true },
+      img: { src: true, alt: true },
+    },
+    denyTags: ["script", "style", "meta", "o:p", "w:sdtdoc"],
+    cleanAttributes: ["data-*", "id"],
   },
   clipboard: {
-    useNativeClipboard: true, // Use browser's native clipboard API
-    cleanPastedHTML: true, // Clean HTML on paste
-    stripTags: ["script", "style", "meta"], // Remove dangerous tags
+    useNativeClipboard: true,
+    cleanPastedHTML: true,
   },
   uploader: {
-    insertImageAsBase64URI: true, // Embed images as Base64
-    imagesExtensions: ["jpg", "png", "jpeg", "gif"], // Supported image types
+    insertImageAsBase64URI: true,
+    imagesExtensions: ["jpg", "png", "jpeg", "gif"],
   },
   style: {
     fontFamily: "Arial, sans-serif",
-  }
+  },
 };
 
 
@@ -598,9 +665,6 @@ const EditMetaInfo: React.FC = () => {
                   onBlur={handleSeoContentChange}
                   onChange={(newContent) => {}}
                 />
-            <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-              {HTMLReactParser(formData.seoContent)}
-            </div>
           </div>
 
           {/* Action Buttons */}

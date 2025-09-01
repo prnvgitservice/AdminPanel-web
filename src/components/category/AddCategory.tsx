@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft, Upload, Wrench } from "lucide-react";
 import { addCategory, updateCategory } from "../../api/apiMethods";
 import { useLocation, useNavigate } from "react-router-dom";
-import ReactQuill from "react-quill";
+import JoditEditor from "jodit-react";
 
 interface AddCategoryProps {
   isEdit?: boolean;
@@ -41,6 +41,7 @@ interface FormErrors {
 }
 
 const AddCategory: React.FC<AddCategoryProps> = ({ isEdit = false }) => {
+  const editor = useRef(null);
   const [formData, setFormData] = useState<FormData>({
     category_name: "",
     category_slug: "",
@@ -58,26 +59,246 @@ const AddCategory: React.FC<AddCategoryProps> = ({ isEdit = false }) => {
   const { state } = useLocation();
   const category = state?.category as Category | undefined;
 
-  const modules = {
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ["bold", "italic", "underline", "strike"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["link"],
-      ["clean"],
-    ],
-  };
+//   const config = {
+//   readonly: false,
+//   placeholder: "Start typing your SEO content...",
+//   minHeight: 300,
+//   buttons: [
+//     "bold",
+//     "italic",
+//     "underline",
+//     "|",
+//     "ul",
+//     "ol",
+//     "|",
+//     "link",
+//     "table",
+//     "|",
+//     "undo",
+//     "redo",
+//     "|",
+//     "source",
+//     "fullsize",
+//   ],
+//   enableDragAndDropFileToEditor: true,
+//   copyFormat: true, // Preserve formatting within editor
+//   pasteFromWord: true, // Handle Word content
+//   pasteFromWordClean: true, // Aggressively clean Word-specific tags
+//   askBeforePasteHTML: false, // No prompt for HTML pasting
+//   askBeforePasteFromWord: false, // No prompt for Word pasting
+//   defaultActionOnPaste: "insert_only_html", // Prefer HTML content over plain text
+//   pastePlain: false, // Retain formatting
+//   cleanHTML: {
+//     cleanOnPaste: true, // Remove unwanted tags/styles
+//     removeEmptyElements: true, // Remove empty tags
+//     fillEmptyParagraph: false, // Avoid extra paragraphs
+//     replaceOldTags: true, // Replace deprecated tags (e.g., <b> to <strong>)
+//     cleanWordHTML: true, // Enhanced Word HTML cleanup
+//   },
+//   clipboard: {
+//     useNativeClipboard: true, // Use browser's native clipboard API
+//     cleanPastedHTML: true, // Clean HTML on paste
+//     stripTags: ["script", "style", "meta"], // Remove dangerous tags
+//   },
+//   uploader: {
+//     insertImageAsBase64URI: true, // Embed images as Base64
+//     imagesExtensions: ["jpg", "png", "jpeg", "gif"], // Supported image types
+//   },
+//   style: {
+//     fontFamily: "Arial, sans-serif",
+//   },
+// };
 
-  const formats = [
-    "header",
+//       const config = {
+//   readonly: false,
+//   placeholder: "Start typing your SEO content...",
+//   minHeight: 400, // Increased for better UX
+//   buttons: [
+//     "bold",
+//     "italic",
+//     "underline",
+//     "|",
+//     "h1",
+//     "h2",
+//     "h3",
+//     "|",
+//     "ul",
+//     "ol",
+//     "|",
+//     "link",
+//     "table",
+//     "|",
+//     "undo",
+//     "redo",
+//     "|",
+//     "source",
+//     "fullsize",
+//   ],
+//   enableDragAndDropFileToEditor: true,
+//   copyFormat: true, // Preserve formatting within editor
+//   pasteFromWord: true, // Handle Word content
+//   pasteFromWordClean: true, // Clean Word-specific tags
+//   askBeforePasteHTML: false, // No prompt for HTML pasting
+//   askBeforePasteFromWord: false, // No prompt for Word pasting
+//   defaultActionOnPaste: "insert_only_html", // Prefer HTML content
+//   pastePlain: false, // Retain formatting
+//   cleanHTML: {
+//     cleanOnPaste: true, // Clean HTML on paste
+//     removeEmptyElements: false, // Preserve empty list items
+//     fillEmptyParagraph: false, // Avoid extra paragraphs
+//     replaceOldTags: true, // Replace <b> with <strong>, etc.
+//     cleanWordHTML: true, // Enhanced Word cleanup
+//     allowTags: {
+//       ul: true,
+//       ol: true,
+//       li: true, // Explicitly allow list tags
+//     },
+//     attributes: {
+//       class: true,
+//       id: true,
+//       type: true,
+//       style: true,
+//     },
+//     denyTags: ["script", "style", "meta"], // Block dangerous tags
+//   },
+//   clipboard: {
+//     useNativeClipboard: true, // Use browser clipboard API
+//     cleanPastedHTML: true, // Clean pasted HTML
+//     stripTags: ["script", "style", "meta"], // Remove dangerous tags
+//   },
+//   uploader: {
+//     insertImageAsBase64URI: true, // Embed images as Base64
+//     imagesExtensions: ["jpg", "png", "jpeg", "gif"],
+//   },
+//   style: {
+//     fontFamily: "Arial, sans-serif",
+//   },
+//   events: {
+//     afterInsertNode: (node) => {
+//       console.log("Inserted Node:", node.outerHTML); // Debug list creation
+//       if (node.tagName === "UL" || node.tagName === "OL") {
+//         console.log("List created:", node.outerHTML);
+//       }
+//     },
+//   },
+// };
+
+    const config = {
+  readonly: false,
+  placeholder: "Start typing your SEO content...",
+  minHeight: 400,
+  buttons: [
     "bold",
     "italic",
     "underline",
-    "strike",
-    "list",
-    "bullet",
+    "strikethrough",
+    "|",
+    "h1",
+    "h2",
+    "h3",
+    "|",
+    {
+      name: "ul",
+      tooltip: "Insert Unordered List",
+      icon: "ul",
+      list: {
+        disc: "Disc",
+        circle: "Circle",
+        square: "Square",
+      },
+      exec: (editor, event, { control }) => {
+        const style = control.args ? control.args[0] : "disc";
+        editor.execCommand("insertUnorderedList");
+        const ul = editor.selection.getNode()?.closest("ul");
+        if (ul) {
+          ul.style.listStyleType = style;
+          console.log(`Applied UL style: ${style}, HTML: ${ul.outerHTML}`);
+        } else {
+          console.warn("No UL found after inserting unordered list");
+        }
+      },
+    },
+    {
+      name: "ol",
+      tooltip: "Insert Ordered List",
+      icon: "ol",
+      list: {
+        decimal: "Numbers",
+        "upper-roman": "Upper Roman",
+        "lower-alpha": "Lower Alpha",
+        "lower-roman": "Lower Roman",
+        "upper-alpha": "Upper Alpha",
+      },
+      exec: (editor, event, { control }) => {
+        const style = control.args ? control.args[0] : "decimal";
+        editor.execCommand("insertOrderedList");
+        const ol = editor.selection.getNode()?.closest("ol");
+        if (ol) {
+          ol.style.listStyleType = style;
+          console.log(`Applied OL style: ${style}, HTML: ${ol.outerHTML}`);
+        } else {
+          console.warn("No OL found after inserting ordered list");
+        }
+      },
+    },
+    "|",
     "link",
-  ];
+    "image",
+    "table",
+    "|",
+    "undo",
+    "redo",
+    "|",
+    "align",
+    "font",
+    "fontsize",
+    "|",
+    "source",
+    "fullsize",
+  ],
+  enableDragAndDropFileToEditor: true,
+  copyFormat: true,
+  pasteFromWord: true,
+  pasteFromWordClean: true,
+  askBeforePasteHTML: false,
+  askBeforePasteFromWord: false,
+  defaultActionOnPaste: "insert_as_html",
+  pastePlain: false,
+  cleanHTML: {
+    cleanOnPaste: true,
+    removeEmptyElements: false,
+    fillEmptyParagraph: false,
+    replaceOldTags: true,
+    cleanWordHTML: true,
+    allowTags: {
+      ul: { "list-style-type": true, class: true, style: true },
+      ol: { "list-style-type": true, class: true, style: true },
+      li: { class: true, style: true },
+      p: { class: true, style: true },
+      span: { class: true, style: true },
+      div: { class: true, style: true },
+      b: true,
+      strong: true,
+      i: true,
+      em: true,
+      a: { href: true, target: true },
+      img: { src: true, alt: true },
+    },
+    denyTags: ["script", "style", "meta", "o:p", "w:sdtdoc"],
+    cleanAttributes: ["data-*", "id"],
+  },
+  clipboard: {
+    useNativeClipboard: true,
+    cleanPastedHTML: true,
+  },
+  uploader: {
+    insertImageAsBase64URI: true,
+    imagesExtensions: ["jpg", "png", "jpeg", "gif"],
+  },
+  style: {
+    fontFamily: "Arial, sans-serif",
+  },
+};
 
   useEffect(() => {
     if (isEdit && category) {
@@ -481,14 +702,22 @@ const AddCategory: React.FC<AddCategoryProps> = ({ isEdit = false }) => {
                 <label className="block text-sm font-medium text-gray-700">
                   SEO Content
                 </label>
-                <ReactQuill
+                <JoditEditor
+                  ref={editor}
+                  value={formData.seo_content}
+                  config={config}
+                  onBlur={handleSeoContentChange}
+                  onChange={(newContent) => {}}
+                  className="bg-white rounded-lg"
+                />
+                {/* <ReactQuill
                   value={formData.seo_content}
                   onChange={handleSeoContentChange}
                   modules={modules}
                   formats={formats}
                   placeholder="Write your SEO content here..."
                   className="bg-white rounded-lg"
-                />
+                /> */}
               </div>
             </div>
           </div>
