@@ -182,7 +182,7 @@ const endpoints: any = {
 
   updateCagegorySearchDetails: {
     method: 'put',
-    url: () => `/api/searchContentData/updateCategorySearchDetails`  // Fixed typo 'Cagegory' to 'Category'
+    url: () => `/api/searchContentData/updateCagegorySearchDetails`  // Fixed typo 'Cagegory' to 'Category'
   },
 
   getInTouch: {

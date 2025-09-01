@@ -39,34 +39,95 @@ const AddMetaInfo: React.FC = () => {
   const cityOptions = ["Hyderabad"];
   const navigate = useNavigate();
 
-  const config = {
-    readonly: false,
-    placeholder: "Start typing your SEO content...",
-    minHeight: 300,
-    buttons: [
-      "bold",
-      "italic",
-      "underline",
-      "|",
-      "ul",
-      "ol",
-      "|",
-      "link",
-      "table",
-      "|",
-      "undo",
-      "redo",
-      "|",
-      "source",
-      "fullsize",
-    ],
-    enableDragAndDropFileToEditor: true,
-    uploader: { insertImageAsBase64URI: true },
-    removeButtons: ["image", "file"], 
-    style: {
-      fontFamily: "Arial, sans-serif",
-    },
-  };
+  // const config = {
+  //   readonly: false,
+  //   placeholder: "Start typing your SEO content...",
+  //   minHeight: 300,
+  //   buttons: [
+  //     "bold",
+  //     "italic",
+  //     "underline",
+  //     "|",
+  //     "ul",
+  //     "ol",
+  //     "|",
+  //     "link",
+  //     "table",
+  //     "|",
+  //     "undo",
+  //     "redo",
+  //     "|",
+  //     "source",
+  //     "fullsize",
+  //   ],
+  //   enableDragAndDropFileToEditor: true,
+  //   uploader: { insertImageAsBase64URI: true },
+  //   removeButtons: ["image", "file"], 
+  //   style: {
+  //     fontFamily: "Arial, sans-serif",
+  //   },
+  // };
+
+    const config = {
+  readonly: false,
+  placeholder: "Start typing your SEO content...",
+  minHeight: 300,
+  buttons: [
+    "bold",
+    "italic",
+    "underline",
+    "|",
+    "ul",
+    "ol",
+    "|",
+    "link",
+    "table",
+    "|",
+    "undo",
+    "redo",
+    "|",
+    "source",
+    "fullsize",
+  ],
+  enableDragAndDropFileToEditor: true,
+  copyFormat: true, // Preserve formatting within editor
+  pasteFromWord: true, // Handle Word content
+  pasteFromWordClean: true, // Aggressively clean Word-specific tags
+  askBeforePasteHTML: false, // No prompt for HTML pasting
+  askBeforePasteFromWord: false, // No prompt for Word pasting
+  defaultActionOnPaste: "insert_only_html", // Prefer HTML content over plain text
+  pastePlain: false, // Retain formatting
+  cleanHTML: {
+    cleanOnPaste: true, // Remove unwanted tags/styles
+    removeEmptyElements: true, // Remove empty tags
+    fillEmptyParagraph: false, // Avoid extra paragraphs
+    replaceOldTags: true, // Replace deprecated tags (e.g., <b> to <strong>)
+    cleanWordHTML: true, // Enhanced Word HTML cleanup
+  },
+  clipboard: {
+    useNativeClipboard: true, // Use browser's native clipboard API
+    cleanPastedHTML: true, // Clean HTML on paste
+    stripTags: ["script", "style", "meta"], // Remove dangerous tags
+  },
+  uploader: {
+    insertImageAsBase64URI: true, // Embed images as Base64
+    imagesExtensions: ["jpg", "png", "jpeg", "gif"], // Supported image types
+  },
+  style: {
+    fontFamily: "Arial, sans-serif",
+  },
+  // events: {
+  //   afterPaste: (e) => {
+  //     console.log("Pasted HTML:", e.getData("text/html"));
+  //     console.log("Pasted Text:", e.getData("text/plain"));
+  //     return true; // Allow paste to proceed
+  //   },
+  //   beforePaste: (e) => {
+  //     console.log("Before Paste:", e.getData("text/html"));
+  //     return true; // Allow preprocessing if needed
+  //   }
+  // }
+};
 
   useEffect(() => {
     const fetchCategories = async () => {

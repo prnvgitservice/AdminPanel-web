@@ -313,88 +313,87 @@ const EditMetaInfo: React.FC = () => {
     setError(null);
   };
 
-  // JoditEditor configuration
-    const config = useMemo(
-      () => ({
-        height: 400,
-        buttons: [
-          "bold",
-          "italic",
-          "underline",
-          "|",
-          "ul",
-          "ol",
-          "|",
-          "link",
-          "table",
-          "|",
-          "font", // Font family
-          "fontsize", // Font size
-          "brush", // Text and background color
-          "|",
-          { name: "heading", list: ["h1", "h2", "h3", "h4", "h5", "h6"] }, // Heading levels
-          "|",
-          "undo",
-          "redo",
-        ],
-        toolbarAdaptive: false,
-        placeholder: "Enter SEO content here...",
-        style: {
-          font: "16px Arial", // Default font and size
-        },
-        colors: {
-          // Custom color palette for text and background
-          text: [
-            "#000000",
-            "#FF0000",
-            "#00FF00",
-            "#0000FF",
-            "#FFFF00",
-            "#FF00FF",
-            "#00FFFF",
-          ],
-          background: [
-            "#FFFFFF",
-            "#FFCCCC",
-            "#CCFFCC",
-            "#CCCCFF",
-            "#FFFFCC",
-            "#FFCCFF",
-            "#CCFFFF",
-          ],
-        },
-        fonts: [
-          "Arial",
-          "Helvetica",
-          "Times New Roman",
-          "Courier New",
-          "Verdana",
-          "Georgia",
-          "Trebuchet MS",
-        ],
-        fontSize: [
-          "8",
-          "10",
-          "12",
-          "14",
-          "16",
-          "18",
-          "24",
-          "30",
-          "36",
-        ],
-        // Custom styles for JoditEditor UI
-        iframe: false,
-        styleValues: {
-          "jodit-container": "border border-gray-300 rounded-lg shadow-sm",
-          "jodit-toolbar__box": "bg-gray-50 border-b border-gray-300 rounded-t-lg p-2",
-          "jodit-toolbar-button": "text-gray-700 hover:bg-blue-100 hover:text-blue-600 px-2 py-1 rounded transition",
-          "jodit-toolbar-button_active": "bg-blue-500 text-white",
-          "jodit-wysiwyg": "p-4 min-h-[400px] focus:outline-none focus:ring-2 focus:ring-blue-500",
-        },
-      }),
-      []
-    );
+  // // JoditEditor configuration
+  //   const config = {
+  //   readonly: false,
+  //   placeholder: "Start typing your SEO content...",
+  //   minHeight: 300,
+  //   buttons: [
+  //     "bold",
+  //     "italic",
+  //     "underline",
+  //     "|",
+  //     "ul",
+  //     "ol",
+  //     "|",
+  //     "link",
+  //     "table",
+  //     "|",
+  //     "undo",
+  //     "redo",
+  //     "|",
+  //     "source",
+  //     "fullsize",
+  //   ],
+  //   enableDragAndDropFileToEditor: true,
+  //   copyFormat: true,
+  //   pasteFromWord: true,
+  //   uploader: { insertImageAsBase64URI: true },
+  //   style: {
+  //     fontFamily: "Arial, sans-serif",
+  //   },
+  // };
+
+    const config = {
+  readonly: false,
+  placeholder: "Start typing your SEO content...",
+  minHeight: 300,
+  buttons: [
+    "bold",
+    "italic",
+    "underline",
+    "|",
+    "ul",
+    "ol",
+    "|",
+    "link",
+    "table",
+    "|",
+    "undo",
+    "redo",
+    "|",
+    "source",
+    "fullsize",
+  ],
+  enableDragAndDropFileToEditor: true,
+  copyFormat: true, // Preserve formatting within editor
+  pasteFromWord: true, // Handle Word content
+  pasteFromWordClean: true, // Aggressively clean Word-specific tags
+  askBeforePasteHTML: false, // No prompt for HTML pasting
+  askBeforePasteFromWord: false, // No prompt for Word pasting
+  defaultActionOnPaste: "insert_only_html", // Prefer HTML content over plain text
+  pastePlain: false, // Retain formatting
+  cleanHTML: {
+    cleanOnPaste: true, // Remove unwanted tags/styles
+    removeEmptyElements: true, // Remove empty tags
+    fillEmptyParagraph: false, // Avoid extra paragraphs
+    replaceOldTags: true, // Replace deprecated tags (e.g., <b> to <strong>)
+    cleanWordHTML: true, // Enhanced Word HTML cleanup
+  },
+  clipboard: {
+    useNativeClipboard: true, // Use browser's native clipboard API
+    cleanPastedHTML: true, // Clean HTML on paste
+    stripTags: ["script", "style", "meta"], // Remove dangerous tags
+  },
+  uploader: {
+    insertImageAsBase64URI: true, // Embed images as Base64
+    imagesExtensions: ["jpg", "png", "jpeg", "gif"], // Supported image types
+  },
+  style: {
+    fontFamily: "Arial, sans-serif",
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
@@ -593,36 +592,16 @@ const EditMetaInfo: React.FC = () => {
               SEO Content
             </h2>
             <JoditEditor
-              ref={editor}
-              value={formData.seoContent}
-              config={config}
-              onChange={handleSeoContentChange}
-            />
+                  ref={editor}
+                  value={formData.seoContent}
+                  config={config}
+                  onBlur={handleSeoContentChange}
+                  onChange={(newContent) => {}}
+                />
             <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
               {HTMLReactParser(formData.seoContent)}
             </div>
           </div>
-          {/* <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
-              <h2 className="text-lg font-semibold text-white">SEO Content</h2>
-            </div>
-
-            <div className="p-6">
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  SEO Content <span className="text-red-500">*</span>
-                </label>
-                <ReactQuill
-                  value={formData.seoContent}
-                  onChange={handleSeoContentChange}
-                  modules={modules}
-                  formats={formats}
-                  placeholder="Write your SEO content here..."
-                  className="bg-white rounded-lg"
-                />
-              </div>
-            </div>
-          </div> */}
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
