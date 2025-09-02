@@ -2,6 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import React from "react";
 import Layout from "../pages/Layout";
 import Dashboard from "../pages/Dashboard";
+import Login from "../pages/Login";
+import Profile from "../pages/Profile";
 import AllCategories from "../components/category/AllCategories";
 import AddCategory from "../components/category/AddCategory";
 import ViewCategory from "../components/category/ViewCategory";
@@ -63,6 +65,10 @@ const AppRoutes: React.FC = () => {
         {/* Dashboard: Main landing page */}
         <Route path="/" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
+
+        <Route path="/login" element={<Login />} />
+
+        <Route path="/profile" element={<Profile />} />
 
         {/* Categories: Routes for managing service categories */}
         <Route path="/categories" element={<AllCategories />} />
