@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { ArrowLeft, Upload, Wrench } from "lucide-react";
 import { addCategory, updateCategory } from "../../api/apiMethods";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -490,7 +490,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ isEdit = false }) => {
       }),
       []
     );
-    
+
   useEffect(() => {
     if (isEdit && category) {
       setFormData({
