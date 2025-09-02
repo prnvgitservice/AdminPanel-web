@@ -32,16 +32,18 @@ import AddArea from "../components/areas/AddArea";
 import ViewArea from "../components/areas/ViewArea";
 import EditMetaInfo from "../components/metaInfo/EditMetaInfo";
 import EditArea from "../components/areas/EditArea";
-import EditCategory from "../components/category/EditCategory";
 import Sitemap from "../components/sitemap/Sitemap";
 import AddMetaInfo from "../components/metaInfo/AddMetaInfo";
 
 // Import the new components for blogs and get in touch
 import GetInTouch from "../components/enquiries/GetInTouch";
 import AllBlogs from "../components/blogs/AllBlogs";
-import AddBlog from "../components/blogs/BlogForm";
 import BlogForm from "../components/blogs/BlogForm";
 import ViewBlog from "../components/blogs/ViewBlog";
+import AddExecutive from "../components/manageExecutives/AddExecutive";
+import AllExecutives from "../components/manageExecutives/AllExecutives";
+import AllReferrals from "../components/manageReferrals/AllReferrals";
+import AddReferral from "../components/manageReferrals/AddReferral";
 
 
 
@@ -139,7 +141,16 @@ const AppRoutes: React.FC = () => {
           element={<AdminCreatedFranchises />}
         />
 
-        
+        {/* Management - Executives: Routes for executive management */}
+        <Route path="/management/executives" element={<AllExecutives />} />
+        <Route path="/management/executives/all" element={<AllExecutives />} />
+        <Route path="/management/executives/add" element={<AddExecutive />} />
+
+        {/* Management - Referrals: Routes for referral management */}
+        <Route path="/management/referrals" element={<AllReferrals />} />
+        <Route path="/management/referrals/all" element={<AllReferrals />} />
+        <Route path="/management/referrals/add" element={<AddReferral />} />
+
         {/* Areas: Routes for managing service areas */}
         <Route path="/areas" element={<AllAreas />} />
         <Route path="/areas/all" element={<AllAreas />} />

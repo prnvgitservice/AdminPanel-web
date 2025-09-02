@@ -1,11 +1,6 @@
-
-
-
-
-
-
 import React, { useEffect, useState } from 'react';
 import { Filter, Plus, Eye, Pencil, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface ReferralProps {
   onAddReferral?: () => void;
@@ -89,6 +84,7 @@ const AllReferrals: React.FC<ReferralProps> = ({ onAddReferral }) => {
     referralName: '',
     mobileNumber: ''
   });
+  const navigate = useNavigate();
 
   // Pagination calculations
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -119,11 +115,11 @@ const AllReferrals: React.FC<ReferralProps> = ({ onAddReferral }) => {
 
   // Action handlers
   const handleView = (id: string) => {
-    console.log(`View referral with ID: ${id}`);
+    navigate(`/management/referrals/view/${id}`);
   };
 
   const handleEdit = (id: string) => {
-    console.log(`Edit referral with ID: ${id}`);
+    navigate(`/management/referrals/edit/${id}`);
   };
 
   const handleDelete = (id: string) => {
@@ -375,20 +371,7 @@ const AllReferrals: React.FC<ReferralProps> = ({ onAddReferral }) => {
     </div>
   );
 
-  // Action handlers
-  function handleView(id: string) {
-    console.log(`View referral with ID: ${id}`);
-  }
-
-  function handleEdit(id: string) {
-    console.log(`Edit referral with ID: ${id}`);
-  }
-
-  function handleDelete(id: string) {
-    if (window.confirm('Are you sure you want to delete this referral?')) {
-      console.log(`Delete referral with ID: ${id}`);
-    }
-  }
+  
 };
 
 export default AllReferrals;

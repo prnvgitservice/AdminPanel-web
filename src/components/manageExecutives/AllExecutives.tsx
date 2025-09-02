@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Filter, Plus, Eye, Pencil, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 interface ExecutiveProps {
   onAddExecutive?: () => void;
@@ -83,6 +84,7 @@ const AllExecutives: React.FC<ExecutiveProps> = ({ onAddExecutive }) => {
     executiveName: '',
     mobileNumber: ''
   });
+  const navigate = useNavigate();
 
   // Pagination calculations
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -113,11 +115,11 @@ const AllExecutives: React.FC<ExecutiveProps> = ({ onAddExecutive }) => {
 
   // Action handlers
   const handleView = (id: string) => {
-    console.log(`View executive with ID: ${id}`);
+   navigate(`/management/executives/view/${id}`);
   };
 
   const handleEdit = (id: string) => {
-    console.log(`Edit executive with ID: ${id}`);
+    navigate(`/management/executives/edit/${id}`);
   };
 
   const handleDelete = (id: string) => {
@@ -368,21 +370,6 @@ const AllExecutives: React.FC<ExecutiveProps> = ({ onAddExecutive }) => {
       </div>
     </div>
   );
-
-  // Action handlers
-  function handleView(id: string) {
-    console.log(`View executive with ID: ${id}`);
-  }
-
-  function handleEdit(id: string) {
-    console.log(`Edit executive with ID: ${id}`);
-  }
-
-  function handleDelete(id: string) {
-    if (window.confirm('Are you sure you want to delete this executive?')) {
-      console.log(`Delete executive with ID: ${id}`);
-    }
-  }
 };
 
 export default AllExecutives;
