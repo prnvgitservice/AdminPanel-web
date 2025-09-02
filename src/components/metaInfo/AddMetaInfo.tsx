@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { ArrowLeft, BookOpen, MapPin, RefreshCw } from "lucide-react";
 import { BiSolidCategory } from "react-icons/bi";
 import {
@@ -39,184 +39,197 @@ const AddMetaInfo: React.FC = () => {
   const cityOptions = ["Hyderabad"];
   const navigate = useNavigate();
 
-//     const config = {
-//   readonly: false,
-//   placeholder: "Start typing your SEO content...",
-//   minHeight: 300,
-//   buttons: [
-//     "bold",
-//     "italic",
-//     "underline",
-//     "|",
-//     "ul",
-//     "ol",
-//     "|",
-//     "link",
-//     "table",
-//     "|",
-//     "undo",
-//     "redo",
-//     "|",
-//     "source",
-//     "fullsize",
-//   ],
-//   enableDragAndDropFileToEditor: true,
-//   copyFormat: true, // Preserve formatting within editor
-//   pasteFromWord: true, // Handle Word content
-//   pasteFromWordClean: true, // Aggressively clean Word-specific tags
-//   askBeforePasteHTML: false, // No prompt for HTML pasting
-//   askBeforePasteFromWord: false, // No prompt for Word pasting
-//   defaultActionOnPaste: "insert_only_html", // Prefer HTML content over plain text
-//   pastePlain: false, // Retain formatting
-//   cleanHTML: {
-//     cleanOnPaste: true, // Remove unwanted tags/styles
-//     removeEmptyElements: true, // Remove empty tags
-//     fillEmptyParagraph: false, // Avoid extra paragraphs
-//     replaceOldTags: true, // Replace deprecated tags (e.g., <b> to <strong>)
-//     cleanWordHTML: true, // Enhanced Word HTML cleanup
-//   },
-//   clipboard: {
-//     useNativeClipboard: true, // Use browser's native clipboard API
-//     cleanPastedHTML: true, // Clean HTML on paste
-//     stripTags: ["script", "style", "meta"], // Remove dangerous tags
-//   },
-//   uploader: {
-//     insertImageAsBase64URI: true, // Embed images as Base64
-//     imagesExtensions: ["jpg", "png", "jpeg", "gif"], // Supported image types
-//   },
-//   style: {
-//     fontFamily: "Arial, sans-serif",
-//   },
-// };
-// events: {
-//   afterPaste: (e) => {
-//     console.log("Pasted HTML:", e.getData("text/html"));
-//     console.log("Pasted Text:", e.getData("text/plain"));
-//     return true; // Allow paste to proceed
-//   },
-//   beforePaste: (e) => {
-//     console.log("Before Paste:", e.getData("text/html"));
-//     return true; // Allow preprocessing if needed
-//   }
-// }
-
-  const config = {
-  readonly: false,
-  placeholder: "Start typing your SEO content...",
-  minHeight: 400,
-  buttons: [
-    "bold",
-    "italic",
-    "underline",
-    "strikethrough",
-    "|",
-    "h1",
-    "h2",
-    "h3",
-    "|",
-    {
-      name: "ul",
-      tooltip: "Insert Unordered List",
-      icon: "ul",
-      list: {
-        disc: "Disc",
-        circle: "Circle",
-        square: "Square",
-      },
-      exec: (editor, event, { control }) => {
-        const style = control.args ? control.args[0] : "disc";
-        editor.execCommand("insertUnorderedList");
-        const ul = editor.selection.getNode()?.closest("ul");
-        if (ul) {
-          ul.style.listStyleType = style;
-          console.log(`Applied UL style: ${style}, HTML: ${ul.outerHTML}`);
-        } else {
-          console.warn("No UL found after inserting unordered list");
-        }
-      },
-    },
-    {
-      name: "ol",
-      tooltip: "Insert Ordered List",
-      icon: "ol",
-      list: {
-        decimal: "Numbers",
-        "upper-roman": "Upper Roman",
-        "lower-alpha": "Lower Alpha",
-        "lower-roman": "Lower Roman",
-        "upper-alpha": "Upper Alpha",
-      },
-      exec: (editor, event, { control }) => {
-        const style = control.args ? control.args[0] : "decimal";
-        editor.execCommand("insertOrderedList");
-        const ol = editor.selection.getNode()?.closest("ol");
-        if (ol) {
-          ol.style.listStyleType = style;
-          console.log(`Applied OL style: ${style}, HTML: ${ol.outerHTML}`);
-        } else {
-          console.warn("No OL found after inserting ordered list");
-        }
-      },
-    },
-    "|",
-    "link",
-    "image",
-    "table",
-    "|",
-    "undo",
-    "redo",
-    "|",
-    "align",
-    "font",
-    "fontsize",
-    "|",
-    "source",
-    "fullsize",
-  ],
-  enableDragAndDropFileToEditor: true,
-  copyFormat: true,
-  pasteFromWord: true,
-  pasteFromWordClean: true,
-  askBeforePasteHTML: false,
-  askBeforePasteFromWord: false,
-  defaultActionOnPaste: "insert_as_html",
-  pastePlain: false,
-  cleanHTML: {
-    cleanOnPaste: true,
-    removeEmptyElements: false,
-    fillEmptyParagraph: false,
-    replaceOldTags: true,
-    cleanWordHTML: true,
-    allowTags: {
-      ul: { "list-style-type": true, class: true, style: true },
-      ol: { "list-style-type": true, class: true, style: true },
-      li: { class: true, style: true },
-      p: { class: true, style: true },
-      span: { class: true, style: true },
-      div: { class: true, style: true },
-      b: true,
-      strong: true,
-      i: true,
-      em: true,
-      a: { href: true, target: true },
-      img: { src: true, alt: true },
-    },
-    denyTags: ["script", "style", "meta", "o:p", "w:sdtdoc"],
-    cleanAttributes: ["data-*", "id"],
-  },
-  clipboard: {
-    useNativeClipboard: true,
-    cleanPastedHTML: true,
-  },
-  uploader: {
-    insertImageAsBase64URI: true,
-    imagesExtensions: ["jpg", "png", "jpeg", "gif"],
-  },
-  style: {
-    fontFamily: "Arial, sans-serif",
-  },
-};
-
+  // JoditEditor configuration
+ const config = useMemo(
+     () => ({
+       readonly: false,
+       placeholder: "Start typing your SEO content...",
+       minHeight: 400,
+       buttons: [
+         "bold",
+         "italic",
+         "underline",
+         "strikethrough",
+         "|",
+         "h1",
+         "h2",
+         "h3",
+         "h4",
+         "h5",
+         "h6",
+         "|",
+         {
+           name: "ul",
+           tooltip: "Insert Unordered List",
+           icon: "ul",
+           list: {
+             disc: "Disc",
+             circle: "Circle",
+             square: "Square",
+           },
+           exec: (editor: Jodit, event: any, { control }: any) => {
+             const style = control.args ? control.args[0] : "disc";
+             editor.execCommand("insertUnorderedList");
+             const ul = editor.selection.getNode()?.closest("ul");
+             if (ul) {
+               ul.style.listStyleType = style;
+             }
+           },
+         },
+         {
+           name: "ol",
+           tooltip: "Insert Ordered List",
+           icon: "ol",
+           list: {
+             decimal: "Numbers",
+             "upper-roman": "Upper Roman",
+             "lower-alpha": "Lower Alpha",
+             "lower-roman": "Lower Roman",
+             "upper-alpha": "Upper Alpha",
+           },
+           exec: (editor: Jodit, event: any, { control }: any) => {
+             const style = control.args ? control.args[0] : "decimal";
+             editor.execCommand("insertOrderedList");
+             const ol = editor.selection.getNode()?.closest("ol");
+             if (ol) {
+               ol.style.listStyleType = style;
+             }
+           },
+         },
+         "|",
+         "link",
+         "image",
+         {
+           name: "table",
+           tooltip: "Insert Table",
+           icon: "table",
+           popup: (editor: Jodit) => {
+             return editor.create.inside.element("div", {
+               class: "jodit_popup_table",
+               innerHTML: `
+                 <div>
+                   <label>Rows: <input type="number" min="1" value="2" class="jodit_table_rows"></label>
+                   <label>Cols: <input type="number" min="1" value="2" class="jodit_table_cols"></label>
+                   <button type="button" class="jodit_table_insert">Insert</button>
+                 </div>
+               `,
+             });
+           },
+           exec: (editor: Jodit, event: any, { control }: any) => {
+             const popup = control.control.popup;
+             const rowsInput = popup.querySelector(".jodit_table_rows") as HTMLInputElement;
+             const colsInput = popup.querySelector(".jodit_table_cols") as HTMLInputElement;
+             const insertButton = popup.querySelector(".jodit_table_insert") as HTMLButtonElement;
+             insertButton.onclick = () => {
+               const rows = parseInt(rowsInput.value) || 2;
+               const cols = parseInt(colsInput.value) || 2;
+               const table = editor.create.inside.element("table");
+               for (let i = 0; i < rows; i++) {
+                 const tr = editor.create.inside.element("tr");
+                 for (let j = 0; j < cols; j++) {
+                   const td = editor.create.inside.element("td");
+                   td.innerHTML = "&nbsp;";
+                   tr.appendChild(td);
+                 }
+                 table.appendChild(tr);
+               }
+               editor.selection.insertNode(table);
+               console.log("Table inserted:", table.outerHTML);
+             };
+           },
+         },
+         "|",
+         "undo",
+         "redo",
+         "|",
+         "align",
+         "font",
+         "fontsize",
+         "|",
+         "source",
+         "fullsize",
+       ],
+       enableDragAndDropFileToEditor: true,
+       copyFormat: true,
+       pasteFromWord: true,
+       pasteFromWordClean: true,
+       askBeforePasteHTML: false,
+       askBeforePasteFromWord: false,
+       defaultActionOnPaste: "insert_as_html",
+       pastePlain: false,
+       cleanHTML: {
+         cleanOnPaste: false,
+         removeEmptyElements: false,
+         fillEmptyParagraph: false,
+         replaceOldTags: false,
+         cleanWordHTML: true,
+         allowTags: {
+           p: { class: true, style: true },
+           div: { class: true, style: true },
+           span: { class: true, style: true },
+           ul: { "list-style-type": true, class: true, style: true },
+           ol: { "list-style-type": true, class: true, style: true },
+           li: { class: true, style: true },
+           b: true,
+           strong: true,
+           i: true,
+           em: true,
+           a: { href: true, target: true, rel: true },
+           img: { src: true, alt: true, class: true, style: true },
+           h1: { class: true, style: true },
+           h2: { class: true, style: true },
+           h3: { class: true, style: true },
+           h4: { class: true, style: true },
+           h5: { class: true, style: true },
+           h6: { class: true, style: true },
+           table: { class: true, style: true, border: true, cellpadding: true, cellspacing: true },
+           tr: { class: true, style: true },
+           td: { class: true, style: true, colspan: true, rowspan: true },
+           th: { class: true, style: true, colspan: true, rowspan: true },
+           tbody: { class: true, style: true },
+           thead: { class: true, style: true },
+           tfoot: { class: true, style: true },
+           caption: { class: true, style: true },
+           blockquote: { class: true, style: true },
+           br: true,
+         },
+         denyTags: ["script", "style", "meta", "o:p", "w:sdtdoc"],
+         cleanAttributes: [], // Disable attribute cleaning to preserve table attributes
+       },
+       clipboard: {
+         useNativeClipboard: true,
+         cleanPastedHTML: false,
+       },
+       disablePlugins: [], // Ensure table plugin is not disabled
+       table: {
+         allowResize: true,
+         allowMerge: true,
+         allowSplit: true,
+       },
+       uploader: {
+         insertImageAsBase64URI: true,
+         imagesExtensions: ["jpg", "png", "jpeg", "gif"],
+       },
+       style: {
+         fontFamily: "Arial, sans-serif",
+       },
+       events: {
+         afterInit: (editor: Jodit) => {
+           console.log("JoditEditor initialized with content:", editor.getEditorValue());
+         },
+         change: (newContent: string) => {
+           console.log("Editor content changed:", newContent);
+         },
+         focus: () => {
+           console.log("Editor focused, current content:", editor.current?.getEditorValue());
+         },
+         afterInsertNode: (node: Node) => {
+           console.log("Node inserted:", node.outerHTML || node.textContent);
+         },
+       },
+     }),
+     []
+   );
 
   useEffect(() => {
     const fetchCategories = async () => {
