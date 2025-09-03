@@ -170,8 +170,8 @@ const endpoints: any = {
 
   getAllSearchContents: {
     method: "get",
-    url: ({offset, limit, searchTerm}: {offset: number, limit: number, searchTerm: string}) => {
-      return `/api/searchContentData/getAllSearchContents?offset=${offset}&limit=${limit}&search=${searchTerm}`
+    url: ({offset, limit}: {offset: number, limit: number}) => {
+      return `/api/searchContentData/getAllSearchContents?offset=${offset}&limit=${limit}`
     }
   },
 

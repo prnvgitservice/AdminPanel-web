@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { ArrowLeft, Upload, Wrench } from "lucide-react";
 import { addCategory, updateCategory } from "../../api/apiMethods";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -183,122 +183,313 @@ const AddCategory: React.FC<AddCategoryProps> = ({ isEdit = false }) => {
 //   },
 // };
 
-    const config = {
-  readonly: false,
-  placeholder: "Start typing your SEO content...",
-  minHeight: 400,
-  buttons: [
-    "bold",
-    "italic",
-    "underline",
-    "strikethrough",
-    "|",
-    "h1",
-    "h2",
-    "h3",
-    "|",
-    {
-      name: "ul",
-      tooltip: "Insert Unordered List",
-      icon: "ul",
-      list: {
-        disc: "Disc",
-        circle: "Circle",
-        square: "Square",
-      },
-      exec: (editor, event, { control }) => {
-        const style = control.args ? control.args[0] : "disc";
-        editor.execCommand("insertUnorderedList");
-        const ul = editor.selection.getNode()?.closest("ul");
-        if (ul) {
-          ul.style.listStyleType = style;
-          console.log(`Applied UL style: ${style}, HTML: ${ul.outerHTML}`);
-        } else {
-          console.warn("No UL found after inserting unordered list");
-        }
-      },
-    },
-    {
-      name: "ol",
-      tooltip: "Insert Ordered List",
-      icon: "ol",
-      list: {
-        decimal: "Numbers",
-        "upper-roman": "Upper Roman",
-        "lower-alpha": "Lower Alpha",
-        "lower-roman": "Lower Roman",
-        "upper-alpha": "Upper Alpha",
-      },
-      exec: (editor, event, { control }) => {
-        const style = control.args ? control.args[0] : "decimal";
-        editor.execCommand("insertOrderedList");
-        const ol = editor.selection.getNode()?.closest("ol");
-        if (ol) {
-          ol.style.listStyleType = style;
-          console.log(`Applied OL style: ${style}, HTML: ${ol.outerHTML}`);
-        } else {
-          console.warn("No OL found after inserting ordered list");
-        }
-      },
-    },
-    "|",
-    "link",
-    "image",
-    "table",
-    "|",
-    "undo",
-    "redo",
-    "|",
-    "align",
-    "font",
-    "fontsize",
-    "|",
-    "source",
-    "fullsize",
-  ],
-  enableDragAndDropFileToEditor: true,
-  copyFormat: true,
-  pasteFromWord: true,
-  pasteFromWordClean: true,
-  askBeforePasteHTML: false,
-  askBeforePasteFromWord: false,
-  defaultActionOnPaste: "insert_as_html",
-  pastePlain: false,
-  cleanHTML: {
-    cleanOnPaste: true,
-    removeEmptyElements: false,
-    fillEmptyParagraph: false,
-    replaceOldTags: true,
-    cleanWordHTML: true,
-    allowTags: {
-      ul: { "list-style-type": true, class: true, style: true },
-      ol: { "list-style-type": true, class: true, style: true },
-      li: { class: true, style: true },
-      p: { class: true, style: true },
-      span: { class: true, style: true },
-      div: { class: true, style: true },
-      b: true,
-      strong: true,
-      i: true,
-      em: true,
-      a: { href: true, target: true },
-      img: { src: true, alt: true },
-    },
-    denyTags: ["script", "style", "meta", "o:p", "w:sdtdoc"],
-    cleanAttributes: ["data-*", "id"],
-  },
-  clipboard: {
-    useNativeClipboard: true,
-    cleanPastedHTML: true,
-  },
-  uploader: {
-    insertImageAsBase64URI: true,
-    imagesExtensions: ["jpg", "png", "jpeg", "gif"],
-  },
-  style: {
-    fontFamily: "Arial, sans-serif",
-  },
-};
+//     const config = {
+//   readonly: false,
+//   placeholder: "Start typing your SEO content...",
+//   minHeight: 400,
+//   buttons: [
+//     "bold",
+//     "italic",
+//     "underline",
+//     "strikethrough",
+//     "|",
+//     "h1",
+//     "h2",
+//     "h3",
+//     "|",
+//     {
+//       name: "ul",
+//       tooltip: "Insert Unordered List",
+//       icon: "ul",
+//       list: {
+//         disc: "Disc",
+//         circle: "Circle",
+//         square: "Square",
+//       },
+//       exec: (editor, event, { control }) => {
+//         const style = control.args ? control.args[0] : "disc";
+//         editor.execCommand("insertUnorderedList");
+//         const ul = editor.selection.getNode()?.closest("ul");
+//         if (ul) {
+//           ul.style.listStyleType = style;
+//           console.log(`Applied UL style: ${style}, HTML: ${ul.outerHTML}`);
+//         } else {
+//           console.warn("No UL found after inserting unordered list");
+//         }
+//       },
+//     },
+//     {
+//       name: "ol",
+//       tooltip: "Insert Ordered List",
+//       icon: "ol",
+//       list: {
+//         decimal: "Numbers",
+//         "upper-roman": "Upper Roman",
+//         "lower-alpha": "Lower Alpha",
+//         "lower-roman": "Lower Roman",
+//         "upper-alpha": "Upper Alpha",
+//       },
+//       exec: (editor, event, { control }) => {
+//         const style = control.args ? control.args[0] : "decimal";
+//         editor.execCommand("insertOrderedList");
+//         const ol = editor.selection.getNode()?.closest("ol");
+//         if (ol) {
+//           ol.style.listStyleType = style;
+//           console.log(`Applied OL style: ${style}, HTML: ${ol.outerHTML}`);
+//         } else {
+//           console.warn("No OL found after inserting ordered list");
+//         }
+//       },
+//     },
+//     "|",
+//     "link",
+//     "image",
+//     "table",
+//     "|",
+//     "undo",
+//     "redo",
+//     "|",
+//     "align",
+//     "font",
+//     "fontsize",
+//     "|",
+//     "source",
+//     "fullsize",
+//   ],
+//   enableDragAndDropFileToEditor: true,
+//   copyFormat: true,
+//   pasteFromWord: true,
+//   pasteFromWordClean: true,
+//   askBeforePasteHTML: false,
+//   askBeforePasteFromWord: false,
+//   defaultActionOnPaste: "insert_as_html",
+//   pastePlain: false,
+//   cleanHTML: {
+//     cleanOnPaste: true,
+//     removeEmptyElements: false,
+//     fillEmptyParagraph: false,
+//     replaceOldTags: true,
+//     cleanWordHTML: true,
+//     allowTags: {
+//       ul: { "list-style-type": true, class: true, style: true },
+//       ol: { "list-style-type": true, class: true, style: true },
+//       li: { class: true, style: true },
+//       p: { class: true, style: true },
+//       span: { class: true, style: true },
+//       div: { class: true, style: true },
+//       b: true,
+//       strong: true,
+//       i: true,
+//       em: true,
+//       a: { href: true, target: true },
+//       img: { src: true, alt: true },
+//     },
+//     denyTags: ["script", "style", "meta", "o:p", "w:sdtdoc"],
+//     cleanAttributes: ["data-*", "id"],
+//   },
+//   clipboard: {
+//     useNativeClipboard: true,
+//     cleanPastedHTML: true,
+//   },
+//   uploader: {
+//     insertImageAsBase64URI: true,
+//     imagesExtensions: ["jpg", "png", "jpeg", "gif"],
+//   },
+//   style: {
+//     fontFamily: "Arial, sans-serif",
+//   },
+// };
+
+  const config = useMemo(
+      () => ({
+        readonly: false,
+        placeholder: "Start typing your SEO content...",
+        minHeight: 400,
+        buttons: [
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "|",
+          "h1",
+          "h2",
+          "h3",
+          "h4",
+          "h5",
+          "h6",
+          "|",
+          {
+            name: "ul",
+            tooltip: "Insert Unordered List",
+            icon: "ul",
+            list: {
+              disc: "Disc",
+              circle: "Circle",
+              square: "Square",
+            },
+            exec: (editor: Jodit, event: any, { control }: any) => {
+              const style = control.args ? control.args[0] : "disc";
+              editor.execCommand("insertUnorderedList");
+              const ul = editor.selection.getNode()?.closest("ul");
+              if (ul) {
+                ul.style.listStyleType = style;
+              }
+            },
+          },
+          {
+            name: "ol",
+            tooltip: "Insert Ordered List",
+            icon: "ol",
+            list: {
+              decimal: "Numbers",
+              "upper-roman": "Upper Roman",
+              "lower-alpha": "Lower Alpha",
+              "lower-roman": "Lower Roman",
+              "upper-alpha": "Upper Alpha",
+            },
+            exec: (editor: Jodit, event: any, { control }: any) => {
+              const style = control.args ? control.args[0] : "decimal";
+              editor.execCommand("insertOrderedList");
+              const ol = editor.selection.getNode()?.closest("ol");
+              if (ol) {
+                ol.style.listStyleType = style;
+              }
+            },
+          },
+          "|",
+          "link",
+          "image",
+          {
+            name: "table",
+            tooltip: "Insert Table",
+            icon: "table",
+            popup: (editor: Jodit) => {
+              return editor.create.inside.element("div", {
+                class: "jodit_popup_table",
+                innerHTML: `
+                  <div>
+                    <label>Rows: <input type="number" min="1" value="2" class="jodit_table_rows"></label>
+                    <label>Cols: <input type="number" min="1" value="2" class="jodit_table_cols"></label>
+                    <button type="button" class="jodit_table_insert">Insert</button>
+                  </div>
+                `,
+              });
+            },
+            exec: (editor: Jodit, event: any, { control }: any) => {
+              const popup = control.control.popup;
+              const rowsInput = popup.querySelector(".jodit_table_rows") as HTMLInputElement;
+              const colsInput = popup.querySelector(".jodit_table_cols") as HTMLInputElement;
+              const insertButton = popup.querySelector(".jodit_table_insert") as HTMLButtonElement;
+              insertButton.onclick = () => {
+                const rows = parseInt(rowsInput.value) || 2;
+                const cols = parseInt(colsInput.value) || 2;
+                const table = editor.create.inside.element("table");
+                for (let i = 0; i < rows; i++) {
+                  const tr = editor.create.inside.element("tr");
+                  for (let j = 0; j < cols; j++) {
+                    const td = editor.create.inside.element("td");
+                    td.innerHTML = "&nbsp;";
+                    tr.appendChild(td);
+                  }
+                  table.appendChild(tr);
+                }
+                editor.selection.insertNode(table);
+                console.log("Table inserted:", table.outerHTML);
+              };
+            },
+          },
+          "|",
+          "undo",
+          "redo",
+          "|",
+          "align",
+          "font",
+          "fontsize",
+          "|",
+          "source",
+          "fullsize",
+        ],
+        enableDragAndDropFileToEditor: true,
+        copyFormat: true,
+        pasteFromWord: true,
+        pasteFromWordClean: true,
+        askBeforePasteHTML: false,
+        askBeforePasteFromWord: false,
+        defaultActionOnPaste: "insert_as_html",
+        pastePlain: false,
+        cleanHTML: {
+          cleanOnPaste: false,
+          removeEmptyElements: false,
+          fillEmptyParagraph: false,
+          replaceOldTags: false,
+          cleanWordHTML: true,
+          allowTags: {
+            p: { class: true, style: true },
+            div: { class: true, style: true },
+            span: { class: true, style: true },
+            ul: { "list-style-type": true, class: true, style: true },
+            ol: { "list-style-type": true, class: true, style: true },
+            li: { class: true, style: true },
+            b: true,
+            strong: true,
+            i: true,
+            em: true,
+            a: { href: true, target: true, rel: true },
+            img: { src: true, alt: true, class: true, style: true },
+            h1: { class: true, style: true },
+            h2: { class: true, style: true },
+            h3: { class: true, style: true },
+            h4: { class: true, style: true },
+            h5: { class: true, style: true },
+            h6: { class: true, style: true },
+            table: { class: true, style: true, border: true, cellpadding: true, cellspacing: true },
+            tr: { class: true, style: true },
+            td: { class: true, style: true, colspan: true, rowspan: true },
+            th: { class: true, style: true, colspan: true, rowspan: true },
+            tbody: { class: true, style: true },
+            thead: { class: true, style: true },
+            tfoot: { class: true, style: true },
+            caption: { class: true, style: true },
+            blockquote: { class: true, style: true },
+            br: true,
+          },
+          denyTags: ["script", "style", "meta", "o:p", "w:sdtdoc"],
+          cleanAttributes: [], // Disable attribute cleaning to preserve table attributes
+        },
+        clipboard: {
+          useNativeClipboard: true,
+          cleanPastedHTML: false,
+        },
+        disablePlugins: [], // Ensure table plugin is not disabled
+        table: {
+          allowResize: true,
+          allowMerge: true,
+          allowSplit: true,
+        },
+        uploader: {
+          insertImageAsBase64URI: true,
+          imagesExtensions: ["jpg", "png", "jpeg", "gif"],
+        },
+        style: {
+          fontFamily: "Arial, sans-serif",
+        },
+        events: {
+          afterInit: (editor: Jodit) => {
+            console.log("JoditEditor initialized with content:", editor.getEditorValue());
+          },
+          change: (newContent: string) => {
+            console.log("Editor content changed:", newContent);
+          },
+          focus: () => {
+            console.log("Editor focused, current content:", editor.current?.getEditorValue());
+          },
+          afterInsertNode: (node: Node) => {
+            console.log("Node inserted:", node.outerHTML || node.textContent);
+          },
+        },
+      }),
+      []
+    );
 
   useEffect(() => {
     if (isEdit && category) {
