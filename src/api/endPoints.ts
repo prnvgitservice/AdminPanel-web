@@ -206,6 +206,11 @@ const endpoints: any = {
     url: ({offset, limit}: {offset: number, limit: number}) => {
       return `/api/executiveAuth/getAllExecutives?offset=${offset}&limit=${limit}`
     }
+  },
+
+  deleteExecutiveProfile: {
+    method: "delete",
+    url: (id: string) => `/api/executiveAuth/deleteExecutiveProfile/${id}`
   }
 };
 

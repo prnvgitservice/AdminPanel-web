@@ -67,6 +67,9 @@ export const deleteBlog = (blogId: string, data: any) => apiRequest("deleteBlog"
 export const getAllExecutives = (data: {offset: number, limit: number}) => apiRequest("getAllExecutives", null, data);
 
 
+export const deleteExecutiveProfile = (id: string) => apiRequest("deleteExecutiveProfile", null, id);
+
+
 
 // // API Methods file (unchanged, as no errors found here)
 // // File: apiMethods.ts (or similar)

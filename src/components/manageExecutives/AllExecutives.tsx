@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Filter, Plus, Eye, Pencil, Trash2 } from 'lucide-react';
-import { getAllExecutives } from "../../api/apiMethods"; 
+import { getAllExecutives, deleteExecutiveProfile } from "../../api/apiMethods"; 
 
 interface ExecutiveProps {
   onAddExecutive?: () => void;
@@ -49,7 +49,7 @@ const AllExecutives: React.FC<ExecutiveProps> = ({ onAddExecutive }) => {
   const handleFilterSubmit = () => {
     console.log('Applying filters:', filters);
     setShowFilter(false);
-    fetchAllExecutives(); // Re-fetch with filters
+    fetchAllExecutives(); 
   };
 
   const handlePageChange = (page: number) => {
@@ -64,7 +64,7 @@ const AllExecutives: React.FC<ExecutiveProps> = ({ onAddExecutive }) => {
     fetchAllExecutives(1, newItemsPerPage);
   };
 
-  // Action handlers
+  
   const handleView = (id: string) => {
     console.log(`View executive with ID: ${id}`);
   };
@@ -73,9 +73,23 @@ const AllExecutives: React.FC<ExecutiveProps> = ({ onAddExecutive }) => {
     console.log(`Edit executive with ID: ${id}`);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this executive?')) {
-      console.log(`Delete executive with ID: ${id}`);
+      try {
+        setLoading(true);
+        const response = await deleteExecutiveProfile(id);
+        if (response?.success) {
+         
+          await fetchAllExecutives(currentPage, itemsPerPage);
+          alert('Executive deleted successfully');
+        } else {
+          setError('Failed to delete executive');
+        }
+      } catch (err: any) {
+        setError(err?.message || 'Failed to delete executive');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -328,6 +342,7 @@ export default AllExecutives;
 
 // import React, { useEffect, useState } from 'react';
 // import { Filter, Plus, Eye, Pencil, Trash2 } from 'lucide-react';
+// import { getAllExecutives } from "../../api/apiMethods"; 
 
 // interface ExecutiveProps {
 //   onAddExecutive?: () => void;
@@ -336,69 +351,16 @@ export default AllExecutives;
 // interface ExecutiveData {
 //   id: string;
 //   executiveId: string;
-//   executiveName: string;
-//   mobileNumber: string;
-//   joinDate: string;
-//   address: string;
-//   totalExecutives: number;
+//   executivename: string;
+//   phoneNumber: string;
+//   role: string;
+//   buildingName: string;
+//   areaName: string;
+//   city: string;
+//   state: string;
+//   pincode: string;
+//   profileImage?: string;
 // }
-
-// // Mock API service function
-// const getAllExecutives = async () => {
-//   return new Promise<{ executives: ExecutiveData[] }>((resolve) => {
-//     setTimeout(() => {
-//       resolve({
-//         executives: [
-//           {
-//             id: '1',
-//             executiveId: 'EX-001',
-//             executiveName: 'John Smith',
-//             mobileNumber: '9876543210',
-//             joinDate: '15-01-2024',
-//             address: '123 Business District, Mumbai, 400001',
-//             totalExecutives: 5
-//           },
-//           {
-//             id: '2',
-//             executiveId: 'EX-002',
-//             executiveName: 'Sarah Johnson',
-//             mobileNumber: '8765432109',
-//             joinDate: '22-02-2024',
-//             address: '456 Corporate Ave, Delhi, 110001',
-//             totalExecutives: 8
-//           },
-//           {
-//             id: '3',
-//             executiveId: 'EX-003',
-//             executiveName: 'Michael Chen',
-//             mobileNumber: '7654321098',
-//             joinDate: '10-03-2024',
-//             address: '789 Executive Plaza, Bangalore, 560001',
-//             totalExecutives: 3
-//           },
-//           {
-//             id: '4',
-//             executiveId: 'EX-004',
-//             executiveName: 'Emily Davis',
-//             mobileNumber: '6543210987',
-//             joinDate: '05-04-2024',
-//             address: '321 Management Street, Chennai, 600001',
-//             totalExecutives: 12
-//           },
-//           {
-//             id: '5',
-//             executiveId: 'EX-005',
-//             executiveName: 'David Wilson',
-//             mobileNumber: '5432109876',
-//             joinDate: '18-05-2024',
-//             address: '654 Leadership Lane, Pune, 411001',
-//             totalExecutives: 7
-//           }
-//         ]
-//       });
-//     }, 1000);
-//   });
-// };
 
 // const AllExecutives: React.FC<ExecutiveProps> = ({ onAddExecutive }) => {
 //   const [showFilter, setShowFilter] = useState(false);
@@ -408,15 +370,16 @@ export default AllExecutives;
 //   const [error, setError] = useState<string | null>(null);
 //   const [loading, setLoading] = useState(true);
 //   const [filters, setFilters] = useState({
-//     executiveName: '',
-//     mobileNumber: ''
+//     executivename: '',
+//     phoneNumber: ''
 //   });
+//   const [totalItems, setTotalItems] = useState(0);
 
 //   // Pagination calculations
 //   const indexOfLastItem = currentPage * itemsPerPage;
 //   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 //   const currentExecutives = executives.slice(indexOfFirstItem, indexOfLastItem);
-//   const totalPages = Math.ceil(executives.length / itemsPerPage);
+//   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
 //   const handleFilterChange = (field: string, value: string) => {
 //     setFilters(prev => ({
@@ -428,15 +391,19 @@ export default AllExecutives;
 //   const handleFilterSubmit = () => {
 //     console.log('Applying filters:', filters);
 //     setShowFilter(false);
+//     fetchAllExecutives(); // Re-fetch with filters
 //   };
 
 //   const handlePageChange = (page: number) => {
 //     setCurrentPage(page);
+//     fetchAllExecutives(page, itemsPerPage);
 //   };
 
 //   const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-//     setItemsPerPage(Number(e.target.value));
+//     const newItemsPerPage = Number(e.target.value);
+//     setItemsPerPage(newItemsPerPage);
 //     setCurrentPage(1);
+//     fetchAllExecutives(1, newItemsPerPage);
 //   };
 
 //   // Action handlers
@@ -454,12 +421,14 @@ export default AllExecutives;
 //     }
 //   };
 
-//   const fetchAllExecutives = async () => {
+//   const fetchAllExecutives = async (page: number = currentPage, limit: number = itemsPerPage) => {
 //     try {
 //       setLoading(true);
-//       const response = await getAllExecutives();
-//       if (response?.executives) {
+//       const offset = (page - 1) * limit;
+//       const response = await getAllExecutives({ offset, limit });
+//       if (response?.success && response?.executives) {
 //         setExecutives(response.executives);
+//         setTotalItems(response.total);
 //       } else {
 //         setError('Invalid response format');
 //       }
@@ -505,14 +474,14 @@ export default AllExecutives;
 //               <div>
 //                 <label className="block text-sm font-medium text-gray-700 mb-2">Executive Name</label>
 //                 <select
-//                   value={filters.executiveName}
-//                   onChange={(e) => handleFilterChange('executiveName', e.target.value)}
+//                   value={filters.executivename}
+//                   onChange={(e) => handleFilterChange('executivename', e.target.value)}
 //                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 //                 >
 //                   <option value="">Select executive name</option>
 //                   {executives.map(executive => (
-//                     <option key={executive.id} value={executive.executiveName}>
-//                       {executive.executiveName}
+//                     <option key={executive.id} value={executive.executivename}>
+//                       {executive.executivename}
 //                     </option>
 //                   ))}
 //                 </select>
@@ -521,14 +490,14 @@ export default AllExecutives;
 //               <div>
 //                 <label className="block text-sm font-medium text-gray-700 mb-2">Mobile No</label>
 //                 <select
-//                   value={filters.mobileNumber}
-//                   onChange={(e) => handleFilterChange('mobileNumber', e.target.value)}
+//                   value={filters.phoneNumber}
+//                   onChange={(e) => handleFilterChange('phoneNumber', e.target.value)}
 //                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 //                 >
 //                   <option value="">Select Mobile No</option>
 //                   {executives.map(executive => (
-//                     <option key={executive.id} value={executive.mobileNumber}>
-//                       {executive.mobileNumber}
+//                     <option key={executive.id} value={executive.phoneNumber}>
+//                       {executive.phoneNumber}
 //                     </option>
 //                   ))}
 //                 </select>
@@ -572,17 +541,16 @@ export default AllExecutives;
 //                 <tr>
 //                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Executive Name</th>
 //                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Executive ID</th>
-//                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mobile Number</th>
-//                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Join Date</th>
+//                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone Number</th>
+//                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
 //                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
-//                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Executives</th>
 //                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
 //                 </tr>
 //               </thead>
 //               <tbody className="bg-white divide-y divide-gray-200">
 //                 {loading ? (
 //                   <tr>
-//                     <td colSpan={7} className="px-6 py-8 text-center">
+//                     <td colSpan={6} className="px-6 py-8 text-center">
 //                       <div className="flex justify-center items-center">
 //                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
 //                       </div>
@@ -590,13 +558,13 @@ export default AllExecutives;
 //                   </tr>
 //                 ) : error ? (
 //                   <tr>
-//                     <td colSpan={7} className="px-6 py-8 text-center text-red-500">
+//                     <td colSpan={6} className="px-6 py-8 text-center text-red-500">
 //                       {error}
 //                     </td>
 //                   </tr>
 //                 ) : currentExecutives.length === 0 ? (
 //                   <tr>
-//                     <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+//                     <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
 //                       No executives found
 //                     </td>
 //                   </tr>
@@ -604,18 +572,13 @@ export default AllExecutives;
 //                   currentExecutives.map((executive) => (
 //                     <tr key={executive.id} className="hover:bg-gray-50 transition-colors duration-150">
 //                       <td className="px-6 py-4 whitespace-nowrap">
-//                         <span className="text-sm font-medium text-gray-900">{executive.executiveName}</span>
+//                         <span className="text-sm font-medium text-gray-900">{executive.executivename}</span>
 //                       </td>
 //                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">{executive.executiveId}</td>
-//                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{executive.mobileNumber}</td>
-//                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{executive.joinDate}</td>
+//                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{executive.phoneNumber}</td>
+//                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{executive.role}</td>
 //                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 max-w-xs">
-//                         <div className="truncate">{executive.address}</div>
-//                       </td>
-//                       <td className="px-6 py-4 whitespace-nowrap text-center">
-//                         <span className="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-//                           {executive.totalExecutives}
-//                         </span>
+//                         <div className="truncate">{`${executive.buildingName}, ${executive.areaName}, ${executive.city}, ${executive.state} ${executive.pincode}`}</div>
 //                       </td>
 //                       <td className="px-6 py-4 whitespace-nowrap">
 //                         <div className="flex items-center space-x-2">
@@ -653,8 +616,8 @@ export default AllExecutives;
 //           <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
 //             <div className="text-sm text-gray-700">
 //               Showing <span className="font-medium">{indexOfFirstItem + 1}</span> to{' '}
-//               <span className="font-medium">{Math.min(indexOfLastItem, executives.length)}</span> of{' '}
-//               <span className="font-medium">{executives.length}</span> executives
+//               <span className="font-medium">{Math.min(indexOfLastItem, totalItems)}</span> of{' '}
+//               <span className="font-medium">{totalItems}</span> executives
 //             </div>
 //             <div className="flex space-x-2">
 //               <button
@@ -696,21 +659,12 @@ export default AllExecutives;
 //       </div>
 //     </div>
 //   );
-
-//   // // Action handlers
-//   // function handleView(id: string) {
-//   //   console.log(`View executive with ID: ${id}`);
-//   // }
-
-//   // function handleEdit(id: string) {
-//   //   console.log(`Edit executive with ID: ${id}`);
-//   // }
-
-//   // function handleDelete(id: string) {
-//   //   if (window.confirm('Are you sure you want to delete this executive?')) {
-//   //     console.log(`Delete executive with ID: ${id}`);
-//   //   }
-//   // }
 // };
 
 // export default AllExecutives;
+
+
+
+
+
+
