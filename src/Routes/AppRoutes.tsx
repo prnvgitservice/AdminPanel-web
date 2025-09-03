@@ -37,15 +37,14 @@ import EditArea from "../components/areas/EditArea";
 import EditCategory from "../components/category/EditCategory";
 import Sitemap from "../components/sitemap/Sitemap";
 import AddMetaInfo from "../components/metaInfo/AddMetaInfo";
-
-// Import the new components for blogs and get in touch
 import GetInTouch from "../components/enquiries/GetInTouch";
 import AllBlogs from "../components/blogs/AllBlogs";
 import AddBlog from "../components/blogs/BlogForm";
 import BlogForm from "../components/blogs/BlogForm";
 import ViewBlog from "../components/blogs/ViewBlog";
-
-
+// import ManageExecutives from "../components/manageExecutives/ManageExecutives";
+import AllExecutives from "../components/manageExecutives/AllExecutives";
+import AddExecutive from "../components/manageExecutives/AddExecutive";
 
 // Placeholder component for routes not yet implemented
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
@@ -145,7 +144,12 @@ const AppRoutes: React.FC = () => {
           element={<AdminCreatedFranchises />}
         />
 
-        
+        {/* Management - Executives: New routes for executive management */}
+        {/* <Route path="/management/executives" element={<ManageExecutives />} /> */}
+        <Route path="/management/executives/all" element={<AllExecutives />} />
+        {/* <Route path="/management/executives/add" element={<AddExecutives />} /> */}
+        <Route path="/management/executives/add" element={<AddExecutive />} />
+
         {/* Areas: Routes for managing service areas */}
         <Route path="/areas" element={<AllAreas />} />
         <Route path="/areas/all" element={<AllAreas />} />
@@ -180,7 +184,7 @@ const AppRoutes: React.FC = () => {
 
         {/* Advertisements: Routes for managing advertisements */}
         <Route
-          path="/advertisements"
+          price="/advertisements"
           element={<PlaceholderPage title="Advertisements" />}
         />
         <Route
