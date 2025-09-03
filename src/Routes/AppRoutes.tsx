@@ -46,6 +46,7 @@ import AddExecutive from "../components/manageExecutives/AddExecutive";
 import AllExecutives from "../components/manageExecutives/AllExecutives";
 import AllReferrals from "../components/manageReferrals/AllReferrals";
 import AddReferral from "../components/manageReferrals/AddReferral";
+import AuthLayout from "../layout/AuthLayout";
 
 
 
@@ -61,12 +62,14 @@ const AppRoutes: React.FC = () => {
   return (
     <Routes>
       {/* All routes are wrapped in the Layout component, which includes the sidebar */}
+      <Route element={<AuthLayout />}>
+        <Route path="/login" element={<Login />} />
+      </Route>
+
       <Route element={<Layout />}>
         {/* Dashboard: Main landing page */}
         <Route path="/" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
-
-        <Route path="/login" element={<Login />} />
 
         <Route path="/profile" element={<Profile />} />
 

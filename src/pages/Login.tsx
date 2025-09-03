@@ -1,26 +1,35 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     // For demo purposes, just navigate to dashboard
-    navigate('/');
+    navigate("/");
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+    <div className="bg-gray-50 flex items-center justify-center py-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         {/* Logo and Header */}
-        <div className="text-center">
-          <div className="mx-auto w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mb-6">
-            <div className="text-white text-2xl font-bold">P</div>
+        {/* <div className="text-white text-2xl font-bold">P</div> */}
+        <div className="flex justify-center mb-6">
+          <div className="bg-blue-900 rounded px-2 py-1 flex items-center">
+            <img
+              src="https://prnvservices.com/uploads/logo/1695377568_logo-white.png"
+              alt="Justdial Logo"
+              className="h-8 w-auto"
+            />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900">LOGIN PRNV SERVICES</h2>
+        </div>
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900">
+            LOGIN PRNV SERVICES
+          </h2>
           <p className="mt-2 text-gray-600">Access to our dashboard</p>
         </div>
 
@@ -28,7 +37,10 @@ const Login: React.FC = () => {
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Username
               </label>
               <input
@@ -43,7 +55,10 @@ const Login: React.FC = () => {
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Password
               </label>
               <input
