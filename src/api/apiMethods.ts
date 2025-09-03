@@ -66,3 +66,5 @@ export const createBlog = (data: any) => apiRequest("createBlog", data);
 export const updateBlog = (data: any) => apiRequest("updateBlog", data);
 
 export const deleteBlog = (blogId: string, data: any) => apiRequest("deleteBlog", data, blogId);
+
+export const registerExecutiveByAdmin = (data: any) => apiRequest("registerExecutiveByAdmin", data);

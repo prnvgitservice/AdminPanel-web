@@ -210,7 +210,14 @@ const endpoints: any = {
   deleteBlog: {
     method: "delete",
     url: (blogId: string) => `/api/blog/delete/${blogId}`
-  }
+  },
+
+  registerExecutiveByAdmin: {
+    method: "post",
+    url: () => {
+      return `/api/executiveAuth/registerExecutiveByAdmin`;
+    },
+  },
 };
 
 export default endpoints;
