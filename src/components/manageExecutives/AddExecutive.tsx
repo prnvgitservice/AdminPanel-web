@@ -32,7 +32,7 @@ const initialFormState: ExecutiveData = {
   executivename: '',
   phoneNumber: '',
   password: '',
-  role: 'senior marketing executive',
+  role: '',
   buildingName: '',
   areaName: '',
   city: '',
