@@ -369,16 +369,17 @@ const AddMetaInfo: React.FC = () => {
       const response = await createSeoContent(requestData);
       if (response?.success) {
         alert("Meta Info added Successfully!");
-        setFormData({
-          categoryId: "",
-          areaName: "",
-          city: "",
-          state: "",
-          pincode: "",
-          metaTitle: "",
-          metaDescription: "",
-          seoContent: "",
-        });
+        handleReset();
+        // setFormData({
+        //   categoryId: "",
+        //   areaName: "",
+        //   city: "",
+        //   state: "",
+        //   pincode: "",
+        //   metaTitle: "",
+        //   metaDescription: "",
+        //   seoContent: "",
+        // });
       } else {
         throw new Error(response?.message || "Failed to submit review");
       }
