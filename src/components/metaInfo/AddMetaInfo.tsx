@@ -237,7 +237,8 @@ const AddMetaInfo: React.FC = () => {
       try {
         const res = await getAllCategories();
         if (res.success && Array.isArray(res.data)) {
-          setCategories(res.data.filter((cat) => cat?.status === 1));
+          setCategories(res.data);
+          // setCategories(res.data.filter((cat) => cat?.status === 1));
         } else {
           setError("Failed to fetch categories");
         }
@@ -644,6 +645,7 @@ const AddMetaInfo: React.FC = () => {
 };
 
 export default AddMetaInfo;
+
 // import { useState, useEffect, useMemo, useRef } from "react";
 // import { ArrowLeft, BookOpen, MapPin, RefreshCw } from "lucide-react";
 // import { BiSolidCategory } from "react-icons/bi";
