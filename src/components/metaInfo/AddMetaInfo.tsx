@@ -15,7 +15,7 @@ const AddMetaInfo: React.FC = () => {
   const [pincodeData, setPincodeData] = useState([]);
   const [areaOptions, setAreaOptions] = useState([]);
   const [subAreaOptions, setSubAreaOptions] = useState([]);
-  const [selectedCity, setSelectedCity] = useState("Hyderabad");
+  const [selectedCity, setSelectedCity] = useState("");
   const [selectedState, setSelectedState] = useState("Telangana");
   const [selectedCategory, setSelectedCategory] = useState({
     name: "",
@@ -28,6 +28,7 @@ const AddMetaInfo: React.FC = () => {
   const [formData, setFormData] = useState({
     categoryId: "",
     areaName: "",
+    subAreaName: "",
     city: "",
     state: "",
     pincode: "",
@@ -347,8 +348,10 @@ const AddMetaInfo: React.FC = () => {
     try {
       if (
         !formData.categoryId ||
-        !selectedArea ||
-        !selectedPincode ||
+        !selectedCity ||
+        // !selectedState ||
+        // !selectedArea ||
+        // !selectedPincode ||
         !formData.metaTitle ||
         !formData.metaDescription ||
         !formData.seoContent
@@ -359,6 +362,7 @@ const AddMetaInfo: React.FC = () => {
       const requestData = {
         categoryId: formData.categoryId,
         areaName: selectedArea,
+        subAreaName: selectedSubArea,
         city: selectedCity,
         state: selectedState,
         pincode: selectedPincode,
@@ -396,7 +400,7 @@ const AddMetaInfo: React.FC = () => {
 
   const handleReset = () => {
     setSelectedCategory({ name: "", slug: "", id: "" });
-    setSelectedCity("Hyderabad");
+    setSelectedCity("");
     setSelectedState("Telangana");
     setSelectedPincode("");
     setSelectedArea("");
@@ -405,6 +409,7 @@ const AddMetaInfo: React.FC = () => {
     setFormData({
       categoryId: "",
       areaName: "",
+      subAreaName: "",
       city: "",
       state: "",
       pincode: "",
@@ -502,13 +507,13 @@ const AddMetaInfo: React.FC = () => {
                 </div>
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Area <span className="text-red-500">*</span>
+                    Area 
                   </label>
                   <select
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
                     value={selectedArea}
                     onChange={handleAreaChange}
-                    required
+                    // required
                   >
                     <option value="" disabled>
                       Select Area
@@ -609,6 +614,7 @@ const AddMetaInfo: React.FC = () => {
                   config={config}
                   onBlur={handleSeoContentChange}
                   onChange={(newContent) => {}}
+                required
                 />
               </div>
             </div>
