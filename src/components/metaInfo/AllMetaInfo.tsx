@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { ArrowLeft, BookOpen, Search, Edit, Trash2, Eye, Plus } from "lucide-react";
+import { ArrowLeft, BookOpen, Search, Edit, Trash2, Eye, Plus, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import "react-quill/dist/quill.snow.css";
-import { deleteCategorySearchDetails, getAllSearchContents } from "../../api/apiMethods";
 import debounce from "lodash/debounce";
+import {
+  deleteCategorySearchDetails,
+  getSeosByCateId,
+} from "../../api/apiMethods";
 import { useCategoryContext } from "../Context/CategoryContext";
 
-// Define interface for search content based on API response
 interface SearchContent {
   id: string;
   categoryId: string;
@@ -22,22 +23,6 @@ interface SearchContent {
   updatedAt: string;
 }
 
-// Define interface for category from CategoryContext
-interface Category {
-  _id: string;
-  category_name: string;
-  category_slug: string;
-  category_image: string;
-  meta_title: string;
-  meta_description: string;
-  status: number;
-  totalviews: number;
-  ratings: number | null;
-  seo_content: string;
-  updatedAt: string;
-}
-
-// Define interface for API response to ensure type safety
 interface ApiResponse {
   success: boolean;
   message?: string;
@@ -48,433 +33,301 @@ interface ApiResponse {
 }
 
 const AllMetaInfo = () => {
-  const { categories } = useCategoryContext();
-  const [searchContents, setSearchContents] = useState<SearchContent[]>([]);
+  const navigate = useNavigate();
+  const { categories, loading: categoriesLoading } = useCategoryContext();
+  console.log(categories,"categories")
+
+  const [contents, setContents] = useState<SearchContent[]>([]);
   const [filteredContents, setFilteredContents] = useState<SearchContent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+   const [showFilter, setShowFilter] = useState(false);
+
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState(0);
-  const [searchTerm, setSearchTerm] = useState("");
-  const navigate = useNavigate();
 
-  // Debounced fetch function with stable dependencies
-  const debouncedFetch = useCallback(
-    debounce((offset: number, limit: number) => {
-      fetchSearchContents(offset, limit);
-    }, 500),
-    [] // Empty dependency array to ensure stability
-  );
+  // pick first category as default
+  useEffect(() => {
+    if (categories.length > 0 && !selectedCategory) {
+      setSelectedCategory(categories[0]._id);
+    }
+  }, [categories, selectedCategory]);
 
-  // Fetch search contents with improved error handling
-  const fetchSearchContents = useCallback(
-    async (offset: number, limit: number) => {
+  /** Fetch SEO content by category */
+  const fetchSeoByCategory = useCallback(
+    async (categoryId: string, offset: number, limit: number) => {
+      if (!categoryId || offset < 0 || limit <= 0) return;
       try {
         setLoading(true);
-        setError(null);
+        const response = await getSeosByCateId(categoryId, offset, limit);
 
-        const response: ApiResponse = await getAllSearchContents({ offset, limit });
+        const results =
+          response?.data?.results?.map((content: any) => ({
+            ...content,  
+            categoryName:
+              categories.find((cat) => cat._id === content.categoryId)
+                ?.category_name || "Unknown",
+          })) || [];
 
-        if (!response.success) {
-          throw new Error(response.message || "Failed to fetch meta information");
-        }
-
-        setSearchContents(response.result.results || []);
-        setTotal(response.result.total || 0);
-      } catch (err: unknown) {
-        const errorMessage =
-          err instanceof Error
-            ? err.message
-            : "An unexpected error occurred. Please try again.";
-        setError(errorMessage);
+        setContents(results);
+        setTotal(response?.data?.total || results.length);
+         setError(null);
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch SEO content.");
+        setContents([]);
+        setTotal(0);
       } finally {
         setLoading(false);
-      }
+      } 
     },
-    []
+    [categories]
   );
 
-  // Filter contents by selected category and search term (pincode)
-  useEffect(() => {
-    let filtered = searchContents;
+useEffect(() => {
+  if (selectedCategory && Number.isInteger(offset) && Number.isInteger(limit) && limit > 0) {
+    fetchSeoByCategory(selectedCategory, offset, limit);
+  }
+}, [selectedCategory, offset, limit, fetchSeoByCategory]);
 
-    // Apply pincode filter
+//   const debouncedFetch = useCallback(
+//   debounce((categoryId: string, offset: number, limit: number) => {
+//     fetchSeoByCategory(categoryId, offset, limit);
+//   }, 400),
+//   [fetchSeoByCategory]
+// );
+
+// useEffect(() => {
+//   if (selectedCategory) {
+//     debouncedFetch(selectedCategory, offset, limit);
+//   }
+//   return () => debouncedFetch.cancel();
+// }, [selectedCategory, offset, limit, debouncedFetch]);
+
+
+  useEffect(() => {
+    let filtered = contents;
     if (searchTerm) {
-      filtered = filtered.filter((content) =>
-        content.pincode.includes(searchTerm)
-      );
+      filtered = contents.filter((c) => c.pincode.includes(searchTerm));
     }
-
     setFilteredContents(filtered);
-  }, [searchContents, searchTerm]);
+  }, [contents, searchTerm]);
 
-  // Trigger fetch on mount and when params change
-  useEffect(() => {
-    debouncedFetch(offset, limit);
-    return () => debouncedFetch.cancel(); // Cleanup debounce on unmount
-  }, [offset, limit, debouncedFetch]);
 
-  // Handle deletion with correct parameter passing
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this meta information?")) {
-      return;
-    }
+    if (!window.confirm("Are you sure you want to delete this meta information?")) return;
 
     try {
-      setError(null);
-      const response = await deleteCategorySearchDetails(id);
-
-      if (!response.success) {
-        throw new Error(response.message || "Failed to delete meta information");
-      }
-
-      // Refresh data with current parameters
-      fetchSearchContents(offset, limit);
-    } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Failed to delete. Please try again.";
-      setError(errorMessage);
+      await deleteCategorySearchDetails(id);
+      if (selectedCategory) {
+        fetchSeoByCategory(selectedCategory, offset, limit);
+      } 
+    } catch (err: any) {
+      setError(err.message || "Failed to delete.");
     }
   };
 
-  // Format date for display
-  const formatDate = (dateString: string): string => {
-    try {
-      return new Date(dateString).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      });
-    } catch {
-      return "Invalid Date";
-    }
-  };
-
-  // Pagination logic
+  /** Pagination helpers */
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const currentPage = Math.floor(offset / limit) + 1;
-
-  // Generate page numbers for pagination
-  const getPageNumbers = () => {
-    const pages: number[] = [];
-    const maxPagesToShow = 5;
-    const startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-    const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
-    }
-    return pages;
-  };
-
-  // Handle pincode input validation
-  const handleSearchTermChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Only allow numeric values and max length of 6 for pincode
-    if (/^\d{0,6}$/.test(value)) {
-      setSearchTerm(value);
-    }
-  };
+  const pageNumbers = Array.from(
+    { length: Math.min(5, totalPages) },
+    (_, i) => Math.max(1, currentPage - 2) + i
+  ).filter((page) => page <= totalPages);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
+   
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
-              <BookOpen className="h-6 w-6 text-white" aria-hidden="true" />
+              <BookOpen className="h-6 w-6 text-white" />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              All Meta Info
-            </h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">All Meta Info</h1>
           </div>
-          <button
-            onClick={() => navigate("/meta-info/add")}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            aria-label="Add new meta information"
-          >
-            <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
-            Add Info
-          </button>
-        </div>
-
-        {/* Search and Limit Section */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-gray-400" aria-hidden="true" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search by pincode..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={searchTerm}
-                onChange={handleSearchTermChange}
-                aria-label="Search meta information by pincode"
-              />
-            </div>
-            <div className="flex gap-2">
-              <select
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={limit}
-                onChange={(e) => {
-                  setLimit(Number(e.target.value));
-                  setOffset(0); // Reset offset when limit changes
-                }}
-                aria-label="Select items per page"
-              >
-                <option value={5}>5 per page</option>
-                <option value={10}>10 per page</option>
-                <option value={20}>20 per page</option>
-                <option value={50}>50 per page</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Error Message */}
-        {error && (
-          <div
-            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 flex items-center justify-between"
-            role="alert"
-          >
-            <span>{error}</span>
-            <button
-              onClick={() => fetchSearchContents(offset, limit)}
-              className="text-sm text-red-600 hover:text-red-800 underline"
-              aria-label="Retry fetching meta information"
+  <div className="flex flex-wrap items-center gap-2">
+            {/* <button
+              onClick={handleRefresh}
+              className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
-              Retry
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Refresh
+            </button> */}
+            <button
+              onClick={() => setShowFilter(!showFilter)}
+              className="flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              <Filter className="h-4 w-4 mr-2" />
+              Filter
+            </button>
+            <button
+              onClick={() => navigate("/meta-info/add")}
+              className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Meta Info
             </button>
           </div>
-        )}
+        </div>
 
-        {/* Loading State with Skeleton */}
-        {loading && (
-          <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-            <div className="animate-pulse">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3">
-                      <div className="h-4 bg-gray-200 rounded w-24"></div>
-                    </th>
-                    <th className="px-6 py-3">
-                      <div className="h-4 bg-gray-200 rounded w-24"></div>
-                    </th>
-                    <th className="px-6 py-3">
-                      <div className="h-4 bg-gray-200 rounded w-24"></div>
-                    </th>
-                    <th className="px-6 py-3">
-                      <div className="h-4 bg-gray-200 rounded w-24"></div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {[...Array(Math.min(limit, 10))].map((_, index) => (
-                    <tr key={index}>
-                      <td className="px-6 py-4">
-                        <div className="h-4 bg-gray-200 rounded w-32"></div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="h-4 bg-gray-200 rounded w-48"></div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="h-4 bg-gray-200 rounded w-64"></div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="h-4 bg-gray-200 rounded w-24"></div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+ {showFilter && (
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8 flex flex-col md:flex-row gap-4">
+        <div className="flex flex-1  gap-4 w-full">
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by pincode"
+              value={searchTerm}
+              onChange={(e) => /^\d{0,6}$/.test(e.target.value) && setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+            />
+          </div>
+          <select
+            className="flex px-4 py-2 border rounded-lg w-full text-sm"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            disabled={categoriesLoading}
+          >
+            {categoriesLoading ? (
+              <option>Loading...</option>
+            ) : (
+              categories
+                .sort((a, b) => a.category_name.localeCompare(b.category_name))
+                .map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.category_name}
+                  </option>
+                ))
+            )}
+          </select>
+</div>
+<div className="flex items-center">
+          <select
+            className="px-4 py-2 border rounded-lg w-full sm:w-32 text-sm"
+            value={limit}
+            onChange={(e) => setLimit(Number(e.target.value))}
+          >
+            {[5, 10, 20, 50].map((n) => (
+              <option key={n} value={n}>
+                {n} per page
+              </option>
+            ))}
+          </select>
+
+        </div>
+        </div>
+ )}
+
+       
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-xl mb-6 text-sm">
+            {error}
+            {/* <button onClick={() => fetchSeoByCategory(selectedCategory, offset, limit)} className="underline ml-2">
+              Retry
+            </button> */}
           </div>
         )}
 
-        {/* Content Table */}
+        
         {!loading && (
-          <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+          <div className="bg-white rounded-xl shadow-lg border overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50 text-left">
                   <tr>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-sm font-medium text-gray-500"
-                    >
-                      Category
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-sm font-medium text-gray-500"
-                    >
-                      Address
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-sm font-medium text-gray-500"
-                    >
-                      Meta Title
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-sm font-medium text-gray-500"
-                    >
-                      Action
-                    </th>
+                    <th className="px-6 py-3 text-sm font-medium text-gray-500">Category</th>
+                    <th className="px-6 py-3 text-sm font-medium text-gray-500">Address</th>
+                    <th className="px-6 py-3 text-sm font-medium text-gray-500">Meta Title</th>
+                    <th className="px-6 py-3 text-sm font-medium text-gray-500">Action</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredContents.length === 0 && (
+                <tbody>
+                  {filteredContents.length === 0 ? (
                     <tr>
-                      <td
-                        colSpan={4}
-                        className="px-6 py-4 text-center text-sm text-gray-500"
-                      >
+                      <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
                         No meta information found.
                       </td>
                     </tr>
+                  ) : (
+                    filteredContents.map((content) => (
+
+                      <tr key={content.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{content.categoryName}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{content.city}</div>
+                          <div className="text-sm text-gray-500">
+                            {content.areaName} - {content.pincode}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-900 line-clamp-2">{content.meta_title}</td>
+                        <td className="px-6 py-4">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() =>
+                                navigate(`/meta-info/view/${content.id}`, { state: { content } })
+                              }
+                              className="text-green-600 hover:text-green-900"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() =>
+                                navigate(`/meta-info/edit/${content.id}`, { state: { content } })
+                              }
+                              className="text-blue-600 hover:text-blue-900"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(content.id)}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
                   )}
-                  {filteredContents.map((content) => (
-                    <tr key={content.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {content.categoryName}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{content.city}</div>
-                        <div className="text-sm text-gray-500">
-                          {content.areaName.trim()} - {content.pincode}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900 line-clamp-2">
-                          {content.meta_title}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() =>
-                              navigate(`/meta-info/view/${content.id}`, {
-                                state: { content },
-                              })
-                            }
-                            className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500"
-                            title="View meta information"
-                            aria-label={`View meta information for ${content.meta_title}`}
-                          >
-                            <Eye className="h-5 w-5" aria-hidden="true" />
-                          </button>
-                          <button
-                            onClick={() =>
-                              navigate(`/meta-info/edit/${content.id}`, {
-                                state: { content },
-                              })
-                            }
-                            className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            title="Edit meta information"
-                            aria-label={`Edit meta information for ${content.meta_title}`}
-                          >
-                            <Edit className="h-5 w-5" aria-hidden="true" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(content.id)}
-                            className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500"
-                            title="Delete meta information"
-                            aria-label={`Delete meta information for ${content.meta_title}`}
-                          >
-                            <Trash2 className="h-5 w-5" aria-hidden="true" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
                 </tbody>
               </table>
             </div>
 
             {/* Pagination */}
-            <div className="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
-              <div className="flex-1 flex justify-between sm:hidden">
+            <div className="bg-gray-50 px-6 py-3 flex justify-between items-center border-t">
+              <p className="text-sm text-gray-700">
+                Showing {offset + 1} to {Math.min(offset + limit, total)} of {total} results
+              </p>
+              <div className="flex items-center space-x-1">
                 <button
                   onClick={() => setOffset(Math.max(0, offset - limit))}
                   disabled={offset === 0}
-                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  aria-label="Previous page"
+                  className="px-2 py-1 border rounded disabled:opacity-50"
                 >
-                  Previous
+                  <ArrowLeft className="h-5 w-5" />
                 </button>
+                {pageNumbers.map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => setOffset((p - 1) * limit)}
+                    className={`px-3 py-1 border rounded ${
+                      currentPage === p ? "bg-blue-50 text-blue-600 border-blue-500" : ""
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
                 <button
                   onClick={() => setOffset(offset + limit)}
                   disabled={offset + limit >= total}
-                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  aria-label="Next page"
+                  className="px-2 py-1 border rounded disabled:opacity-50"
                 >
-                  Next
+                  <ArrowLeft className="h-5 w-5 rotate-180" />
                 </button>
-              </div>
-              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm text-gray-700">
-                    Showing <span className="font-medium">{offset + 1}</span> to{" "}
-                    <span className="font-medium">
-                      {Math.min(offset + limit, total)}
-                    </span>{" "}
-                    of <span className="font-medium">{total}</span> results
-                  </p>
-                </div>
-                <div>
-                  <nav
-                    className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-                    aria-label="Pagination"
-                  >
-                    <button
-                      onClick={() => setOffset(Math.max(0, offset - limit))}
-                      disabled={offset === 0}
-                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                      aria-label="Previous page"
-                    >
-                      <span className="sr-only">Previous</span>
-                      <ArrowLeft className="h-5 w-5" aria-hidden="true" />
-                    </button>
-                    {getPageNumbers().map((page) => (
-                      <button
-                        key={page}
-                        onClick={() => setOffset((page - 1) * limit)}
-                        className={`relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium ${
-                          currentPage === page
-                            ? "bg-blue-50 text-blue-600 border-blue-500"
-                            : "text-gray-700 bg-white hover:bg-gray-50"
-                        }`}
-                        aria-label={`Go to page ${page}`}
-                        aria-current={currentPage === page ? "page" : undefined}
-                      >
-                        {page}
-                      </button>
-                    ))}
-                    <button
-                      onClick={() => setOffset(offset + limit)}
-                      disabled={offset + limit >= total}
-                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                      aria-label="Next page"
-                    >
-                      <span className="sr-only">Next</span>
-                      <ArrowLeft
-                        className="h-5 w-5 transform rotate-180"
-                        aria-hidden="true"
-                      />
-                    </button>
-                  </nav>
-                </div>
               </div>
             </div>
           </div>
@@ -485,6 +338,557 @@ const AllMetaInfo = () => {
 };
 
 export default AllMetaInfo;
+
+
+// import React, { useState, useEffect, useCallback } from "react";
+// import { ArrowLeft, BookOpen, Search, Edit, Trash2, Eye, Plus } from "lucide-react";
+// import { useNavigate } from "react-router-dom";
+// import "react-quill/dist/quill.snow.css";
+// import { deleteCategorySearchDetails, getAllSearchContents, getSeosByCateId } from "../../api/apiMethods";
+// import debounce from "lodash/debounce";
+// import { useCategoryContext } from "../Context/CategoryContext";
+
+// interface SearchContent {
+//   id: string;
+//   categoryId: string;
+//   categoryName: string;
+//   areaName: string;
+//   city: string;
+//   state: string;
+//   pincode: string;
+//   meta_title: string;
+//   meta_description: string;
+//   seo_content: string;
+//   createdAt: string;
+//   updatedAt: string;
+// }
+
+// interface Category {
+//   _id: string;
+//   category_name: string;
+//   category_slug: string;
+//   category_image: string;
+//   meta_title: string;
+//   meta_description: string;
+//   status: number;
+//   totalviews: number;
+//   ratings: number | null;
+//   seo_content: string;
+//   updatedAt: string;
+// }
+
+// interface ApiResponse {
+//   success: boolean;
+//   message?: string;
+//   result: {
+//     results: SearchContent[];
+//     total: number;
+//   };
+// }
+
+// const AllMetaInfo = () => {
+//   const { categories, loading: categoriesLoading, error: categoriesError } = useCategoryContext();
+//   const [searchContents, setSearchContents] = useState<SearchContent[]>([]);
+//   const [filteredContents, setFilteredContents] = useState<SearchContent[]>([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState<string | null>(null);
+//   const [offset, setOffset] = useState(0);
+//   const [limit, setLimit] = useState(10);
+//   const [total, setTotal] = useState(0);
+//   const [searchTerm, setSearchTerm] = useState("");
+//    const [selectedCategory, setSelectedCategory] = useState<string>("");
+//   const navigate = useNavigate();
+
+//     useEffect(() => {
+//       if (categories.length > 0 && !selectedCategory) {
+//         setSelectedCategory(categories[0]._id);
+//       }
+//     }, [categories, selectedCategory]);
+
+//       useEffect(() => {
+//         if (!selectedCategory) return;
+    
+//         const fetchSeoByCAtId = async () => {
+//           setLoading(true);
+//           setError(null);
+//           try {
+//             const response = await getSeosByCateId(selectedCategory);
+//             const allSeos = response?.data?.length > 0 ? response?.data?.results?.map((content: any) => ({
+//               id: content.id,
+//               category: categories.find((cat) => cat._id === content.categoryId)?.category_name || "Unknown",
+//               areaName : content.areaName,
+//               city: content.city,
+//               state: content.state,
+//               pincode: content.pincode,
+//               meta_title: content.meta_title,
+//               meta_description: content.meta_description,
+//               seo_content: content.seo_content,
+//               createdAt: content.createdAt || new Date().toISOString(),
+//             })) : [];
+    
+         
+//             const filtered = allSeos.filter((content) =>
+//               content.pincode.includes(searchTerm)
+//             );
+    
+//             // const sorted = filtered.sort((a, b) => {
+//             //   const aValue = a[sortField];
+//             //   const bValue = b[sortField];
+//             //   if (sortField === "price") {
+//             //     return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
+//             //   }
+//             //   return sortOrder === "asc"
+//             //     ? String(aValue).localeCompare(String(bValue))
+//             //     : String(bValue).localeCompare(String(aValue));
+//             // });
+    
+//             // setTotal(sorted.length);
+//             // setServices(sorted.slice(offset, offset + limit));
+//             // setFilteredServices(sorted);
+//             setLoading(false);
+//           } catch (err: any) {
+//             setError(err.message || "Failed to load services. Please try again.");
+//             setServices([]);
+//             setFilteredServices([]);
+//             setTotal(0);
+//             setLoading(false);
+//           }
+//         };
+    
+//         fetchSeoByCAtId();
+//       }, [offset, limit, searchTerm, selectedCategory, categories]);
+    
+
+//   // Debounced fetch function with stable dependencies
+//   const debouncedFetch = useCallback(
+//     debounce((offset: number, limit: number) => {
+//       fetchSearchContents(offset, limit);
+//     }, 500),
+//     [] // Empty dependency array to ensure stability
+//   );
+
+//   // Fetch search contents with improved error handling
+//   const fetchSearchContents = useCallback(
+//     async (offset: number, limit: number) => {
+//       try {
+//         setLoading(true);
+//         setError(null);
+
+//         const response: ApiResponse = await getAllSearchContents({ offset, limit });
+
+//         if (!response.success) {
+//           throw new Error(response.message || "Failed to fetch meta information");
+//         }
+
+//         setSearchContents(response.result.results || []);
+//         setTotal(response.result.total || 0);
+//       } catch (err: unknown) {
+//         const errorMessage =
+//           err instanceof Error
+//             ? err.message
+//             : "An unexpected error occurred. Please try again.";
+//         setError(errorMessage);
+//       } finally {
+//         setLoading(false);
+//       }
+//     },
+//     []
+//   );
+
+//   // Filter contents by selected category and search term (pincode)
+//   useEffect(() => {
+//     let filtered = searchContents;
+
+//     // Apply pincode filter
+//     if (searchTerm) {
+//       filtered = filtered.filter((content) =>
+//         content.pincode.includes(searchTerm)
+//       );
+//     }
+
+//     setFilteredContents(filtered);
+//   }, [searchContents, searchTerm]);
+
+//   useEffect(() => {
+//     debouncedFetch(offset, limit);
+//     return () => debouncedFetch.cancel();
+//   }, [offset, limit, debouncedFetch]);
+
+ 
+//   const handleDelete = async (id: string) => {
+//     if (!window.confirm("Are you sure you want to delete this meta information?")) {
+//       return;
+//     }
+
+//     try {
+//       setError(null);
+//       const response = await deleteCategorySearchDetails(id);
+
+//       if (!response.success) {
+//         throw new Error(response.message || "Failed to delete meta information");
+//       }
+
+//       fetchSearchContents(offset, limit);
+//     } catch (err: unknown) {
+//       const errorMessage =
+//         err instanceof Error
+//           ? err.message
+//           : "Failed to delete. Please try again.";
+//       setError(errorMessage);
+//     }
+//   };
+
+//   const formatDate = (dateString: string): string => {
+//     try {
+//       return new Date(dateString).toLocaleDateString("en-US", {
+//         year: "numeric",
+//         month: "short",
+//         day: "numeric",
+//       });
+//     } catch {
+//       return "Invalid Date";
+//     }
+//   };
+
+//   const totalPages = Math.max(1, Math.ceil(total / limit));
+//   const currentPage = Math.floor(offset / limit) + 1;
+
+//   const getPageNumbers = () => {
+//     const pages: number[] = [];
+//     const maxPagesToShow = 5;
+//     const startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+//     const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+//     for (let i = startPage; i <= endPage; i++) {
+//       pages.push(i);
+//     }
+//     return pages;
+//   };
+
+//   const handleSearchTermChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const value = e.target.value;
+   
+//     if (/^\d{0,6}$/.test(value)) {
+//       setSearchTerm(value);
+//     }
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
+//       <div className="max-w-7xl mx-auto">
+      
+//         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+//           <div className="flex items-center gap-3">
+//             <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
+//               <BookOpen className="h-6 w-6 text-white" aria-hidden="true" />
+//             </div>
+//             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+//               All Meta Info
+//             </h1>
+//           </div>
+//           <button
+//             onClick={() => navigate("/meta-info/add")}
+//             className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+//             aria-label="Add new meta information"
+//           >
+//             <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
+//             Add Info
+//           </button>
+//         </div>
+
+//            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
+//                   <div className="flex flex-col md:flex-row gap-4">
+//                     <div className="relative flex-1">
+//               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+//                 <Search className="h-5 w-5 text-gray-400" aria-hidden="true" />
+//               </div>
+//               <input
+//                 type="text"
+//                 placeholder="Search by pincode..."
+//                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+//                 value={searchTerm}
+//                 onChange={handleSearchTermChange}
+//                 aria-label="Search meta information by pincode"
+//               />
+//             </div>
+//                     <div className="flex gap-2">
+//                       <select
+//                         className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-40 md:w-48 lg:w-64"
+//                         value={selectedCategory}
+//                         onChange={(e) => setSelectedCategory(e.target.value)}
+//                         disabled={categoriesLoading}
+//                       >
+//                         {categoriesLoading ? (
+//                           <option>Loading categories...</option>
+//                         ) : (
+//                           categories
+//                             .sort((a, b) => a.category_name.toLowerCase().localeCompare(b.category_name.toLowerCase()))
+//                             .map((category) => (
+//                               <option key={category._id} value={category._id}>
+//                                 {category.category_name}
+//                               </option>
+//                             ))
+//                         )}
+//                       </select>
+//                       <select
+//                         className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-24 md:w-32 lg:w-40"
+//                         value={limit}
+//                         onChange={(e) => setLimit(Number(e.target.value))}
+//                       >
+//                         <option value={5}>5 per page</option>
+//                         <option value={10}>10 per page</option>
+//                         <option value={20}>20 per page</option>
+//                         <option value={50}>50 per page</option>
+//                       </select>
+//                     </div>
+//                   </div>
+//                 </div>
+
+//         {error && (
+//           <div
+//             className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 flex items-center justify-between"
+//             role="alert"
+//           >
+//             <span>{error}</span>
+//             <button
+//               onClick={() => fetchSearchContents(offset, limit)}
+//               className="text-sm text-red-600 hover:text-red-800 underline"
+//               aria-label="Retry fetching meta information"
+//             >
+//               Retry
+//             </button>
+//           </div>
+//         )}
+
+//         {loading && (
+//           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+//             <div className="animate-pulse">
+//               <table className="min-w-full divide-y divide-gray-200">
+//                 <thead className="bg-gray-50">
+//                   <tr>
+//                     <th className="px-6 py-3">
+//                       <div className="h-4 bg-gray-200 rounded w-24"></div>
+//                     </th>
+//                     <th className="px-6 py-3">
+//                       <div className="h-4 bg-gray-200 rounded w-24"></div>
+//                     </th>
+//                     <th className="px-6 py-3">
+//                       <div className="h-4 bg-gray-200 rounded w-24"></div>
+//                     </th>
+//                     <th className="px-6 py-3">
+//                       <div className="h-4 bg-gray-200 rounded w-24"></div>
+//                     </th>
+//                   </tr>
+//                 </thead>
+//                 <tbody className="bg-white divide-y divide-gray-200">
+//                   {[...Array(Math.min(limit, 10))].map((_, index) => (
+//                     <tr key={index}>
+//                       <td className="px-6 py-4">
+//                         <div className="h-4 bg-gray-200 rounded w-32"></div>
+//                       </td>
+//                       <td className="px-6 py-4">
+//                         <div className="h-4 bg-gray-200 rounded w-48"></div>
+//                       </td>
+//                       <td className="px-6 py-4">
+//                         <div className="h-4 bg-gray-200 rounded w-64"></div>
+//                       </td>
+//                       <td className="px-6 py-4">
+//                         <div className="h-4 bg-gray-200 rounded w-24"></div>
+//                       </td>
+//                     </tr>
+//                   ))}
+//                 </tbody>
+//               </table>
+//             </div>
+//           </div>
+//         )}
+
+//         {!loading && (
+//           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+//             <div className="overflow-x-auto">
+//               <table className="min-w-full divide-y divide-gray-200">
+//                 <thead className="bg-gray-50 text-left">
+//                   <tr>
+//                     <th
+//                       scope="col"
+//                       className="px-6 py-3 text-sm font-medium text-gray-500"
+//                     >
+//                       Category
+//                     </th>
+//                     <th
+//                       scope="col"
+//                       className="px-6 py-3 text-sm font-medium text-gray-500"
+//                     >
+//                       Address
+//                     </th>
+//                     <th
+//                       scope="col"
+//                       className="px-6 py-3 text-sm font-medium text-gray-500"
+//                     >
+//                       Meta Title
+//                     </th>
+//                     <th
+//                       scope="col"
+//                       className="px-6 py-3 text-sm font-medium text-gray-500"
+//                     >
+//                       Action
+//                     </th>
+//                   </tr>
+//                 </thead>
+//                 <tbody className="bg-white divide-y divide-gray-200">
+//                   {filteredContents.length === 0 && (
+//                     <tr>
+//                       <td
+//                         colSpan={4}
+//                         className="px-6 py-4 text-center text-sm text-gray-500"
+//                       >
+//                         No meta information found.
+//                       </td>
+//                     </tr>
+//                   )}
+//                   {filteredContents.map((content) => (
+//                     <tr key={content.id} className="hover:bg-gray-50">
+//                       <td className="px-6 py-4 whitespace-nowrap">
+//                         <div className="text-sm font-medium text-gray-900">
+//                           {content.categoryName}
+//                         </div>
+//                       </td>
+//                       <td className="px-6 py-4 whitespace-nowrap">
+//                         <div className="text-sm text-gray-900">{content.city}</div>
+//                         <div className="text-sm text-gray-500">
+//                           {content.areaName.trim()} - {content.pincode}
+//                         </div>
+//                       </td>
+//                       <td className="px-6 py-4">
+//                         <div className="text-sm text-gray-900 line-clamp-2">
+//                           {content.meta_title}
+//                         </div>
+//                       </td>
+//                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+//                         <div className="flex gap-2">
+//                           <button
+//                             onClick={() =>
+//                               navigate(`/meta-info/view/${content.id}`, {
+//                                 state: { content },
+//                               })
+//                             }
+//                             className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500"
+//                             title="View meta information"
+//                             aria-label={`View meta information for ${content.meta_title}`}
+//                           >
+//                             <Eye className="h-5 w-5" aria-hidden="true" />
+//                           </button>
+//                           <button
+//                             onClick={() =>
+//                               navigate(`/meta-info/edit/${content.id}`, {
+//                                 state: { content },
+//                               })
+//                             }
+//                             className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                             title="Edit meta information"
+//                             aria-label={`Edit meta information for ${content.meta_title}`}
+//                           >
+//                             <Edit className="h-5 w-5" aria-hidden="true" />
+//                           </button>
+//                           <button
+//                             onClick={() => handleDelete(content.id)}
+//                             className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500"
+//                             title="Delete meta information"
+//                             aria-label={`Delete meta information for ${content.meta_title}`}
+//                           >
+//                             <Trash2 className="h-5 w-5" aria-hidden="true" />
+//                           </button>
+//                         </div>
+//                       </td>
+//                     </tr>
+//                   ))}
+//                 </tbody>
+//               </table>
+//             </div>
+
+//             <div className="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
+//               <div className="flex-1 flex justify-between sm:hidden">
+//                 <button
+//                   onClick={() => setOffset(Math.max(0, offset - limit))}
+//                   disabled={offset === 0}
+//                   className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+//                   aria-label="Previous page"
+//                 >
+//                   Previous
+//                 </button>
+//                 <button
+//                   onClick={() => setOffset(offset + limit)}
+//                   disabled={offset + limit >= total}
+//                   className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+//                   aria-label="Next page"
+//                 >
+//                   Next
+//                 </button>
+//               </div>
+//               <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+//                 <div>
+//                   <p className="text-sm text-gray-700">
+//                     Showing <span className="font-medium">{offset + 1}</span> to{" "}
+//                     <span className="font-medium">
+//                       {Math.min(offset + limit, total)}
+//                     </span>{" "}
+//                     of <span className="font-medium">{total}</span> results
+//                   </p>
+//                 </div>
+//                 <div>
+//                   <nav
+//                     className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+//                     aria-label="Pagination"
+//                   >
+//                     <button
+//                       onClick={() => setOffset(Math.max(0, offset - limit))}
+//                       disabled={offset === 0}
+//                       className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+//                       aria-label="Previous page"
+//                     >
+//                       <span className="sr-only">Previous</span>
+//                       <ArrowLeft className="h-5 w-5" aria-hidden="true" />
+//                     </button>
+//                     {getPageNumbers().map((page) => (
+//                       <button
+//                         key={page}
+//                         onClick={() => setOffset((page - 1) * limit)}
+//                         className={`relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium ${
+//                           currentPage === page
+//                             ? "bg-blue-50 text-blue-600 border-blue-500"
+//                             : "text-gray-700 bg-white hover:bg-gray-50"
+//                         }`}
+//                         aria-label={`Go to page ${page}`}
+//                         aria-current={currentPage === page ? "page" : undefined}
+//                       >
+//                         {page}
+//                       </button>
+//                     ))}
+//                     <button
+//                       onClick={() => setOffset(offset + limit)}
+//                       disabled={offset + limit >= total}
+//                       className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+//                       aria-label="Next page"
+//                     >
+//                       <span className="sr-only">Next</span>
+//                       <ArrowLeft
+//                         className="h-5 w-5 transform rotate-180"
+//                         aria-hidden="true"
+//                       />
+//                     </button>
+//                   </nav>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AllMetaInfo;
+
 // import React, { useState, useEffect, useCallback } from "react";
 // import { ArrowLeft, BookOpen, Search, Edit, Trash2, Eye, Plus } from "lucide-react";
 // import { useNavigate } from "react-router-dom";

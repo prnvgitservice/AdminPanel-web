@@ -154,6 +154,14 @@ const endpoints: any = {
     }
   },
 
+getSeosByCateId: {
+  method: "get",
+  url: (categoryId: string) => {
+    return `/api/searchContentData/getSeoContentsByCategoryId/${categoryId}`;
+  },
+},
+
+
   updateServiceControlByCateId: {
     method: "put",
     url: () => {

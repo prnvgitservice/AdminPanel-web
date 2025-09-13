@@ -53,6 +53,13 @@ export const deleteServiceByAdmin = (serviceId: string) => apiRequest("deleteSer
 
 export const updateCagegorySearchDetails = (data: any) => apiRequest("updateCagegorySearchDetails", data);
 
+export const getSeosByCateId = (
+  categoryId: string,
+  offset: number,
+  limit: number
+) => apiRequest("getSeosByCateId", null, categoryId, { offset, limit });
+
+
 export const getAllSearchContents = (data: any) => apiRequest("getAllSearchContents", null, data);
 
 export const deleteCategorySearchDetails = (id: string) => apiRequest("deleteCategorySearchDetails", null, id);
