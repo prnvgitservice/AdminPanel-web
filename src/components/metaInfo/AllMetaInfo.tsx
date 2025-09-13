@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { ArrowLeft, BookOpen, Search, Edit, Trash2, Eye, Plus, Filter } from "lucide-react";
+import { ArrowLeft, BookOpen, Search, Edit, Trash2, Eye, Plus, Filter, RotateCcw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import debounce from "lodash/debounce";
 import {
@@ -69,12 +69,12 @@ const AllMetaInfo = () => {
             ...content,  
             categoryName:
               categories.find((cat) => cat._id === content.categoryId)
-                ?.category_name || "Unknown",
+                ?.category_name ,
           })) || [];
 
         setContents(results);
         setTotal(response?.data?.total || results.length);
-         setError(null);
+        setError(null);
       } catch (err: any) {
         setError(err.message || "Failed to fetch SEO content.");
         setContents([]);
@@ -112,8 +112,17 @@ useEffect(() => {
     if (searchTerm) {
       filtered = contents.filter((c) => c.pincode.includes(searchTerm));
     }
+     filtered = [...filtered].sort((a, b) => Number(a.pincode) - Number(b.pincode));
+    // filtered = [...filtered].sort((a, b) => Number(a.pincode) - Number(b.pincode));
+  
     setFilteredContents(filtered);
   }, [contents, searchTerm]);
+
+   const handleRefresh = () => {
+    // setShowFilter(false);
+    setSearchTerm("");
+    setSelectedCategory(categories.length > 0 ? categories[0]._id : "");   
+  };
 
 
   const handleDelete = async (id: string) => {
@@ -149,13 +158,13 @@ useEffect(() => {
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">All Meta Info</h1>
           </div>
   <div className="flex flex-wrap items-center gap-2">
-            {/* <button
+            <button
               onClick={handleRefresh}
               className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <RotateCcw className="h-4 w-4 mr-2" />
               Refresh
-            </button> */}
+            </button>
             <button
               onClick={() => setShowFilter(!showFilter)}
               className="flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
@@ -226,9 +235,7 @@ useEffect(() => {
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-xl mb-6 text-sm">
             {error}
-            {/* <button onClick={() => fetchSeoByCategory(selectedCategory, offset, limit)} className="underline ml-2">
-              Retry
-            </button> */}
+         
           </div>
         )}
 
