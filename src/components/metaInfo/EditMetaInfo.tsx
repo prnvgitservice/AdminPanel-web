@@ -781,7 +781,7 @@ const config = useMemo(
                       Select Category
                     </option>
                     {categories
-                      .filter((cat) => cat.status === 1)
+                      // .filter((cat) => cat.status === 1)
                       .sort((a, b) => a.category_name.toLowerCase().localeCompare(b.category_name.toLowerCase()))
                       .map((cat) => (
                         <option key={cat._id} value={cat.category_name}>
