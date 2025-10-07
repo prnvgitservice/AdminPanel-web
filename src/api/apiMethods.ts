@@ -23,9 +23,9 @@ export const updatePlans = (data: any) => apiRequest("updatePlans", data);
 
 export const deletePlan = (planId: string) => apiRequest("deletePlan", null, planId);
 
-export const getAllUsers = (data: any) => apiRequest("getAllUsers", data);
+export const getAllUsers = (data: { offset?: number; limit?: number }) => apiRequest("getAllUsers", null, data);
 
-export const getAllTechnicians = (data: any) => apiRequest("getAllTechnicians", data);
+export const getAllTechnicians = (data: any) => apiRequest("getAllTechnicians", null, data);
 
 export const registerTechByAdmin = (data: any) => apiRequest("registerTechByAdmin", data);
 

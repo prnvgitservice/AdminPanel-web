@@ -71,11 +71,11 @@ const endpoints: any = {
   },
 
   getAllUsers: {
-    method: "get",
-    url: () => {
-      return `/api/userAuth/getAllUsers?offset=1&limit=8`;
-    },
+  method: "get",
+  url: ({ offset, limit }: { offset: number; limit: number }) => {
+    return `/api/userAuth/getAllUsers?offset=${offset}&limit=${limit}`;
   },
+},
 
   getAllTechnicians: {
     method: "get",

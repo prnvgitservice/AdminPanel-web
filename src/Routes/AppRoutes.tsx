@@ -12,7 +12,6 @@ import ViewMetaInfo from "../components/metaInfo/ViewMetaInfo";
 import SubscriptionPage from "../components/Subscriptions/SubscriptionPage";
 import PlanDetailsPage from "../components/Subscriptions/PlanDetailsPage";
 import AllFranchisePlansPage from "../components/FranchisePlansPage/AllFranchisePlansPage";
-import Users from "../components/manageUsers/Users";
 import AddUser from "../components/manageUsers/AddUser";
 import AdminUsers from "../components/manageUsers/AdminUsers";
 import AddAdminUser from "../pages/AddAdminUser";
@@ -48,6 +47,8 @@ import AllReferrals from "../components/manageReferrals/AllReferrals";
 import AddReferral from "../components/manageReferrals/AddReferral";
 import AuthLayout from "../layout/AuthLayout";
 import SubscriptionForm from "../components/Subscriptions/SubscriptionForm";
+import AllUsers from "../components/manageUsers/AllUsers";
+import ViewUser from "../components/manageUsers/ViewUser";
 
 
 
@@ -127,9 +128,10 @@ const AppRoutes: React.FC = () => {
         />
 
         {/* Management - Users: Routes for user management */}
-        <Route path="/management" element={<Users />} />
-        <Route path="/management/users" element={<Users />} />
-        <Route path="/management/users/all" element={<Users />} />
+        <Route path="/management" element={<AllUsers />} />
+        <Route path="/management/users" element={<AllUsers />} />
+        <Route path="/management/users/all" element={<AllUsers />} />
+        <Route path="/management/users/view/:id" element={<ViewUser />} />
         <Route path="/management/users/add" element={<AddUser />} />
         <Route
           path="/management/users/admin-created"
