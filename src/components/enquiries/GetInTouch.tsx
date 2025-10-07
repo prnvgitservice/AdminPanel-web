@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ArrowLeft, Mail, Search } from 'lucide-react';
+import { ArrowLeft, Mail, Search, CreditCard as Edit, Eye, Trash2 } from 'lucide-react';
 import { getInTouch } from '../../api/apiMethods';
 import debounce from "lodash/debounce";
 
@@ -9,6 +9,7 @@ interface Contact {
   name: string;
   phoneNumber: number;
   status: string;
+  message?: string;
   createdAt: string;
   updatedAt: string;
   __v: number;
@@ -28,6 +29,26 @@ const GetInTouch: React.FC = () => {
   const [limit, setLimit] = useState<number>(10);
   const [total, setTotal] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [messages, setMessages] = useState<Record<string, string>>({});
+
+  const handleEdit = (contactId: string) => {
+    console.log('Edit contact:', contactId);
+  };
+
+  const handleView = (contactId: string) => {
+    console.log('View contact:', contactId);
+  };
+
+  const handleDelete = (contactId: string) => {
+    console.log('Delete contact:', contactId);
+  };
+
+  const handleMessageChange = (contactId: string, value: string) => {
+    setMessages(prev => ({
+      ...prev,
+      [contactId]: value
+    }));
+  };
 
   // Debounced fetch function with stable dependencies
   const debouncedFetch = useCallback(
@@ -154,11 +175,17 @@ const GetInTouch: React.FC = () => {
                     <th className="px-6 py-3 ">
                       Category
                     </th>
+                    <th className="px-6 py-3 ">
+                      Message
+                    </th>
                     <th className="px-6 py-3">
                       Requested Date
                     </th>
                     <th className="px-6 py-3 ">
                       Status
+                    </th>
+                    <th className="px-6 py-3 ">
+                      Actions
                     </th>
                   </tr>
                 </thead>
@@ -187,6 +214,15 @@ const GetInTouch: React.FC = () => {
                             {contact.categoryId || '-'}
                           </div>
                         </td>
+                        <td className="px-6 py-4">
+                          <input
+                            type="text"
+                            value={messages[contact._id] || contact.message || ''}
+                            onChange={(e) => handleMessageChange(contact._id, e.target.value)}
+                            placeholder="Type message..."
+                            className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                        </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-500">
                             {formatDate(contact.createdAt)}
@@ -202,6 +238,31 @@ const GetInTouch: React.FC = () => {
                           >
                             {contact.status}
                           </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={() => handleEdit(contact._id)}
+                              className="text-blue-600 hover:text-blue-800 transition-colors"
+                              title="Edit"
+                            >
+                              <Edit className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={() => handleView(contact._id)}
+                              className="text-green-600 hover:text-green-800 transition-colors"
+                              title="View"
+                            >
+                              <Eye className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(contact._id)}
+                              className="text-red-600 hover:text-red-800 transition-colors"
+                              title="Delete"
+                            >
+                              <Trash2 className="h-5 w-5" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -270,6 +331,7 @@ const GetInTouch: React.FC = () => {
 };
 
 export default GetInTouch;
+
 
 
 
