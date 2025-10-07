@@ -49,6 +49,27 @@ const endpoints: any = {
     },
   },
 
+  addPlans: {
+    method: "post",
+    url: () => {
+      return `/api/subscriptions/addSubscription`;
+    },
+  },
+
+  updatePlans:{
+    method: "put",
+    url: () => {
+      return `/api/subscriptions/updateSubscription`;
+    }
+  },
+
+  deletePlan:{
+    method: "delete",
+    url: (planId: string) => {
+      return `/api/subscriptions/deleteSubscription/${planId}`;
+    }
+  },
+
   getAllUsers: {
     method: "get",
     url: () => {

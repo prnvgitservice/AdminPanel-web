@@ -47,6 +47,7 @@ import AllExecutives from "../components/manageExecutives/AllExecutives";
 import AllReferrals from "../components/manageReferrals/AllReferrals";
 import AddReferral from "../components/manageReferrals/AddReferral";
 import AuthLayout from "../layout/AuthLayout";
+import SubscriptionForm from "../components/Subscriptions/SubscriptionForm";
 
 
 
@@ -106,8 +107,12 @@ const AppRoutes: React.FC = () => {
         <Route path="/subscription/all" element={<SubscriptionPage />} />
         <Route path="/subscription/:id" element={<PlanDetailsPage />} />
         <Route
+          path="/subscription/edit/:id"
+          element={<SubscriptionForm isEdit={true} />}
+        />
+        <Route
           path="/subscription/add"
-          element={<PlaceholderPage title="Add Subscription" />}
+          element={<SubscriptionForm />}
         />
 
         {/* Franchise Plans: Routes for managing franchise plans */}

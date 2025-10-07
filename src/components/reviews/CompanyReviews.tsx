@@ -314,8 +314,8 @@ const CompanyReviews: React.FC = () => {
                         <div className="flex items-center space-x-3 mb-2">
                           <h4 className="text-lg font-semibold text-gray-900">
                             {review.role === 'user' 
-                              ? (review.user?.username || 'Anonymous User')
-                              : (review.technician?.username || 'Anonymous Technician')
+                              ? (review.reviewer?.username || 'Anonymous User')
+                              : (review.reviewer?.username || 'Anonymous Technician')
                             }
                           </h4>
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${
