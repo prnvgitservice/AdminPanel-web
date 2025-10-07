@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ArrowLeft, Mail, Search, CreditCard as Edit, Eye, Trash2 } from 'lucide-react';
+import { ArrowLeft, Mail, Search, Eye, X } from 'lucide-react';
 import { getInTouch } from '../../api/apiMethods';
 import debounce from "lodash/debounce";
 
@@ -29,25 +29,32 @@ const GetInTouch: React.FC = () => {
   const [limit, setLimit] = useState<number>(10);
   const [total, setTotal] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [messages, setMessages] = useState<Record<string, string>>({});
-
-  const handleEdit = (contactId: string) => {
-    console.log('Edit contact:', contactId);
-  };
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState<boolean>(false);
 
   const handleView = (contactId: string) => {
-    console.log('View contact:', contactId);
+    const contact = contacts.find(c => c._id === contactId);
+    if (contact) {
+      setSelectedContact(contact);
+      setIsViewModalOpen(true);
+    }
   };
 
-  const handleDelete = (contactId: string) => {
-    console.log('Delete contact:', contactId);
+  const closeViewModal = () => {
+    setIsViewModalOpen(false);
+    setSelectedContact(null);
   };
 
-  const handleMessageChange = (contactId: string, value: string) => {
-    setMessages(prev => ({
-      ...prev,
-      [contactId]: value
-    }));
+  const handleStatusChange = (contactId: string, currentStatus: string) => {
+    if (currentStatus.toLowerCase() === 'pending') {
+      setContacts(prevContacts =>
+        prevContacts.map(contact =>
+          contact._id === contactId
+            ? { ...contact, status: 'completed' }
+            : contact
+        )
+      );
+    }
   };
 
   // Debounced fetch function with stable dependencies
@@ -215,13 +222,9 @@ const GetInTouch: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <input
-                            type="text"
-                            value={messages[contact._id] || contact.message || ''}
-                            onChange={(e) => handleMessageChange(contact._id, e.target.value)}
-                            placeholder="Type message..."
-                            className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          />
+                          <div className="text-sm text-gray-900">
+                            {contact.message || 'No message'}
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-500">
@@ -229,38 +232,29 @@ const GetInTouch: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`px-4 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              contact.status === "pending"
-                                ? "bg-yellow-100 text-yellow-600"
-                                : "bg-green-100 text-green-600"
-                            }`}
-                          >
-                            {contact.status}
-                          </span>
+                          {contact.status.toLowerCase() === 'pending' ? (
+                            <button
+                              onClick={() => handleStatusChange(contact._id, contact.status)}
+                              className="px-4 py-1 text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition-colors cursor-pointer"
+                            >
+                              {contact.status}
+                            </button>
+                          ) : (
+                            <span
+                              className="px-4 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-600"
+                            >
+                              {contact.status}
+                            </span>
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-3">
-                            <button
-                              onClick={() => handleEdit(contact._id)}
-                              className="text-blue-600 hover:text-blue-800 transition-colors"
-                              title="Edit"
-                            >
-                              <Edit className="h-5 w-5" />
-                            </button>
                             <button
                               onClick={() => handleView(contact._id)}
                               className="text-green-600 hover:text-green-800 transition-colors"
                               title="View"
                             >
                               <Eye className="h-5 w-5" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(contact._id)}
-                              className="text-red-600 hover:text-red-800 transition-colors"
-                              title="Delete"
-                            >
-                              <Trash2 className="h-5 w-5" />
                             </button>
                           </div>
                         </td>
@@ -325,12 +319,101 @@ const GetInTouch: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* View Modal */}
+        {isViewModalOpen && selectedContact && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                <h2 className="text-xl font-bold text-gray-900">Contact Details</h2>
+                <button
+                  onClick={closeViewModal}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">Contact ID</label>
+                    <p className="text-base text-gray-900 font-medium">{selectedContact._id}</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">Name</label>
+                    <p className="text-base text-gray-900 font-medium">{selectedContact.name}</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">Phone Number</label>
+                    <p className="text-base text-gray-900 font-medium">{selectedContact.phoneNumber}</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">Category</label>
+                    <p className="text-base text-gray-900 font-medium">{selectedContact.categoryId || '-'}</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">Status</label>
+                    <span
+                      className={`inline-flex px-4 py-1 text-xs leading-5 font-semibold rounded-full ${
+                        selectedContact.status.toLowerCase() === "pending"
+                          ? "bg-yellow-100 text-yellow-600"
+                          : "bg-green-100 text-green-600"
+                      }`}
+                    >
+                      {selectedContact.status}
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">Created At</label>
+                    <p className="text-base text-gray-900 font-medium">{formatDate(selectedContact.createdAt)}</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">Updated At</label>
+                    <p className="text-base text-gray-900 font-medium">{formatDate(selectedContact.updatedAt)}</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">Version</label>
+                    <p className="text-base text-gray-900 font-medium">{selectedContact.__v}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">Message</label>
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <p className="text-base text-gray-900">
+                      {selectedContact.message || 'No message available'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-gray-200 px-6 py-4 bg-gray-50 flex justify-end">
+                <button
+                  onClick={closeViewModal}
+                  className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default GetInTouch;
+
+
 
 
 
