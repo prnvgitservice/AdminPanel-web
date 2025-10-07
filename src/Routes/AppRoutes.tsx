@@ -45,7 +45,8 @@ import ViewBlog from "../components/blogs/ViewBlog";
 // import ManageExecutives from "../components/manageExecutives/ManageExecutives";
 import AllExecutives from "../components/manageExecutives/AllExecutives";
 import AddExecutive from "../components/manageExecutives/AddExecutive";
-
+import AllReferrals from "../components/manageReferrals/AllReferrals";
+import AddReferral from "../components/manageReferrals/AddReferral";
 // Placeholder component for routes not yet implemented
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
   <div className="p-8">
@@ -149,6 +150,9 @@ const AppRoutes: React.FC = () => {
         <Route path="/management/executives/all" element={<AllExecutives />} />
         {/* <Route path="/management/executives/add" element={<AddExecutives />} /> */}
         <Route path="/management/executives/add" element={<AddExecutive />} />
+
+        <Route path ="/management/referrals/all" element={<AllReferrals />} />
+        <Route path ="/management/referrals/add" element={<AddReferral />} />
 
         {/* Areas: Routes for managing service areas */}
         <Route path="/areas" element={<AllAreas />} />

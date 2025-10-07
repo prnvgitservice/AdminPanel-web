@@ -375,20 +375,20 @@ const AllReferrals: React.FC<ReferralProps> = ({ onAddReferral }) => {
     </div>
   );
 
-  // Action handlers
-  function handleView(id: string) {
-    console.log(`View referral with ID: ${id}`);
-  }
+  // // Action handlers
+  // function handleView(id: string) {
+  //   console.log(`View referral with ID: ${id}`);
+  // }
 
-  function handleEdit(id: string) {
-    console.log(`Edit referral with ID: ${id}`);
-  }
+  // function handleEdit(id: string) {
+  //   console.log(`Edit referral with ID: ${id}`);
+  // }
 
-  function handleDelete(id: string) {
-    if (window.confirm('Are you sure you want to delete this referral?')) {
-      console.log(`Delete referral with ID: ${id}`);
-    }
-  }
+  // function handleDelete(id: string) {
+  //   if (window.confirm('Are you sure you want to delete this referral?')) {
+  //     console.log(`Delete referral with ID: ${id}`);
+  //   }
+  // }
 };
 
 export default AllReferrals;
