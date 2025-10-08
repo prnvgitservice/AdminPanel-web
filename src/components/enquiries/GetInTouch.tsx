@@ -337,11 +337,6 @@ const GetInTouch: React.FC = () => {
               <div className="p-6 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">Contact ID</label>
-                    <p className="text-base text-gray-900 font-medium">{selectedContact._id}</p>
-                  </div>
-
-                  <div>
                     <label className="block text-sm font-medium text-gray-500 mb-1">Name</label>
                     <p className="text-base text-gray-900 font-medium">{selectedContact.name}</p>
                   </div>
@@ -370,18 +365,8 @@ const GetInTouch: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">Created At</label>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">Requested Date</label>
                     <p className="text-base text-gray-900 font-medium">{formatDate(selectedContact.createdAt)}</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">Updated At</label>
-                    <p className="text-base text-gray-900 font-medium">{formatDate(selectedContact.updatedAt)}</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">Version</label>
-                    <p className="text-base text-gray-900 font-medium">{selectedContact.__v}</p>
                   </div>
                 </div>
 
