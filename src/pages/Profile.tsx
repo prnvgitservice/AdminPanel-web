@@ -89,13 +89,34 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl border border-gray-100">
-        <div className="p-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-6">Profile Settings</h1>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-blue-600 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            {/* <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold">P</span>
+            </div> */}
+            <h1 className="text-xl font-bold text-white">Profile</h1>
+          </div>
+          <div className="flex items-center space-x-2">
+            <button className="p-2 hover:bg-white/10 rounded-lg transition-colors duration-200">
+              <Eye className="h-5 w-5 text-white" />
+            </button>
+            <button className="p-2 hover:bg-white/10 rounded-lg transition-colors duration-200">
+              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                <span className="text-blue-600 text-sm font-semibold">A</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
 
-          {/* Tab Navigation */}
-          <div className="flex border-b border-gray-200 mb-6">
+      {/* Content */}
+      <div className="max-w-4xl mx-auto p-6">
+        {/* Tab Navigation */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+          <div className="flex border-b border-gray-200">
             <button
               onClick={() => setActiveTab('settings')}
               className={`flex-1 py-3 text-sm font-semibold transition-all duration-300 ${

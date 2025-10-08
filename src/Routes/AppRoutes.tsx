@@ -21,6 +21,7 @@ import AddFranchise from "../components/manageFranchise/AddFranchise";
 import AdminCreatedFranchises from "../components/manageFranchise/AdminCreatedFranchises";
 import CompanyReviews from "../components/reviews/CompanyReviews";
 import AllGuestBookings from "../components/bookings/GuestBooking";
+import AllBookings from "../components/bookings/AllBookings";
 import FranchiseRequest from "../components/enquiries/FranchiseRequest";
 import AllServices from "../components/services/AllServices";
 import AddService from "../components/services/AddServices";
@@ -33,16 +34,10 @@ import EditMetaInfo from "../components/metaInfo/EditMetaInfo";
 import EditArea from "../components/areas/EditArea";
 import Sitemap from "../components/sitemap/Sitemap";
 import AddMetaInfo from "../components/metaInfo/AddMetaInfo";
-
-// Import the new components for blogs and get in touch
 import GetInTouch from "../components/enquiries/GetInTouch";
 import AllBlogs from "../components/blogs/AllBlogs";
 import BlogForm from "../components/blogs/BlogForm";
 import ViewBlog from "../components/blogs/ViewBlog";
-import AddExecutive from "../components/manageExecutives/AddExecutive";
-import AllExecutives from "../components/manageExecutives/AllExecutives";
-import AllReferrals from "../components/manageReferrals/AllReferrals";
-import AddReferral from "../components/manageReferrals/AddReferral";
 import AuthLayout from "../layout/AuthLayout";
 import SubscriptionForm from "../components/Subscriptions/SubscriptionForm";
 import AllUsers from "../components/manageUsers/AllUsers";
@@ -50,9 +45,11 @@ import ViewUser from "../components/manageUsers/ViewUser";
 import UserForm from "../components/manageUsers/UserFrom";
 import ViewTechnician from "../components/manageTechnicians/ViewTechnician";
 import TechnicianForm from "../components/manageTechnicians/TechnicianForm";
-
-
-
+// import ManageExecutives from "../components/manageExecutives/ManageExecutives";
+import AllExecutives from "../components/manageExecutives/AllExecutives";
+import AddExecutive from "../components/manageExecutives/AddExecutive";
+import AllReferrals from "../components/manageReferrals/AllReferrals";
+import AddReferral from "../components/manageReferrals/AddReferral";
 // Placeholder component for routes not yet implemented
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
   <div className="p-8">
@@ -161,15 +158,14 @@ const AppRoutes: React.FC = () => {
           element={<AdminCreatedFranchises />}
         />
 
-        {/* Management - Executives: Routes for executive management */}
-        <Route path="/management/executives" element={<AllExecutives />} />
+        {/* Management - Executives: New routes for executive management */}
+        {/* <Route path="/management/executives" element={<ManageExecutives />} /> */}
         <Route path="/management/executives/all" element={<AllExecutives />} />
+        {/* <Route path="/management/executives/add" element={<AddExecutives />} /> */}
         <Route path="/management/executives/add" element={<AddExecutive />} />
 
-        {/* Management - Referrals: Routes for referral management */}
-        <Route path="/management/referrals" element={<AllReferrals />} />
-        <Route path="/management/referrals/all" element={<AllReferrals />} />
-        <Route path="/management/referrals/add" element={<AddReferral />} />
+        <Route path ="/management/referrals/all" element={<AllReferrals />} />
+        <Route path ="/management/referrals/add" element={<AddReferral />} />
 
         {/* Areas: Routes for managing service areas */}
         <Route path="/areas" element={<AllAreas />} />
@@ -183,10 +179,7 @@ const AppRoutes: React.FC = () => {
           path="/bookings"
           element={<PlaceholderPage title="Bookings" />}
         />
-        <Route
-          path="/bookings/all"
-          element={<PlaceholderPage title="All Bookings" />}
-        />
+        <Route path="/bookings/all" element={<AllBookings />} />
         <Route path="/bookings/guest" element={<AllGuestBookings />} />
 
         {/* Enquiries: Routes for managing enquiries */}
