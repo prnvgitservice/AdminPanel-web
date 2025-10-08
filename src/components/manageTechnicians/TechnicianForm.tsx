@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Edit, Plus } from "lucide-react";
 import { getAllCategories, getAllPincodes, getPlans, registerTechByAdmin } from "../../api/apiMethods";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface TechnicianData {
   username: string;
@@ -33,6 +33,26 @@ interface SubscriptionPlan {
   gst: number;
 }
 
+interface Technician {
+  id: string;
+  username: string;
+  phoneNumber: string;
+  role: string;
+  buildingName: string;
+  areaName: string;
+  subAreaName: string;
+  city: string;
+  state: string;
+  pincode: string;
+  admin: boolean;
+  categoryServices: Array<{
+    categoryServiceId: string;
+    status: boolean;
+    _id: string;
+  }>;
+  subscriptionId?: string;
+}
+
 interface FormErrors {
   username?: string;
   category?: string;
@@ -60,7 +80,12 @@ const initialFormState: TechnicianData = {
   subscriptionId: "",
 };
 
-const AddTechnician: React.FC = () => {
+const TechnicianForm: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const technician: Technician | undefined = location.state?.technician;
+  const isEdit = !!technician;
+
   const [formData, setFormData] = useState<TechnicianData>(initialFormState);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,7 +102,6 @@ const AddTechnician: React.FC = () => {
   >([]);
   const [showPassword, setShowPassword] = useState(false);
   const [subscriptionPlans, setSubscriptionPlans] = useState<SubscriptionPlan[]>([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     getAllPincodes()
@@ -118,6 +142,47 @@ const AddTechnician: React.FC = () => {
         setSubscriptionPlans([]);
       });
   }, []);
+
+  useEffect(() => {
+    if (isEdit && technician && pincodeData.length > 0) {
+      const foundPin = pincodeData.find((p) => p.code === technician.pincode);
+      let tempAreaOptions: typeof areaOptions = [];
+      let tempSubAreaOptions: typeof subAreaOptions = [];
+      let tempCity = technician.city;
+      let tempState = technician.state;
+
+      if (foundPin) {
+        tempAreaOptions = foundPin.areas;
+        const foundArea = foundPin.areas.find((a) => a.name === technician.areaName);
+        if (foundArea) {
+          tempSubAreaOptions = foundArea.subAreas;
+        }
+        tempCity = foundPin.city;
+        tempState = foundPin.state;
+      }
+
+      setAreaOptions(tempAreaOptions);
+      setSubAreaOptions(tempSubAreaOptions);
+      setSelectedPincode(technician.pincode);
+
+      // For category, select the first active one
+      const activeCategory = technician.categoryServices.find(cs => cs.status)?.categoryServiceId || '';
+
+      setFormData({
+        username: technician.username || "",
+        category: activeCategory,
+        phoneNumber: technician.phoneNumber || "",
+        password: "",
+        buildingName: technician.buildingName || "",
+        areaName: technician.areaName || "",
+        subAreaName: technician.subAreaName === "-" ? "" : technician.subAreaName || "",
+        city: tempCity,
+        state: tempState,
+        pincode: technician.pincode || "",
+        subscriptionId: technician.subscriptionId || "",
+      });
+    }
+  }, [isEdit, technician, pincodeData]);
 
   useEffect(() => {
     if (selectedPincode) {
@@ -188,12 +253,11 @@ const AddTechnician: React.FC = () => {
     if (!formData.phoneNumber || !/^\d{10}$/.test(formData.phoneNumber)) {
       newErrors.phoneNumber = "Phone number must be exactly 10 digits.";
     }
-    if (
-      !formData.password ||
-      formData.password.length < 6 ||
-      formData.password.length > 10
-    ) {
+    if (!isEdit && (!formData.password || formData.password.length < 6 || formData.password.length > 10)) {
       newErrors.password = "Password must be 6-10 characters.";
+    }
+    if (isEdit && formData.password && (formData.password.length < 6 || formData.password.length > 10)) {
+      newErrors.password = "Password must be 6-10 characters if provided.";
     }
     if (!formData.buildingName.trim()) {
       newErrors.buildingName = "Building name is required.";
@@ -226,11 +290,10 @@ const AddTechnician: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      const payload = {
+      let payload = {
         username: formData.username,
         category: formData.category,
         phoneNumber: formData.phoneNumber,
-        password: formData.password,
         buildingName: formData.buildingName,
         areaName: formData.areaName,
         subAreaName: formData.subAreaName || "-",
@@ -239,19 +302,36 @@ const AddTechnician: React.FC = () => {
         pincode: formData.pincode,
         subscriptionId: formData.subscriptionId,
       };
-      await registerTechByAdmin(payload);
-      alert("Technician added successfully!");
+
+      if (isEdit) {
+        payload = { ...payload, id: technician!.id };
+        if (formData.password) {
+          payload.password = formData.password;
+        }
+        await updateTechnicianByAdmin(payload);
+        alert("Technician updated successfully!");
+      } else {
+        payload.password = formData.password;
+        await registerTechByAdmin(payload);
+        alert("Technician added successfully!");
+      }
       setIsSubmitting(false);
-      navigate(`management/technicians/all`);
+      navigate("/management/technicians/all");
     } catch (error) {
       setIsSubmitting(false);
       alert("Something went wrong");
-      console.error("Error adding technician:", error);
+      console.error(`Error ${isEdit ? 'updating' : 'adding'} technician:`, error);
       setErrors({
         username: "An error occurred while submitting the form.",
       });
     }
   };
+
+  const IconComponent = isEdit ? Edit : Plus;
+  const title = isEdit ? "Edit Technician" : "Add Technician";
+  const submitText = isEdit ? "Update" : "Add";
+  const passwordPlaceholder = isEdit ? "Leave blank to keep current password" : "6-10 characters";
+  const passwordRequired = !isEdit;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
@@ -260,16 +340,20 @@ const AddTechnician: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
-              <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
+              {isEdit ? (
+                <Edit className="h-6 w-6 text-white" />
+              ) : (
+                <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+              )}
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              Add Technician
+              {title}
             </h1>
           </div>
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/management/technicians/all")}
             className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -376,7 +460,7 @@ const AddTechnician: React.FC = () => {
 
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
-                    Password <span className="text-red-500">*</span>
+                    Password {!passwordRequired && <span className="text-gray-500">(optional)</span>}
                   </label>
                   <div className="relative">
                     <input
@@ -385,10 +469,10 @@ const AddTechnician: React.FC = () => {
                       value={formData.password}
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                      placeholder="6-10 characters"
+                      placeholder={passwordPlaceholder}
                       minLength={6}
                       maxLength={10}
-                      required
+                      required={passwordRequired}
                       aria-describedby={
                         errors.password ? "password-error" : undefined
                       }
@@ -640,7 +724,7 @@ const AddTechnician: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <button
               type="button"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate("/management/technicians/all")}
               className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
               disabled={isSubmitting}
             >
@@ -651,7 +735,7 @@ const AddTechnician: React.FC = () => {
               className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Processing..." : "Add"}
+              {isSubmitting ? "Processing..." : submitText}
             </button>
           </div>
         </form>
@@ -660,7 +744,670 @@ const AddTechnician: React.FC = () => {
   );
 };
 
-export default AddTechnician;
+export default TechnicianForm;
+// import React, { useState, useCallback, useEffect } from "react";
+// import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+// import { getAllCategories, getAllPincodes, getPlans, registerTechByAdmin } from "../../api/apiMethods";
+// import { useNavigate } from "react-router-dom";
+
+// interface TechnicianData {
+//   username: string;
+//   category: string;
+//   phoneNumber: string;
+//   password: string;
+//   buildingName: string;
+//   areaName: string;
+//   subAreaName: string;
+//   city: string;
+//   state: string;
+//   pincode: string;
+//   subscriptionId: string;
+// }
+
+// interface PincodeData {
+//   _id: string;
+//   code: string;
+//   city: string;
+//   state: string;
+//   areas: { _id: string; name: string; subAreas: { _id: string; name: string }[] }[];
+// }
+
+// interface SubscriptionPlan {
+//   _id: string;
+//   name: string;
+//   price: number;
+//   finalPrice: number;
+//   gst: number;
+// }
+
+// interface FormErrors {
+//   username?: string;
+//   category?: string;
+//   phoneNumber?: string;
+//   password?: string;
+//   buildingName?: string;
+//   pincode?: string;
+//   areaName?: string;
+//   city?: string;
+//   state?: string;
+//   subscriptionId?: string;
+// }
+
+// const initialFormState: TechnicianData = {
+//   username: "",
+//   category: "",
+//   phoneNumber: "",
+//   password: "",
+//   buildingName: "",
+//   areaName: "",
+//   subAreaName: "",
+//   city: "",
+//   state: "",
+//   pincode: "",
+//   subscriptionId: "",
+// };
+
+// const AddTechnician: React.FC = () => {
+//   const [formData, setFormData] = useState<TechnicianData>(initialFormState);
+//   const [errors, setErrors] = useState<FormErrors>({});
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+//   const [apiCategories, setApiCategories] = useState<
+//     { _id: string; category_name: string; status: number }[]
+//   >([]);
+//   const [pincodeData, setPincodeData] = useState<PincodeData[]>([]);
+//   const [selectedPincode, setSelectedPincode] = useState<string>("");
+//   const [areaOptions, setAreaOptions] = useState<
+//     { _id: string; name: string; subAreas: { _id: string; name: string }[] }[]
+//   >([]);
+//   const [subAreaOptions, setSubAreaOptions] = useState<
+//     { _id: string; name: string }[]
+//   >([]);
+//   const [showPassword, setShowPassword] = useState(false);
+//   const [subscriptionPlans, setSubscriptionPlans] = useState<SubscriptionPlan[]>([]);
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     getAllPincodes()
+//       .then((res: any) => {
+//         if (Array.isArray(res?.data)) {
+//           setPincodeData(res.data);
+//         }
+//       })
+//       .catch(() => {});
+//   }, []);
+
+//   useEffect(() => {
+//     getAllCategories(null)
+//       .then((res: any) => {
+//         if (Array.isArray(res?.data)) {
+//           setApiCategories(res.data);
+//         } else {
+//           setApiCategories([]);
+//           setErrors({ category: "Failed to load categories" });
+//         }
+//       })
+//       .catch(() => {
+//         setApiCategories([]);
+//         setErrors({ category: "Failed to load categories" });
+//       });
+//   }, []);
+
+//   useEffect(() => {
+//     getPlans()
+//       .then((res: any) => {
+//         if (Array.isArray(res?.data)) {
+//           setSubscriptionPlans(res.data);
+//         } else {
+//           setSubscriptionPlans([]);
+//         }
+//       })
+//       .catch(() => {
+//         setSubscriptionPlans([]);
+//       });
+//   }, []);
+
+//   useEffect(() => {
+//     if (selectedPincode) {
+//       const found = pincodeData.find((p) => p.code === selectedPincode);
+//       if (found && found.areas) {
+//         setAreaOptions(found.areas);
+//         setFormData((prev) => ({
+//           ...prev,
+//           city: found.city,
+//           state: found.state,
+//         }));
+//       } else {
+//         setAreaOptions([]);
+//         setFormData((prev) => ({
+//           ...prev,
+//           city: "",
+//           state: "",
+//           areaName: "",
+//           subAreaName: "",
+//         }));
+//       }
+//     } else {
+//       setAreaOptions([]);
+//       setFormData((prev) => ({
+//         ...prev,
+//         city: "",
+//         state: "",
+//         areaName: "",
+//         subAreaName: "",
+//       }));
+//     }
+//   }, [selectedPincode, pincodeData]);
+
+//   useEffect(() => {
+//     if (formData.areaName) {
+//       const selectedArea = areaOptions.find(
+//         (a) => a.name === formData.areaName
+//       );
+//       if (selectedArea && selectedArea.subAreas) {
+//         setSubAreaOptions(selectedArea.subAreas);
+//       } else {
+//         setSubAreaOptions([]);
+//       }
+//       setFormData((prev) => ({ ...prev, subAreaName: "" }));
+//     }
+//   }, [formData.areaName, areaOptions]);
+
+//   const handleInputChange = useCallback(
+//     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+//       const { name, value } = e.target;
+//       setFormData((prev) => ({ ...prev, [name]: value }));
+//       if (name === "pincode") {
+//         setSelectedPincode(value);
+//       }
+//       setErrors((prev) => ({ ...prev, [name]: undefined }));
+//     },
+//     []
+//   );
+
+//   const validateForm = (): FormErrors => {
+//     const newErrors: FormErrors = {};
+//     if (!formData.username.trim()) {
+//       newErrors.username = "Technician Name is required.";
+//     }
+//     if (!formData.category) {
+//       newErrors.category = "Category is required.";
+//     }
+//     if (!formData.phoneNumber || !/^\d{10}$/.test(formData.phoneNumber)) {
+//       newErrors.phoneNumber = "Phone number must be exactly 10 digits.";
+//     }
+//     if (
+//       !formData.password ||
+//       formData.password.length < 6 ||
+//       formData.password.length > 10
+//     ) {
+//       newErrors.password = "Password must be 6-10 characters.";
+//     }
+//     if (!formData.buildingName.trim()) {
+//       newErrors.buildingName = "Building name is required.";
+//     }
+//     if (!formData.pincode || formData.pincode.length !== 6) {
+//       newErrors.pincode = "Pincode must be exactly 6 digits.";
+//     }
+//     if (!formData.areaName) {
+//       newErrors.areaName = "Area is required.";
+//     }
+//     if (!formData.city) {
+//       newErrors.city = "City is required.";
+//     }
+//     if (!formData.state) {
+//       newErrors.state = "State is required.";
+//     }
+//     if (!formData.subscriptionId) {
+//       newErrors.subscriptionId = "Subscription Plan is required.";
+//     }
+//     return newErrors;
+//   };
+
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     const validationErrors = validateForm();
+//     if (Object.keys(validationErrors).length > 0) {
+//       setErrors(validationErrors);
+//       return;
+//     }
+
+//     setIsSubmitting(true);
+//     try {
+//       const payload = {
+//         username: formData.username,
+//         category: formData.category,
+//         phoneNumber: formData.phoneNumber,
+//         password: formData.password,
+//         buildingName: formData.buildingName,
+//         areaName: formData.areaName,
+//         subAreaName: formData.subAreaName || "-",
+//         city: formData.city,
+//         state: formData.state,
+//         pincode: formData.pincode,
+//         subscriptionId: formData.subscriptionId,
+//       };
+//       await registerTechByAdmin(payload);
+//       alert("Technician added successfully!");
+//       setIsSubmitting(false);
+//       navigate(`management/technicians/all`);
+//     } catch (error) {
+//       setIsSubmitting(false);
+//       alert("Something went wrong");
+//       console.error("Error adding technician:", error);
+//       setErrors({
+//         username: "An error occurred while submitting the form.",
+//       });
+//     }
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
+//       <div className="max-w-4xl mx-auto">
+//         {/* Header */}
+//         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+//           <div className="flex items-center gap-3">
+//             <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
+//               <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+//                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+//               </svg>
+//             </div>
+//             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+//               Add Technician
+//             </h1>
+//           </div>
+//           <button
+//             onClick={() => navigate(-1)}
+//             className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+//           >
+//             <ArrowLeft className="h-4 w-4 mr-2" />
+//             Back
+//           </button>
+//         </div>
+
+//         {/* Form */}
+//         <form onSubmit={handleSubmit} className="space-y-8">
+//           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+//             <div className="bg-gradient-to-r from-blue-500 to-blue-700 px-6 py-4">
+//               <h2 className="text-lg font-semibold text-white">
+//                 Technician Information
+//               </h2>
+//             </div>
+
+//             <div className="p-6 space-y-6">
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">
+//                     Technician Name <span className="text-red-500">*</span>
+//                   </label>
+//                   <input
+//                     type="text"
+//                     name="username"
+//                     value={formData.username}
+//                     onChange={handleInputChange}
+//                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+//                     placeholder="Enter technician name"
+//                     required
+//                     aria-describedby={
+//                       errors.username ? "username-error" : undefined
+//                     }
+//                   />
+//                   {errors.username && (
+//                     <p id="username-error" className="text-red-500 text-sm">
+//                       {errors.username}
+//                     </p>
+//                   )}
+//                 </div>
+
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">
+//                     Category <span className="text-red-500">*</span>
+//                   </label>
+//                   <select
+//                     name="category"
+//                     value={formData.category}
+//                     onChange={handleInputChange}
+//                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+//                     required
+//                     aria-describedby={
+//                       errors.category ? "category-error" : undefined
+//                     }
+//                   >
+//                     <option value="" disabled>
+//                       Select a category
+//                     </option>
+//                     {apiCategories
+//                       .sort((a, b) => a.category_name.toLowerCase().localeCompare(b.category_name.toLowerCase()))
+//                       .map((item) => (
+//                         <option key={item._id} value={item._id}>
+//                           {item.category_name}
+//                         </option>
+//                       ))}
+//                   </select>
+//                   {errors.category && (
+//                     <p id="category-error" className="text-red-500 text-sm">
+//                       {errors.category}
+//                     </p>
+//                   )}
+//                 </div>
+//               </div>
+
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">
+//                     Mobile Number <span className="text-red-500">*</span>
+//                   </label>
+//                   <div className="flex">
+//                     <span className="inline-flex items-center px-3 py-3 border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm rounded-l-lg">
+//                       🇮🇳 +91
+//                     </span>
+//                     <input
+//                       type="tel"
+//                       name="phoneNumber"
+//                       value={formData.phoneNumber}
+//                       onChange={handleInputChange}
+//                       className="flex-1 px-4 py-3 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+//                       placeholder="Enter 10-digit mobile number"
+//                       pattern="[0-9]{10}"
+//                       required
+//                       aria-describedby={
+//                         errors.phoneNumber ? "phoneNumber-error" : undefined
+//                       }
+//                     />
+//                   </div>
+//                   {errors.phoneNumber && (
+//                     <p id="phoneNumber-error" className="text-red-500 text-sm">
+//                       {errors.phoneNumber}
+//                     </p>
+//                   )}
+//                 </div>
+
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">
+//                     Password <span className="text-red-500">*</span>
+//                   </label>
+//                   <div className="relative">
+//                     <input
+//                       type={showPassword ? "text" : "password"}
+//                       name="password"
+//                       value={formData.password}
+//                       onChange={handleInputChange}
+//                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+//                       placeholder="6-10 characters"
+//                       minLength={6}
+//                       maxLength={10}
+//                       required
+//                       aria-describedby={
+//                         errors.password ? "password-error" : undefined
+//                       }
+//                     />
+//                     <span
+//                       className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-blue-500"
+//                       onClick={() => setShowPassword((prev) => !prev)}
+//                     >
+//                       {showPassword ? (
+//                         <EyeOff className="h-5 w-5" />
+//                       ) : (
+//                         <Eye className="h-5 w-5" />
+//                       )}
+//                     </span>
+//                   </div>
+//                   {errors.password && (
+//                     <p id="password-error" className="text-red-500 text-sm">
+//                       {errors.password}
+//                     </p>
+//                   )}
+//                 </div>
+//               </div>
+
+//               <div className="space-y-2">
+//                 <label className="block text-sm font-medium text-gray-700">
+//                   Building Name <span className="text-red-500">*</span>
+//                 </label>
+//                 <input
+//                   type="text"
+//                   name="buildingName"
+//                   value={formData.buildingName}
+//                   onChange={handleInputChange}
+//                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+//                   placeholder="Enter building name"
+//                   required
+//                   aria-describedby={
+//                     errors.buildingName ? "buildingName-error" : undefined
+//                   }
+//                 />
+//                 {errors.buildingName && (
+//                   <p id="buildingName-error" className="text-red-500 text-sm">
+//                     {errors.buildingName}
+//                   </p>
+//                 )}
+//               </div>
+
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">
+//                     Pincode <span className="text-red-500">*</span>
+//                   </label>
+//                   <select
+//                     name="pincode"
+//                     value={formData.pincode}
+//                     onChange={handleInputChange}
+//                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+//                     required
+//                     aria-describedby={
+//                       errors.pincode ? "pincode-error" : undefined
+//                     }
+//                   >
+//                     <option value="" disabled>
+//                       Select Pincode
+//                     </option>
+//                     {pincodeData
+//                       .sort((a, b) => Number(a.code) - Number(b.code))
+//                       .map((p) => (
+//                         <option key={p._id} value={p.code}>
+//                           {p.code}
+//                         </option>
+//                       ))}
+//                   </select>
+//                   {errors.pincode && (
+//                     <p id="pincode-error" className="text-red-500 text-sm">
+//                       {errors.pincode}
+//                     </p>
+//                   )}
+//                 </div>
+
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">
+//                     Area <span className="text-red-500">*</span>
+//                   </label>
+//                   <select
+//                     name="areaName"
+//                     value={formData.areaName}
+//                     onChange={handleInputChange}
+//                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 disabled:bg-gray-100"
+//                     required
+//                     disabled={!selectedPincode}
+//                     aria-describedby={
+//                       errors.areaName ? "areaName-error" : undefined
+//                     }
+//                   >
+//                     <option value="" disabled>
+//                       Select Area
+//                     </option>
+//                     {areaOptions.map((a) => (
+//                       <option key={a._id} value={a.name}>
+//                         {a.name}
+//                       </option>
+//                     ))}
+//                   </select>
+//                   {errors.areaName && (
+//                     <p id="areaName-error" className="text-red-500 text-sm">
+//                       {errors.areaName}
+//                     </p>
+//                   )}
+//                 </div>
+//               </div>
+
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">
+//                     Sub Area
+//                   </label>
+//                   <select
+//                     name="subAreaName"
+//                     value={formData.subAreaName}
+//                     onChange={handleInputChange}
+//                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 disabled:bg-gray-100"
+//                     disabled={!formData.areaName}
+//                   >
+//                     <option value="">Select Sub Area</option>
+//                     {subAreaOptions
+//                       .sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()))
+//                       .map((a) => (
+//                         <option key={a._id} value={a.name}>
+//                           {a.name}
+//                         </option>
+//                       ))}
+//                   </select>
+//                 </div>
+
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">
+//                     City <span className="text-red-500">*</span>
+//                   </label>
+//                   <select
+//                     name="city"
+//                     value={formData.city}
+//                     onChange={handleInputChange}
+//                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 disabled:bg-gray-100"
+//                     required
+//                     disabled={!selectedPincode}
+//                     aria-describedby={errors.city ? "city-error" : undefined}
+//                   >
+//                     <option value="" disabled>
+//                       Select City
+//                     </option>
+//                     {selectedPincode &&
+//                       pincodeData.find((p) => p.code === selectedPincode) && (
+//                         <option
+//                           value={
+//                             pincodeData.find((p) => p.code === selectedPincode)
+//                               ?.city
+//                           }
+//                         >
+//                           {
+//                             pincodeData.find((p) => p.code === selectedPincode)
+//                               ?.city
+//                           }
+//                         </option>
+//                       )}
+//                   </select>
+//                   {errors.city && (
+//                     <p id="city-error" className="text-red-500 text-sm">
+//                       {errors.city}
+//                     </p>
+//                   )}
+//                 </div>
+//               </div>
+
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">
+//                     State <span className="text-red-500">*</span>
+//                   </label>
+//                   <select
+//                     name="state"
+//                     value={formData.state}
+//                     onChange={handleInputChange}
+//                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 disabled:bg-gray-100"
+//                     required
+//                     disabled={!selectedPincode}
+//                     aria-describedby={errors.state ? "state-error" : undefined}
+//                   >
+//                     <option value="" disabled>
+//                       Select State
+//                     </option>
+//                     {selectedPincode &&
+//                       pincodeData.find((p) => p.code === selectedPincode) && (
+//                         <option
+//                           value={
+//                             pincodeData.find((p) => p.code === selectedPincode)
+//                               ?.state
+//                           }
+//                         >
+//                           {
+//                             pincodeData.find((p) => p.code === selectedPincode)
+//                               ?.state
+//                           }
+//                         </option>
+//                       )}
+//                   </select>
+//                   {errors.state && (
+//                     <p id="state-error" className="text-red-500 text-sm">
+//                       {errors.state}
+//                     </p>
+//                   )}
+//                 </div>
+
+//                 <div className="space-y-2">
+//                   <label className="block text-sm font-medium text-gray-700">
+//                     Subscription Plan <span className="text-red-500">*</span>
+//                   </label>
+//                   <select
+//                     name="subscriptionId"
+//                     value={formData.subscriptionId}
+//                     onChange={handleInputChange}
+//                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+//                     required
+//                     aria-describedby={
+//                       errors.subscriptionId ? "subscriptionId-error" : undefined
+//                     }
+//                   >
+//                     <option value="" disabled>
+//                       Select Subscription Plan
+//                     </option>
+//                     {subscriptionPlans
+//                       .filter((plan) => ['Economy Plan', 'Free Plan'].includes(plan.name))
+//                       .map((plan) => (
+//                         <option key={plan._id} value={plan._id}>
+//                           {plan.name} - ₹{plan.finalPrice} ({plan.price} + {plan.gst} GST)
+//                         </option>
+//                       ))}
+//                   </select>
+//                   {errors.subscriptionId && (
+//                     <p id="subscriptionId-error" className="text-red-500 text-sm">
+//                       {errors.subscriptionId}
+//                     </p>
+//                   )}
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Action Buttons */}
+//           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+//             <button
+//               type="button"
+//               onClick={() => navigate(-1)}
+//               className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+//               disabled={isSubmitting}
+//             >
+//               Cancel
+//             </button>
+//             <button
+//               type="submit"
+//               className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
+//               disabled={isSubmitting}
+//             >
+//               {isSubmitting ? "Processing..." : "Add"}
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AddTechnician;
 // import React, { useState, useCallback, useEffect } from "react";
 // import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 // import { getAllCategories, getAllPincodes, getPlans, registerTechByAdmin } from "../../api/apiMethods";

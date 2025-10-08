@@ -56,39 +56,54 @@ const endpoints: any = {
     },
   },
 
-  updatePlans:{
+  updatePlans: {
     method: "put",
     url: () => {
       return `/api/subscriptions/updateSubscription`;
-    }
-  },
-
-  deletePlan:{
-    method: "delete",
-    url: (planId: string) => {
-      return `/api/subscriptions/deleteSubscription/${planId}`;
-    }
-  },
-
-  getAllUsers: {
-  method: "get",
-  url: ({ offset, limit }: { offset: number; limit: number }) => {
-    return `/api/userAuth/getAllUsers?offset=${offset}&limit=${limit}`;
-  },
-},
-
-  getAllTechnicians: {
-    method: "get",
-    url: () => {
-      return `/api/techAuth/getAllTechnicians?offset=1&limit=2`;
     },
   },
 
-  registerTechByAdmin:{
+  deletePlan: {
+    method: "delete",
+    url: (planId: string) => {
+      return `/api/subscriptions/deleteSubscription/${planId}`;
+    },
+  },
+
+  getAllUsers: {
+    method: "get",
+    url: ({ offset, limit }: { offset: number; limit: number }) => {
+      return `/api/userAuth/getAllUsers?offset=${offset}&limit=${limit}`;
+    },
+  },
+
+  deleteUserByAdmin: {
+    method: "delete",
+    url: (userId: string) => {
+      return `/api/userAuth/deleteUserByAdmin/${userId}`;
+    },
+  },
+
+
+  getAllTechnicians: {
+    method: "get",
+    url: ({offset, limit}: {offset: number, limit: number}) => {
+      return `/api/techAuth/getAllTechnicians?offset=${offset}&limit=${limit}`;
+    },
+  },
+
+  deleteTechnicianByAdmin: {
+    method: "delete",
+    url: (techId: string) => {
+      return `/api/techAuth/deleteTechnicianByAdmin/${techId}`;
+    },
+  },
+
+  registerTechByAdmin: {
     method: "post",
     url: () => {
       return `/api/techAuth/registerByAdmin`;
-    }
+    },
   },
 
   getAllFranchises: {
@@ -102,7 +117,7 @@ const endpoints: any = {
     method: "post",
     url: () => {
       return `/api/franchiseAuth/registerFranchiseByAdmin`;
-    }
+    },
   },
 
   getCompanyReviews: {
@@ -113,9 +128,9 @@ const endpoints: any = {
   },
 
   createCompanyReview: {
-    method: "post",  // Corrected from 'get' to 'post' based on typical CRUD patterns
+    method: "post", // Corrected from 'get' to 'post' based on typical CRUD patterns
     url: () => {
-      return `/api/companyReview/getReview`;  // Note: URL might need review, as 'getReview' seems odd for create
+      return `/api/companyReview/getReview`; // Note: URL might need review, as 'getReview' seems odd for create
     },
   },
 
@@ -126,13 +141,13 @@ const endpoints: any = {
     },
   },
 
-    createSeoContent: {
+  createSeoContent: {
     method: "post",
     url: () => {
       return `/api/searchContentData/addCagegorySearchDetails`;
     },
   },
-  
+
   createTechnicianByAdmin: {
     method: "post",
     url: () => {
@@ -157,7 +172,7 @@ const endpoints: any = {
   getAllFranchiseRequests: {
     method: "get",
     url: () => {
-      return `/api/franchaseEnquiry/getAllFranchaseEnquiries`;  // Note: 'franchase' might be typo, but left as is
+      return `/api/franchaseEnquiry/getAllFranchaseEnquiries`; // Note: 'franchase' might be typo, but left as is
     },
   },
 
@@ -171,74 +186,74 @@ const endpoints: any = {
   getServicesByCateId: {
     method: "get",
     url: (categoryId: string) => {
-      return `/api/cateServices/getServicesByCateId/${categoryId}`
-    }
+      return `/api/cateServices/getServicesByCateId/${categoryId}`;
+    },
   },
 
-getSeosByCateId: {
-  method: "get",
-  url: (categoryId: string) => {
-    return `/api/searchContentData/getSeoContentsByCategoryId/${categoryId}`;
+  getSeosByCateId: {
+    method: "get",
+    url: (categoryId: string) => {
+      return `/api/searchContentData/getSeoContentsByCategoryId/${categoryId}`;
+    },
   },
-},
-
 
   updateServiceControlByCateId: {
     method: "put",
     url: () => {
       return `/api/cateServices/updateServiceControl`;
-    }
+    },
   },
 
   deleteServiceByAdmin: {
     method: "delete",
     url: (serviceId: string) => {
       return `/api/cateServices/deleteServiceById/${serviceId}`;
-    }
+    },
   },
 
   getAllSearchContents: {
     method: "get",
-    url: ({offset, limit}: {offset: number, limit: number}) => {
-      return `/api/searchContentData/getAllSearchContents?offset=${offset}&limit=${limit}`
-    }
+    url: ({ offset, limit }: { offset: number; limit: number }) => {
+      return `/api/searchContentData/getAllSearchContents?offset=${offset}&limit=${limit}`;
+    },
   },
 
   deleteCategorySearchDetails: {
-    method: 'delete',
-    url: (id: string) => `/api/searchContentData/deleteCategorySearchDetails/${id}`
+    method: "delete",
+    url: (id: string) =>
+      `/api/searchContentData/deleteCategorySearchDetails/${id}`,
   },
 
   updateCagegorySearchDetails: {
-    method: 'put',
-    url: () => `/api/searchContentData/updateCagegorySearchDetails`  // Fixed typo 'Cagegory' to 'Category'
+    method: "put",
+    url: () => `/api/searchContentData/updateCagegorySearchDetails`, // Fixed typo 'Cagegory' to 'Category'
   },
 
   getInTouch: {
     method: "get",
-    url: (params: {offset: number, limit: number}) => {
-      return `/api/getInTouch/getInTouchContacts?offset=${params.offset}&limit=${params.limit}`;  // Corrected URL to match sample API
-    }
+    url: (params: { offset: number; limit: number }) => {
+      return `/api/getInTouch/getInTouchContacts?offset=${params.offset}&limit=${params.limit}`; // Corrected URL to match sample API
+    },
   },
 
   getAllBlogs: {
     method: "get",
-    url: () => `/api/blog/getAllBlogs`
+    url: () => `/api/blog/getAllBlogs`,
   },
 
   createBlog: {
     method: "post",
-    url: () => `/api/blog/create`
+    url: () => `/api/blog/create`,
   },
 
   updateBlog: {
     method: "put",
-    url: () => `/api/blog/update`
+    url: () => `/api/blog/update`,
   },
 
   deleteBlog: {
     method: "delete",
-    url: (blogId: string) => `/api/blog/delete/${blogId}`
+    url: (blogId: string) => `/api/blog/delete/${blogId}`,
   },
 
   registerExecutiveByAdmin: {

@@ -12,11 +12,9 @@ import ViewMetaInfo from "../components/metaInfo/ViewMetaInfo";
 import SubscriptionPage from "../components/Subscriptions/SubscriptionPage";
 import PlanDetailsPage from "../components/Subscriptions/PlanDetailsPage";
 import AllFranchisePlansPage from "../components/FranchisePlansPage/AllFranchisePlansPage";
-import AddUser from "../components/manageUsers/AddUser";
 import AdminUsers from "../components/manageUsers/AdminUsers";
 import AddAdminUser from "../pages/AddAdminUser";
 import Technicians from "../components/manageTechnicians/Technicians";
-import AddTechnician from "../components/manageTechnicians/AddTechnician";
 import AdminCreatedTechnicians from "../components/manageTechnicians/AdminCreatedTechnicians";
 import Franchise from "../components/manageFranchise/Franchises";
 import AddFranchise from "../components/manageFranchise/AddFranchise";
@@ -49,6 +47,9 @@ import AuthLayout from "../layout/AuthLayout";
 import SubscriptionForm from "../components/Subscriptions/SubscriptionForm";
 import AllUsers from "../components/manageUsers/AllUsers";
 import ViewUser from "../components/manageUsers/ViewUser";
+import UserForm from "../components/manageUsers/UserFrom";
+import ViewTechnician from "../components/manageTechnicians/ViewTechnician";
+import TechnicianForm from "../components/manageTechnicians/TechnicianForm";
 
 
 
@@ -132,7 +133,8 @@ const AppRoutes: React.FC = () => {
         <Route path="/management/users" element={<AllUsers />} />
         <Route path="/management/users/all" element={<AllUsers />} />
         <Route path="/management/users/view/:id" element={<ViewUser />} />
-        <Route path="/management/users/add" element={<AddUser />} />
+        <Route path="/management/users/edit/:id" element={<UserForm />} />
+        <Route path="/management/users/add" element={<UserForm />} />
         <Route
           path="/management/users/admin-created"
           element={<AdminUsers />}
@@ -142,7 +144,9 @@ const AppRoutes: React.FC = () => {
         {/* Management - Technicians: Routes for technician management */}
         <Route path="/management/technicians" element={<Technicians />} />
         <Route path="/management/technicians/all" element={<Technicians />} />
-        <Route path="/management/technicians/add" element={<AddTechnician />} />
+        <Route path="/management/technicians/add" element={<TechnicianForm />} />
+        <Route path="/management/technicians/view/:id" element={<ViewTechnician />} />
+        <Route path="/management/technicians/edit/:id" element={<TechnicianForm/>} />
         <Route
           path="/management/technicians/admin-created"
           element={<AdminCreatedTechnicians />}
