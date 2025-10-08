@@ -260,7 +260,14 @@ const endpoints: any = {
   deleteExecutiveProfile: {
     method: "delete",
     url: (id: string) => `/api/executiveAuth/deleteExecutiveProfile/${id}`
-  }
+  },
+
+  getAllBookings: {
+    method: "get",
+    url: ({offset, limit}: {offset: number, limit: number}) => {
+      return `/api/bookingServices/getAllBookings?offset=${offset}&limit=${limit}`
+    }
+  }, 
 };
 
 export default endpoints;

@@ -84,10 +84,12 @@ export const updateBlog = (data: any) => apiRequest("updateBlog", data);
 export const deleteBlog = (blogId: string, data: any) => apiRequest("deleteBlog", data, blogId);
 
 export const registerExecutiveByAdmin = (data: any) => apiRequest("registerExecutiveByAdmin", data);
+
 export const getAllExecutives = (data: {offset: number, limit: number}) => apiRequest("getAllExecutives", null, data);
 
-
 export const deleteExecutiveProfile = (id: string) => apiRequest("deleteExecutiveProfile", null, id);
+
+export const getAllBookings = (data: {offset: number, limit: number}) => apiRequest("getAllBookings", null, data);
 
 
 
