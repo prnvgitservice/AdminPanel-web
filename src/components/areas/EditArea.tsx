@@ -50,7 +50,6 @@ const EditArea: React.FC = () => {
       setError("No pincode data found. Please select a pincode to edit.");
       setTimeout(() => navigate("/areas"), 2000); // Redirect after 2 seconds
     } else {
-      console.log("Pincode data:", pincode); // Debug
       setFormData({
         code: pincode.code || "",
         city: pincode.city || "",

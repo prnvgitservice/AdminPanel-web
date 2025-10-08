@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, MapPin, Search, Edit, Trash2, Eye, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { getAllPincodes } from "../../api/apiMethods";
+import { deletePincode, getAllPincodes } from "../../api/apiMethods";
 import "react-quill/dist/quill.snow.css";
 
 interface SubArea {
@@ -97,19 +97,16 @@ const AllAreas = () => {
     navigate(`/areas/edit/${id}`, { state: { pincode } });
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (pincode: Pincode) => {
     if (window.confirm("Are you sure you want to delete this pincode?")) {
       try {
-        const response = await fetch(
-          `https://services-platform-backend.onrender.com/api/pincodes/delete`,
-          {
-            method: "DELETE",
-          }
-        );
-        const data = await response.json();
+        console.log("Deleting pincode:", pincode);
+        const response = await deletePincode(pincode);
 
-        if (!response.ok) {
-          throw new Error(data.message || "Failed to delete pincode");
+        console.log("Delete response:", response);
+
+        if (!response.success) {
+          throw new Error(response.message || "Failed to delete pincode");
         }
 
         const res: FetchPincodeResponse = await getAllPincodes();
@@ -304,7 +301,7 @@ const AllAreas = () => {
                               <Edit className="h-5 w-5" />
                             </button>
                             <button
-                              onClick={() => handleDelete(pincode._id)}
+                              onClick={() => handleDelete(pincode)}
                               className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
                               title="Delete"
                             >

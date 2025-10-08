@@ -42,6 +42,11 @@ const endpoints: any = {
     url: (pincodeId: string) => `/api/pincodes/${pincodeId}`,
   },
 
+  deletePincode: {
+    method: "delete",
+    url: () => `/api/pincodes/delete`,
+  },
+
   getPlans: {
     method: "get",
     url: () => {

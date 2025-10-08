@@ -15,6 +15,8 @@ export const getAllPincodes = () => apiRequest("getAllPincodes");
 
 export const updatePincode = (pincodeId: string, data: any) => apiRequest("updatePincode", data, pincodeId);
 
+export const deletePincode = (pincodeData: any) => apiRequest("deletePincode", null, pincodeData);
+
 export const getPlans = (data: any) => apiRequest("getPlans", data);
 
 export const addPlans = (data: any) => apiRequest("addPlans", data);
