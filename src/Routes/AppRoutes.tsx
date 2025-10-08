@@ -24,6 +24,7 @@ import AddFranchise from "../components/manageFranchise/AddFranchise";
 import AdminCreatedFranchises from "../components/manageFranchise/AdminCreatedFranchises";
 import CompanyReviews from "../components/reviews/CompanyReviews";
 import AllGuestBookings from "../components/bookings/GuestBooking";
+import AllBookings from "../components/bookings/AllBookings";
 import FranchiseRequest from "../components/enquiries/FranchiseRequest";
 import AllServices from "../components/services/AllServices";
 import AddService from "../components/services/AddServices";
@@ -166,10 +167,7 @@ const AppRoutes: React.FC = () => {
           path="/bookings"
           element={<PlaceholderPage title="Bookings" />}
         />
-        <Route
-          path="/bookings/all"
-          element={<PlaceholderPage title="All Bookings" />}
-        />
+        <Route path="/bookings/all" element={<AllBookings />} />
         <Route path="/bookings/guest" element={<AllGuestBookings />} />
 
         {/* Enquiries: Routes for managing enquiries */}
