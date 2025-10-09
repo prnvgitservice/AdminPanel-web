@@ -100,8 +100,7 @@ const AllAreas = () => {
   const handleDelete = async (pincode: Pincode) => {
     if (window.confirm("Are you sure you want to delete this pincode?")) {
       try {
-        console.log("Deleting pincode:", pincode);
-        const response = await deletePincode(pincode);
+        const response = await deletePincode({...pincode , forceDelete: true});
 
         console.log("Delete response:", response);
 

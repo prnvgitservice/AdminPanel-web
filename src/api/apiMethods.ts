@@ -12,7 +12,7 @@ export const getAllPincodes = () => apiRequest("getAllPincodes");
 
 export const updatePincode = (pincodeId: string, data: any) => apiRequest("updatePincode", data, pincodeId);
 
-export const deletePincode = (pincodeData: any) => apiRequest("deletePincode", null, pincodeData);
+export const deletePincode = (pincodeData: any) => apiRequest("deletePincode", pincodeData);
 
 export const getPlans = (data: any) => apiRequest("getPlans", data);
 
@@ -24,6 +24,8 @@ export const deletePlan = (planId: string) => apiRequest("deletePlan", null, pla
 
 export const getAllUsers = (data: { offset?: number; limit?: number }) => apiRequest("getAllUsers", null, data);
 
+export const updateUserByAdmin = (data: any) => apiRequest("updateUserByAdmin", data);
+
 export const deleteUserByAdmin = (userId: string) => apiRequest("deleteUserByAdmin", null, userId);
 
 export const getAllTechnicians = (data: any) => apiRequest("getAllTechnicians", null, data);
@@ -31,6 +33,8 @@ export const getAllTechnicians = (data: any) => apiRequest("getAllTechnicians", 
 export const deleteTechnicianByAdmin = (techId: string) => apiRequest("deleteTechnicianByAdmin", null, techId);
 
 export const registerTechByAdmin = (data: any) => apiRequest("registerTechByAdmin", data);
+
+export const updateTechByAdmin = (data: any) => apiRequest("updateTechByAdmin", data);
 
 export const getAllFranchises = (data: any) => apiRequest("getAllFranchises", data);
 

@@ -3,12 +3,14 @@ import { Users, Search, Eye, Plus, Edit, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { deleteTechnicianByAdmin, getAllTechnicians } from "../../api/apiMethods";
 
-// Interface for Technician data
+// Updated Interface for Technician data to match the provided JSON structure
 interface Technician {
   id: string;
   username: string;
   phoneNumber: string;
   role: string;
+  userId: string;
+  category?: string;
   buildingName: string;
   areaName: string;
   subAreaName: string;
@@ -16,14 +18,27 @@ interface Technician {
   state: string;
   pincode: string;
   profileImage?: string;
-  fullAddress: string;
   admin: boolean;
+  description?: string;
   categoryServices: Array<{
     categoryServiceId: string;
     status: boolean;
     _id: string;
   }>;
-  categoryCount: number;
+  createdAt: string;
+  techDetails: {
+    categoryName: string;
+    planDetails: {
+      subscriptionId: string;
+      subscriptionName: string;
+      startDate: string;
+      endDate: string;
+      leads: number | null;
+      ordersCount: number;
+      _id: string;
+    };
+  };
+  fullAddress: string;
 }
 
 interface ApiResponse {
@@ -52,6 +67,8 @@ const Technicians = () => {
     username: apiTechnician.username,
     phoneNumber: apiTechnician.phoneNumber,
     role: apiTechnician.role,
+    userId: apiTechnician.userId,
+    category: apiTechnician.category,
     buildingName: apiTechnician.buildingName,
     areaName: apiTechnician.areaName,
     subAreaName: apiTechnician.subAreaName,
@@ -60,9 +77,11 @@ const Technicians = () => {
     state: apiTechnician.state,
     pincode: apiTechnician.pincode,
     admin: apiTechnician.admin,
+    description: apiTechnician.description,
     categoryServices: apiTechnician.categoryServices || [],
+    createdAt: apiTechnician.createdAt,
+    techDetails: apiTechnician.techDetails || { categoryName: '', planDetails: { subscriptionId: '', subscriptionName: '', startDate: '', endDate: '', leads: null, ordersCount: 0, _id: '' } },
     fullAddress: `${apiTechnician.buildingName}, ${apiTechnician.subAreaName}, ${apiTechnician.areaName}, ${apiTechnician.city}, ${apiTechnician.state} - ${apiTechnician.pincode}`,
-    categoryCount: apiTechnician.categoryServices ? apiTechnician.categoryServices.length : 0,
   });
 
   // Fetch technicians with server-side pagination
@@ -101,7 +120,8 @@ const Technicians = () => {
     } else {
       const filtered = allTechnicians.filter(technician =>
         technician.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        technician.phoneNumber.includes(searchTerm)
+        technician.phoneNumber.includes(searchTerm) ||
+        technician.userId.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredTechnicians(filtered);
     }
@@ -284,7 +304,9 @@ const Technicians = () => {
                       </td>
                     </tr>
                   ) : (
-                    filteredTechnicians.map((technician) => (
+                    filteredTechnicians.map((technician) => {
+                      const subscriptionName = technician.techDetails?.planDetails?.subscriptionName || 'N/A';
+                      return (
                       <tr key={technician.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
@@ -298,23 +320,21 @@ const Technicians = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">{technician.id}</div>
+                          <div className="text-sm text-gray-900">{technician.userId}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">
-                            <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                              {technician.categoryCount} services
-                            </span>
+                            {technician.techDetails.categoryName}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">{technician.phoneNumber}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">-</div>
+                          <div className="text-sm text-gray-900">{new Date(technician.createdAt).toLocaleDateString()}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">-</div>
+                          <div className="text-sm text-gray-900">{subscriptionName}</div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="text-sm text-gray-900 max-w-xs truncate" title={technician.fullAddress}>
@@ -356,7 +376,7 @@ const Technicians = () => {
                           </button>
                         </td>
                       </tr>
-                    ))
+                    )})
                   )}
                 </tbody>
               </table>
@@ -439,6 +459,1358 @@ const Technicians = () => {
 };
 
 export default Technicians;
+// import React, { useState, useEffect } from "react";
+// import { Users, Search, Eye, Plus, Edit, Trash2 } from "lucide-react";
+// import { useNavigate } from "react-router-dom";
+// import { deleteTechnicianByAdmin, getAllTechnicians } from "../../api/apiMethods";
+
+// // Updated Interface for Technician data to include full subscription
+// interface Technician {
+//   id: string;
+//   username: string;
+//   phoneNumber: string;
+//   role: string;
+//   userId: string;
+//   buildingName: string;
+//   areaName: string;
+//   subAreaName: string;
+//   city: string;
+//   state: string;
+//   pincode: string;
+//   profileImage?: string;
+//   fullAddress: string;
+//   admin: boolean;
+//   categoryServices: Array<{
+//     categoryServiceId: string;
+//     status: boolean;
+//     _id: string;
+//   }>;
+//   categoryName: string;
+//   createdAt: string;
+//   subscription: {
+//     _id: string;
+//     technicianId: string;
+//     subscriptions: Array<{
+//       subscriptionId: string;
+//       subscriptionName: string;
+//       startDate: string;
+//       endDate: string;
+//       leads: number | null;
+//       ordersCount: number;
+//       _id: string;
+//     }>;
+//     createdAt: string;
+//     updatedAt: string;
+//     __v: number;
+//   } | null;
+// }
+
+// interface ApiResponse {
+//   success: boolean;
+//   technicians: Technician[];
+//   total: number;
+//   offset: number;
+//   limit: number;
+// }
+
+// const Technicians = () => {
+//   const [allTechnicians, setAllTechnicians] = useState<Technician[]>([]); // Store all technicians from API
+//   const [filteredTechnicians, setFilteredTechnicians] = useState<Technician[]>([]); // Store filtered technicians for display
+//   const [loading, setLoading] = useState(true);
+//   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+//   const [error, setError] = useState<string | null>(null);
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [limit, setLimit] = useState(10);
+//   const [total, setTotal] = useState(0);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const navigate = useNavigate();
+
+//   // Map API technician to local Technician interface
+//   const mapTechnician = (apiTechnician: any): Technician => ({
+//     id: apiTechnician.id,
+//     username: apiTechnician.username,
+//     phoneNumber: apiTechnician.phoneNumber,
+//     role: apiTechnician.role,
+//     userId: apiTechnician.userId,
+//     buildingName: apiTechnician.buildingName,
+//     areaName: apiTechnician.areaName,
+//     subAreaName: apiTechnician.subAreaName,
+//     profileImage: apiTechnician.profileImage,
+//     city: apiTechnician.city,
+//     state: apiTechnician.state,
+//     pincode: apiTechnician.pincode,
+//     admin: apiTechnician.admin,
+//     categoryServices: apiTechnician.categoryServices || [],
+//     categoryName: apiTechnician.categoryName || '',
+//     createdAt: apiTechnician.createdAt,
+//     subscription: apiTechnician.subscription || null,
+//     fullAddress: `${apiTechnician.buildingName}, ${apiTechnician.subAreaName}, ${apiTechnician.areaName}, ${apiTechnician.city}, ${apiTechnician.state} - ${apiTechnician.pincode}`,
+//   });
+
+//   // Fetch technicians with server-side pagination
+//   const fetchTechnicians = async (): Promise<void> => {
+//     setLoading(true);
+//     setError(null);
+//     const offset = (currentPage - 1) * limit;
+//     try {
+//       const data = { offset, limit };
+//       const response: ApiResponse = await getAllTechnicians(data);
+//       if (!response.success) {
+//         throw new Error("Failed to fetch technicians");
+//       }
+//       const mappedTechnicians = response.technicians.map(mapTechnician);
+//       setAllTechnicians(mappedTechnicians);
+//       setFilteredTechnicians(mappedTechnicians); // Initially set filtered technicians to all technicians
+//       setTotal(response.total);
+//     } catch (err: any) {
+//       setError(err.message || "Failed to load technicians. Please try again.");
+//       setAllTechnicians([]);
+//       setFilteredTechnicians([]);
+//       setTotal(0);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchTechnicians();
+//   }, [currentPage, limit]);
+
+//   // Filter technicians based on search term
+//   useEffect(() => {
+//     if (searchTerm.trim() === "") {
+//       setFilteredTechnicians(allTechnicians);
+//     } else {
+//       const filtered = allTechnicians.filter(technician =>
+//         technician.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//         technician.phoneNumber.includes(searchTerm) ||
+//         technician.userId.toLowerCase().includes(searchTerm.toLowerCase())
+//       );
+//       setFilteredTechnicians(filtered);
+//     }
+//   }, [searchTerm, allTechnicians]);
+
+//   // Delete technician
+//   const handleDeleteTechnician = async (technicianId: string) => {
+//     if (!window.confirm("Are you sure you want to delete this technician?")) return;
+
+//     setDeleteLoading(technicianId);
+//     setError(null);
+//     try {
+//       await deleteTechnicianByAdmin(technicianId);
+//       fetchTechnicians(); // Refetch current page after delete
+//       alert("Technician deleted successfully!");
+//       if (filteredTechnicians.length === 1 && currentPage > 1) {
+//         setCurrentPage(currentPage - 1); // Go to previous page if last item deleted
+//       }
+//     } catch (err: any) {
+//       setError(err.message || "Failed to delete technician. Please try again.");
+//     } finally {
+//       setDeleteLoading(null);
+//     }
+//   };
+
+//   const handlePageChange = (page: number) => {
+//     setCurrentPage(page);
+//   };
+
+//   const handleLimitChange = (newLimit: number) => {
+//     setLimit(newLimit);
+//     setCurrentPage(1); // Reset to first page
+//   };
+
+//   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     setSearchTerm(e.target.value);
+//     // Don't reset current page here since we're filtering client-side
+//   };
+
+//   const handleAddTechnician = () => {
+//     navigate("/management/technicians/add");
+//   };
+
+//   const totalPages = Math.ceil(total / limit);
+//   const startItem = (currentPage - 1) * limit + 1;
+//   const endItem = Math.min(currentPage * limit, total);
+
+//   // Calculate visible pages for showing up to 3 pages
+//   const getVisiblePages = () => {
+//     if (totalPages <= 0) return [];
+//     const delta = 1;
+//     let rangeStart, rangeEnd;
+//     if (currentPage <= delta + 1) {
+//       rangeStart = 1;
+//       rangeEnd = Math.min(totalPages, (delta * 2) + 1);
+//     } else if (currentPage >= totalPages - delta) {
+//       rangeStart = Math.max(1, totalPages - (delta * 2));
+//       rangeEnd = totalPages;
+//     } else {
+//       rangeStart = currentPage - delta;
+//       rangeEnd = currentPage + delta;
+//     }
+//     return Array.from({ length: rangeEnd - rangeStart + 1 }, (_, i) => rangeStart + i);
+//   };
+
+//   const visiblePages = getVisiblePages();
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
+//       <div className="max-w-7xl mx-auto">
+//         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+//           <div className="flex items-center gap-3">
+//             <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
+//               <Users className="h-6 w-6 text-white" />
+//             </div>
+//             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+//               Technicians
+//             </h1>
+//           </div>
+//           <button
+//             onClick={handleAddTechnician}
+//             className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+//           >
+//             <Plus className="h-4 w-4 mr-2" />
+//             Add Technician
+//           </button>
+//         </div>
+
+//         <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
+//           <div className="flex-1 gap-4">
+//             <div className="w-full flex gap-2">
+//               <div className="relative flex-1 w-1/3">
+//                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+//                 <input
+//                   type="text"
+//                   placeholder="Search by name or phone number..."
+//                   value={searchTerm}
+//                   onChange={handleSearchChange}
+//                   className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+//                 />
+//               </div>
+
+//               <div className="w-1/4">
+//                 <select
+//                   className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+//                   value={limit}
+//                   onChange={(e) => handleLimitChange(Number(e.target.value))}
+//                 >
+//                   <option value={5}>5 per page</option>
+//                   <option value={10}>10 per page</option>
+//                   <option value={20}>20 per page</option>
+//                   <option value={50}>50 per page</option>
+//                 </select>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Error Messages */}
+//         {error && (
+//           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+//             {error}
+//           </div>
+//         )}
+
+//         {/* Loading State */}
+//         {loading && (
+//           <div className="flex justify-center items-center h-64">
+//             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+//           </div>
+//         )}
+
+//         {/* Technicians Table */}
+//         {!loading && (
+//           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+//             <div className="overflow-x-auto">
+//               <table className="min-w-full divide-y divide-gray-200">
+//                 <thead className="bg-gray-50">
+//                   <tr>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Technician Name
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Technician ID
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Category
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Mobile No
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Join Date
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Subscription
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Address
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Action
+//                     </th>
+//                   </tr>
+//                 </thead>
+//                 <tbody className="bg-white divide-y divide-gray-200">
+//                   {filteredTechnicians.length === 0 ? (
+//                     <tr>
+//                       <td colSpan={8} className="px-6 py-4 text-center">
+//                         <p className="text-gray-500 text-lg">
+//                           {searchTerm ? `No technicians found for "${searchTerm}".` : "There are no technicians available."}
+//                         </p>
+//                         <button
+//                           onClick={handleAddTechnician}
+//                           className="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+//                         >
+//                           <Plus className="h-4 w-4 mr-2" />
+//                           Add Technician
+//                         </button>
+//                       </td>
+//                     </tr>
+//                   ) : (
+//                     filteredTechnicians.map((technician) => {
+//                       const subscriptionName = technician.subscription?.subscriptions?.[0]?.subscriptionName || 'N/A';
+//                       return (
+//                       <tr key={technician.id} className="hover:bg-gray-50">
+//                         <td className="px-6 py-4 whitespace-nowrap">
+//                           <div className="text-sm font-medium text-gray-900">
+//                             <img
+//                               src={
+//                                 technician.profileImage ? technician.profileImage  : "https://img-new.cgtrader.com/items/4519471/f444ec0898/large/mechanic-avatar-3d-icon-3d-model-f444ec0898.jpg"  }
+//                               alt={technician.username}
+//                               className="h-8 w-8 rounded-full object-cover inline-block mr-2"
+//                             />
+//                             {technician.username}
+//                           </div>
+//                         </td>
+//                         <td className="px-6 py-4 whitespace-nowrap">
+//                           <div className="text-sm text-gray-900">{technician.userId}</div>
+//                         </td>
+//                         <td className="px-6 py-4 whitespace-nowrap">
+//                           <div className="text-sm text-gray-900">
+//                             {technician.categoryName}
+//                           </div>
+//                         </td>
+//                         <td className="px-6 py-4 whitespace-nowrap">
+//                           <div className="text-sm text-gray-900">{technician.phoneNumber}</div>
+//                         </td>
+//                         <td className="px-6 py-4 whitespace-nowrap">
+//                           <div className="text-sm text-gray-900">{new Date(technician.createdAt).toLocaleDateString()}</div>
+//                         </td>
+//                         <td className="px-6 py-4 whitespace-nowrap">
+//                           <div className="text-sm text-gray-900">{subscriptionName}</div>
+//                         </td>
+//                         <td className="px-6 py-4">
+//                           <div className="text-sm text-gray-900 max-w-xs truncate" title={technician.fullAddress}>
+//                             {technician.fullAddress}
+//                           </div>
+//                         </td>
+//                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+//                           <button
+//                             onClick={() =>
+//                               navigate(`/management/technicians/view/${technician.id}`, { state: { technician } })
+//                             }
+//                             className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50"
+//                             title="View"
+//                             disabled={deleteLoading === technician.id}
+//                           >
+//                             <Eye className="h-5 w-5" />
+//                           </button>
+//                           <button
+//                             onClick={() =>
+//                               navigate(`/management/technicians/edit/${technician.id}`, { state: { technician } })
+//                             }
+//                             className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 ml-2"
+//                             title="Edit"
+//                             disabled={deleteLoading === technician.id}
+//                           >
+//                             <Edit className="h-5 w-5" />
+//                           </button>
+//                           <button
+//                             onClick={() => handleDeleteTechnician(technician.id)}
+//                             className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 ml-2"
+//                             title="Delete"
+//                             disabled={deleteLoading === technician.id}
+//                           >
+//                             {deleteLoading === technician.id ? (
+//                               <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-red-500"></div>
+//                             ) : (
+//                               <Trash2 className="h-5 w-5" />
+//                             )}
+//                           </button>
+//                         </td>
+//                       </tr>
+//                     )})
+//                   )}
+//                 </tbody>
+//               </table>
+//             </div>
+
+//             {/* Pagination */}
+//             {total > 0 && (
+//               <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+//                 <div className="text-sm text-gray-700">
+//                   Showing <span className="font-medium">{startItem}</span> to{" "}
+//                   <span className="font-medium">{endItem}</span> of{" "}
+//                   <span className="font-medium">{total}</span> results
+//                 </div>
+//                 <div className="flex items-center space-x-2">
+//                   <button
+//                     onClick={() => handlePageChange(1)}
+//                     disabled={currentPage === 1}
+//                     className={`px-3 py-2 rounded-md border font-medium ${
+//                       currentPage === 1
+//                         ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
+//                         : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+//                     }`}
+//                   >
+//                     First
+//                   </button>
+//                   <button
+//                     onClick={() => handlePageChange(currentPage - 1)}
+//                     disabled={currentPage === 1}
+//                     className={`px-3 py-2 rounded-md border font-medium ${
+//                       currentPage === 1
+//                         ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
+//                         : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+//                     }`}
+//                   >
+//                     Previous
+//                   </button>
+//                   {visiblePages.map((page) => (
+//                     <button
+//                       key={page}
+//                       onClick={() => handlePageChange(page)}
+//                       className={`px-3 py-2 rounded-md border font-medium ${
+//                         currentPage === page
+//                           ? 'bg-blue-600 text-white border-blue-600'
+//                           : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+//                       }`}
+//                     >
+//                       {page}
+//                     </button>
+//                   ))}
+//                   <button
+//                     onClick={() => handlePageChange(currentPage + 1)}
+//                     disabled={currentPage === totalPages}
+//                     className={`px-3 py-2 rounded-md border font-medium ${
+//                       currentPage === totalPages
+//                         ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
+//                         : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+//                     }`}
+//                   >
+//                     Next
+//                   </button>
+//                   <button
+//                     onClick={() => handlePageChange(totalPages)}
+//                     disabled={currentPage === totalPages}
+//                     className={`px-3 py-2 rounded-md border font-medium ${
+//                       currentPage === totalPages
+//                         ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
+//                         : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+//                     }`}
+//                   >
+//                     Last
+//                   </button>
+//                 </div>
+//               </div>
+//             )}
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Technicians;
+// import React, { useState, useEffect } from "react";
+// import { Users, Search, Eye, Plus, Edit, Trash2 } from "lucide-react";
+// import { useNavigate } from "react-router-dom";
+// import { deleteTechnicianByAdmin, getAllTechnicians } from "../../api/apiMethods";
+
+// // Interface for Technician data
+// interface Technician {
+//   id: string;
+//   username: string;
+//   phoneNumber: string;
+//   role: string;
+//   userId: string;
+//   buildingName: string;
+//   areaName: string;
+//   subAreaName: string;
+//   city: string;
+//   state: string;
+//   pincode: string;
+//   profileImage?: string;
+//   fullAddress: string;
+//   admin: boolean;
+//   categoryServices: Array<{
+//     categoryServiceId: string;
+//     status: boolean;
+//     _id: string;
+//   }>;
+//   categoryName: string;
+//   createdAt: string;
+//   subscriptionName: string;
+// }
+
+// interface ApiResponse {
+//   success: boolean;
+//   technicians: Technician[];
+//   total: number;
+//   offset: number;
+//   limit: number;
+// }
+
+// const Technicians = () => {
+//   const [allTechnicians, setAllTechnicians] = useState<Technician[]>([]); // Store all technicians from API
+//   const [filteredTechnicians, setFilteredTechnicians] = useState<Technician[]>([]); // Store filtered technicians for display
+//   const [loading, setLoading] = useState(true);
+//   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+//   const [error, setError] = useState<string | null>(null);
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [limit, setLimit] = useState(10);
+//   const [total, setTotal] = useState(0);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const navigate = useNavigate();
+
+//   // Map API technician to local Technician interface
+//   const mapTechnician = (apiTechnician: any): Technician => ({
+//     id: apiTechnician.id,
+//     username: apiTechnician.username,
+//     phoneNumber: apiTechnician.phoneNumber,
+//     role: apiTechnician.role,
+//     userId: apiTechnician.userId,
+//     buildingName: apiTechnician.buildingName,
+//     areaName: apiTechnician.areaName,
+//     subAreaName: apiTechnician.subAreaName,
+//     profileImage: apiTechnician.profileImage,
+//     city: apiTechnician.city,
+//     state: apiTechnician.state,
+//     pincode: apiTechnician.pincode,
+//     admin: apiTechnician.admin,
+//     categoryServices: apiTechnician.categoryServices || [],
+//     categoryName: apiTechnician.categoryName || '',
+//     createdAt: apiTechnician.createdAt,
+//     subscriptionName: apiTechnician.subscription?.subscriptions?.[0]?.subscriptionName || 'N/A',
+//     fullAddress: `${apiTechnician.buildingName}, ${apiTechnician.subAreaName}, ${apiTechnician.areaName}, ${apiTechnician.city}, ${apiTechnician.state} - ${apiTechnician.pincode}`,
+//   });
+
+//   // Fetch technicians with server-side pagination
+//   const fetchTechnicians = async (): Promise<void> => {
+//     setLoading(true);
+//     setError(null);
+//     const offset = (currentPage - 1) * limit;
+//     try {
+//       const data = { offset, limit };
+//       const response: ApiResponse = await getAllTechnicians(data);
+//       if (!response.success) {
+//         throw new Error("Failed to fetch technicians");
+//       }
+//       const mappedTechnicians = response.technicians.map(mapTechnician);
+//       setAllTechnicians(mappedTechnicians);
+//       setFilteredTechnicians(mappedTechnicians); // Initially set filtered technicians to all technicians
+//       setTotal(response.total);
+//     } catch (err: any) {
+//       setError(err.message || "Failed to load technicians. Please try again.");
+//       setAllTechnicians([]);
+//       setFilteredTechnicians([]);
+//       setTotal(0);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchTechnicians();
+//   }, [currentPage, limit]);
+
+//   // Filter technicians based on search term
+//   useEffect(() => {
+//     if (searchTerm.trim() === "") {
+//       setFilteredTechnicians(allTechnicians);
+//     } else {
+//       const filtered = allTechnicians.filter(technician =>
+//         technician.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//         technician.phoneNumber.includes(searchTerm) ||
+//         technician.userId.toLowerCase().includes(searchTerm.toLowerCase())
+//       );
+//       setFilteredTechnicians(filtered);
+//     }
+//   }, [searchTerm, allTechnicians]);
+
+//   // Delete technician
+//   const handleDeleteTechnician = async (technicianId: string) => {
+//     if (!window.confirm("Are you sure you want to delete this technician?")) return;
+
+//     setDeleteLoading(technicianId);
+//     setError(null);
+//     try {
+//       await deleteTechnicianByAdmin(technicianId);
+//       fetchTechnicians(); // Refetch current page after delete
+//       alert("Technician deleted successfully!");
+//       if (filteredTechnicians.length === 1 && currentPage > 1) {
+//         setCurrentPage(currentPage - 1); // Go to previous page if last item deleted
+//       }
+//     } catch (err: any) {
+//       setError(err.message || "Failed to delete technician. Please try again.");
+//     } finally {
+//       setDeleteLoading(null);
+//     }
+//   };
+
+//   const handlePageChange = (page: number) => {
+//     setCurrentPage(page);
+//   };
+
+//   const handleLimitChange = (newLimit: number) => {
+//     setLimit(newLimit);
+//     setCurrentPage(1); // Reset to first page
+//   };
+
+//   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     setSearchTerm(e.target.value);
+//     // Don't reset current page here since we're filtering client-side
+//   };
+
+//   const handleAddTechnician = () => {
+//     navigate("/management/technicians/add");
+//   };
+
+//   const totalPages = Math.ceil(total / limit);
+//   const startItem = (currentPage - 1) * limit + 1;
+//   const endItem = Math.min(currentPage * limit, total);
+
+//   // Calculate visible pages for showing up to 3 pages
+//   const getVisiblePages = () => {
+//     if (totalPages <= 0) return [];
+//     const delta = 1;
+//     let rangeStart, rangeEnd;
+//     if (currentPage <= delta + 1) {
+//       rangeStart = 1;
+//       rangeEnd = Math.min(totalPages, (delta * 2) + 1);
+//     } else if (currentPage >= totalPages - delta) {
+//       rangeStart = Math.max(1, totalPages - (delta * 2));
+//       rangeEnd = totalPages;
+//     } else {
+//       rangeStart = currentPage - delta;
+//       rangeEnd = currentPage + delta;
+//     }
+//     return Array.from({ length: rangeEnd - rangeStart + 1 }, (_, i) => rangeStart + i);
+//   };
+
+//   const visiblePages = getVisiblePages();
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
+//       <div className="max-w-7xl mx-auto">
+//         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+//           <div className="flex items-center gap-3">
+//             <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
+//               <Users className="h-6 w-6 text-white" />
+//             </div>
+//             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+//               Technicians
+//             </h1>
+//           </div>
+//           <button
+//             onClick={handleAddTechnician}
+//             className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+//           >
+//             <Plus className="h-4 w-4 mr-2" />
+//             Add Technician
+//           </button>
+//         </div>
+
+//         <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
+//           <div className="flex-1 gap-4">
+//             <div className="w-full flex gap-2">
+//               <div className="relative flex-1 w-1/3">
+//                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+//                 <input
+//                   type="text"
+//                   placeholder="Search by name or phone number..."
+//                   value={searchTerm}
+//                   onChange={handleSearchChange}
+//                   className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+//                 />
+//               </div>
+
+//               <div className="w-1/4">
+//                 <select
+//                   className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+//                   value={limit}
+//                   onChange={(e) => handleLimitChange(Number(e.target.value))}
+//                 >
+//                   <option value={5}>5 per page</option>
+//                   <option value={10}>10 per page</option>
+//                   <option value={20}>20 per page</option>
+//                   <option value={50}>50 per page</option>
+//                 </select>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Error Messages */}
+//         {error && (
+//           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+//             {error}
+//           </div>
+//         )}
+
+//         {/* Loading State */}
+//         {loading && (
+//           <div className="flex justify-center items-center h-64">
+//             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+//           </div>
+//         )}
+
+//         {/* Technicians Table */}
+//         {!loading && (
+//           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+//             <div className="overflow-x-auto">
+//               <table className="min-w-full divide-y divide-gray-200">
+//                 <thead className="bg-gray-50">
+//                   <tr>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Technician Name
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Technician ID
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Category
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Mobile No
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Join Date
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Subscription
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Address
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Action
+//                     </th>
+//                   </tr>
+//                 </thead>
+//                 <tbody className="bg-white divide-y divide-gray-200">
+//                   {filteredTechnicians.length === 0 ? (
+//                     <tr>
+//                       <td colSpan={8} className="px-6 py-4 text-center">
+//                         <p className="text-gray-500 text-lg">
+//                           {searchTerm ? `No technicians found for "${searchTerm}".` : "There are no technicians available."}
+//                         </p>
+//                         <button
+//                           onClick={handleAddTechnician}
+//                           className="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+//                         >
+//                           <Plus className="h-4 w-4 mr-2" />
+//                           Add Technician
+//                         </button>
+//                       </td>
+//                     </tr>
+//                   ) : (
+//                     filteredTechnicians.map((technician) => (
+//                       <tr key={technician.id} className="hover:bg-gray-50">
+//                         <td className="px-6 py-4 whitespace-nowrap">
+//                           <div className="text-sm font-medium text-gray-900">
+//                             <img
+//                               src={
+//                                 technician.profileImage ? technician.profileImage  : "https://img-new.cgtrader.com/items/4519471/f444ec0898/large/mechanic-avatar-3d-icon-3d-model-f444ec0898.jpg"  }
+//                               alt={technician.username}
+//                               className="h-8 w-8 rounded-full object-cover inline-block mr-2"
+//                             />
+//                             {technician.username}
+//                           </div>
+//                         </td>
+//                         <td className="px-6 py-4 whitespace-nowrap">
+//                           <div className="text-sm text-gray-900">{technician.userId}</div>
+//                         </td>
+//                         <td className="px-6 py-4 whitespace-nowrap">
+//                           <div className="text-sm text-gray-900">
+//                             {technician.categoryName}
+//                           </div>
+//                         </td>
+//                         <td className="px-6 py-4 whitespace-nowrap">
+//                           <div className="text-sm text-gray-900">{technician.phoneNumber}</div>
+//                         </td>
+//                         <td className="px-6 py-4 whitespace-nowrap">
+//                           <div className="text-sm text-gray-900">{new Date(technician.createdAt).toLocaleDateString()}</div>
+//                         </td>
+//                         <td className="px-6 py-4 whitespace-nowrap">
+//                           <div className="text-sm text-gray-900">{technician.subscriptionName}</div>
+//                         </td>
+//                         <td className="px-6 py-4">
+//                           <div className="text-sm text-gray-900 max-w-xs truncate" title={technician.fullAddress}>
+//                             {technician.fullAddress}
+//                           </div>
+//                         </td>
+//                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+//                           <button
+//                             onClick={() =>
+//                               navigate(`/management/technicians/view/${technician.id}`, { state: { technician } })
+//                             }
+//                             className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50"
+//                             title="View"
+//                             disabled={deleteLoading === technician.id}
+//                           >
+//                             <Eye className="h-5 w-5" />
+//                           </button>
+//                           <button
+//                             onClick={() =>
+//                               navigate(`/management/technicians/edit/${technician.id}`, { state: { technician } })
+//                             }
+//                             className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 ml-2"
+//                             title="Edit"
+//                             disabled={deleteLoading === technician.id}
+//                           >
+//                             <Edit className="h-5 w-5" />
+//                           </button>
+//                           <button
+//                             onClick={() => handleDeleteTechnician(technician.id)}
+//                             className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 ml-2"
+//                             title="Delete"
+//                             disabled={deleteLoading === technician.id}
+//                           >
+//                             {deleteLoading === technician.id ? (
+//                               <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-red-500"></div>
+//                             ) : (
+//                               <Trash2 className="h-5 w-5" />
+//                             )}
+//                           </button>
+//                         </td>
+//                       </tr>
+//                     ))
+//                   )}
+//                 </tbody>
+//               </table>
+//             </div>
+
+//             {/* Pagination */}
+//             {total > 0 && (
+//               <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+//                 <div className="text-sm text-gray-700">
+//                   Showing <span className="font-medium">{startItem}</span> to{" "}
+//                   <span className="font-medium">{endItem}</span> of{" "}
+//                   <span className="font-medium">{total}</span> results
+//                 </div>
+//                 <div className="flex items-center space-x-2">
+//                   <button
+//                     onClick={() => handlePageChange(1)}
+//                     disabled={currentPage === 1}
+//                     className={`px-3 py-2 rounded-md border font-medium ${
+//                       currentPage === 1
+//                         ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
+//                         : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+//                     }`}
+//                   >
+//                     First
+//                   </button>
+//                   <button
+//                     onClick={() => handlePageChange(currentPage - 1)}
+//                     disabled={currentPage === 1}
+//                     className={`px-3 py-2 rounded-md border font-medium ${
+//                       currentPage === 1
+//                         ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
+//                         : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+//                     }`}
+//                   >
+//                     Previous
+//                   </button>
+//                   {visiblePages.map((page) => (
+//                     <button
+//                       key={page}
+//                       onClick={() => handlePageChange(page)}
+//                       className={`px-3 py-2 rounded-md border font-medium ${
+//                         currentPage === page
+//                           ? 'bg-blue-600 text-white border-blue-600'
+//                           : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+//                       }`}
+//                     >
+//                       {page}
+//                     </button>
+//                   ))}
+//                   <button
+//                     onClick={() => handlePageChange(currentPage + 1)}
+//                     disabled={currentPage === totalPages}
+//                     className={`px-3 py-2 rounded-md border font-medium ${
+//                       currentPage === totalPages
+//                         ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
+//                         : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+//                     }`}
+//                   >
+//                     Next
+//                   </button>
+//                   <button
+//                     onClick={() => handlePageChange(totalPages)}
+//                     disabled={currentPage === totalPages}
+//                     className={`px-3 py-2 rounded-md border font-medium ${
+//                       currentPage === totalPages
+//                         ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
+//                         : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+//                     }`}
+//                   >
+//                     Last
+//                   </button>
+//                 </div>
+//               </div>
+//             )}
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Technicians;
+// import React, { useState, useEffect } from "react";
+// import { Users, Search, Eye, Plus, Edit, Trash2 } from "lucide-react";
+// import { useNavigate } from "react-router-dom";
+// import { deleteTechnicianByAdmin, getAllTechnicians } from "../../api/apiMethods";
+
+// // Interface for Technician data
+// interface Technician {
+//   id: string;
+//   username: string;
+//   phoneNumber: string;
+//   role: string;
+//   userId: string;
+//   buildingName: string;
+//   areaName: string;
+//   subAreaName: string;
+//   city: string;
+//   state: string;
+//   pincode: string;
+//   profileImage?: string;
+//   fullAddress: string;
+//   admin: boolean;
+//   categoryServices: Array<{
+//     categoryServiceId: string;
+//     status: boolean;
+//     _id: string;
+//   }>;
+//   categoryCount: number;
+//   createdAt?: string;
+// }
+
+// interface ApiResponse {
+//   success: boolean;
+//   technicians: Technician[];
+//   total: number;
+//   offset: number;
+//   limit: number;
+// }
+
+// const Technicians = () => {
+//   const [allTechnicians, setAllTechnicians] = useState<Technician[]>([]); // Store all technicians from API
+//   const [filteredTechnicians, setFilteredTechnicians] = useState<Technician[]>([]); // Store filtered technicians for display
+//   const [loading, setLoading] = useState(true);
+//   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+//   const [error, setError] = useState<string | null>(null);
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [limit, setLimit] = useState(10);
+//   const [total, setTotal] = useState(0);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const navigate = useNavigate();
+
+//   // Map API technician to local Technician interface
+//   const mapTechnician = (apiTechnician: any): Technician => ({
+//     id: apiTechnician.id,
+//     username: apiTechnician.username,
+//     phoneNumber: apiTechnician.phoneNumber,
+//     role: apiTechnician.role,
+//     buildingName: apiTechnician.buildingName,
+//     areaName: apiTechnician.areaName,
+//     subAreaName: apiTechnician.subAreaName,
+//     profileImage: apiTechnician.profileImage,
+//     city: apiTechnician.city,
+//     state: apiTechnician.state,
+//     pincode: apiTechnician.pincode,
+//     admin: apiTechnician.admin,
+//     categoryServices: apiTechnician.categoryServices || [],
+//     fullAddress: `${apiTechnician.buildingName}, ${apiTechnician.subAreaName}, ${apiTechnician.areaName}, ${apiTechnician.city}, ${apiTechnician.state} - ${apiTechnician.pincode}`,
+//     categoryCount: apiTechnician.categoryServices ? apiTechnician.categoryServices.length : 0,
+//   });
+
+//   // Fetch technicians with server-side pagination
+//   const fetchTechnicians = async (): Promise<void> => {
+//     setLoading(true);
+//     setError(null);
+//     const offset = (currentPage - 1) * limit;
+//     try {
+//       const data = { offset, limit };
+//       const response: ApiResponse = await getAllTechnicians(data);
+//       if (!response.success) {
+//         throw new Error("Failed to fetch technicians");
+//       }
+//       const mappedTechnicians = response.technicians.map(mapTechnician);
+//       setAllTechnicians(mappedTechnicians);
+//       setFilteredTechnicians(mappedTechnicians); // Initially set filtered technicians to all technicians
+//       setTotal(response.total);
+//     } catch (err: any) {
+//       setError(err.message || "Failed to load technicians. Please try again.");
+//       setAllTechnicians([]);
+//       setFilteredTechnicians([]);
+//       setTotal(0);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchTechnicians();
+//   }, [currentPage, limit]);
+
+//   // Filter technicians based on search term
+//   useEffect(() => {
+//     if (searchTerm.trim() === "") {
+//       setFilteredTechnicians(allTechnicians);
+//     } else {
+//       const filtered = allTechnicians.filter(technician =>
+//         technician.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//         technician.phoneNumber.includes(searchTerm)
+//       );
+//       setFilteredTechnicians(filtered);
+//     }
+//   }, [searchTerm, allTechnicians]);
+
+//   // Delete technician
+//   const handleDeleteTechnician = async (technicianId: string) => {
+//     if (!window.confirm("Are you sure you want to delete this technician?")) return;
+
+//     setDeleteLoading(technicianId);
+//     setError(null);
+//     try {
+//       await deleteTechnicianByAdmin(technicianId);
+//       fetchTechnicians(); // Refetch current page after delete
+//       alert("Technician deleted successfully!");
+//       if (filteredTechnicians.length === 1 && currentPage > 1) {
+//         setCurrentPage(currentPage - 1); // Go to previous page if last item deleted
+//       }
+//     } catch (err: any) {
+//       setError(err.message || "Failed to delete technician. Please try again.");
+//     } finally {
+//       setDeleteLoading(null);
+//     }
+//   };
+
+//   const handlePageChange = (page: number) => {
+//     setCurrentPage(page);
+//   };
+
+//   const handleLimitChange = (newLimit: number) => {
+//     setLimit(newLimit);
+//     setCurrentPage(1); // Reset to first page
+//   };
+
+//   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     setSearchTerm(e.target.value);
+//     // Don't reset current page here since we're filtering client-side
+//   };
+
+//   const handleAddTechnician = () => {
+//     navigate("/management/technicians/add");
+//   };
+
+//   const totalPages = Math.ceil(total / limit);
+//   const startItem = (currentPage - 1) * limit + 1;
+//   const endItem = Math.min(currentPage * limit, total);
+
+//   // Calculate visible pages for showing up to 3 pages
+//   const getVisiblePages = () => {
+//     if (totalPages <= 0) return [];
+//     const delta = 1;
+//     let rangeStart, rangeEnd;
+//     if (currentPage <= delta + 1) {
+//       rangeStart = 1;
+//       rangeEnd = Math.min(totalPages, (delta * 2) + 1);
+//     } else if (currentPage >= totalPages - delta) {
+//       rangeStart = Math.max(1, totalPages - (delta * 2));
+//       rangeEnd = totalPages;
+//     } else {
+//       rangeStart = currentPage - delta;
+//       rangeEnd = currentPage + delta;
+//     }
+//     return Array.from({ length: rangeEnd - rangeStart + 1 }, (_, i) => rangeStart + i);
+//   };
+
+//   const visiblePages = getVisiblePages();
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
+//       <div className="max-w-7xl mx-auto">
+//         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+//           <div className="flex items-center gap-3">
+//             <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
+//               <Users className="h-6 w-6 text-white" />
+//             </div>
+//             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+//               Technicians
+//             </h1>
+//           </div>
+//           <button
+//             onClick={handleAddTechnician}
+//             className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+//           >
+//             <Plus className="h-4 w-4 mr-2" />
+//             Add Technician
+//           </button>
+//         </div>
+
+//         <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
+//           <div className="flex-1 gap-4">
+//             <div className="w-full flex gap-2">
+//               <div className="relative flex-1 w-1/3">
+//                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+//                 <input
+//                   type="text"
+//                   placeholder="Search by name or phone number..."
+//                   value={searchTerm}
+//                   onChange={handleSearchChange}
+//                   className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+//                 />
+//               </div>
+
+//               <div className="w-1/4">
+//                 <select
+//                   className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+//                   value={limit}
+//                   onChange={(e) => handleLimitChange(Number(e.target.value))}
+//                 >
+//                   <option value={5}>5 per page</option>
+//                   <option value={10}>10 per page</option>
+//                   <option value={20}>20 per page</option>
+//                   <option value={50}>50 per page</option>
+//                 </select>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Error Messages */}
+//         {error && (
+//           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+//             {error}
+//           </div>
+//         )}
+
+//         {/* Loading State */}
+//         {loading && (
+//           <div className="flex justify-center items-center h-64">
+//             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+//           </div>
+//         )}
+
+//         {/* Technicians Table */}
+//         {!loading && (
+//           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+//             <div className="overflow-x-auto">
+//               <table className="min-w-full divide-y divide-gray-200">
+//                 <thead className="bg-gray-50">
+//                   <tr>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Technician Name
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Technician ID
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Category
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Mobile No
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Join Date
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Subscription
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Address
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                       Action
+//                     </th>
+//                   </tr>
+//                 </thead>
+//                 <tbody className="bg-white divide-y divide-gray-200">
+//                   {filteredTechnicians.length === 0 ? (
+//                     <tr>
+//                       <td colSpan={8} className="px-6 py-4 text-center">
+//                         <p className="text-gray-500 text-lg">
+//                           {searchTerm ? `No technicians found for "${searchTerm}".` : "There are no technicians available."}
+//                         </p>
+//                         <button
+//                           onClick={handleAddTechnician}
+//                           className="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+//                         >
+//                           <Plus className="h-4 w-4 mr-2" />
+//                           Add Technician
+//                         </button>
+//                       </td>
+//                     </tr>
+//                   ) : (
+//                     filteredTechnicians.map((technician) => (
+//                       <tr key={technician.id} className="hover:bg-gray-50">
+//                         <td className="px-6 py-4 whitespace-nowrap">
+//                           <div className="text-sm font-medium text-gray-900">
+//                             <img
+//                               src={
+//                                 technician.profileImage ? technician.profileImage  : "https://img-new.cgtrader.com/items/4519471/f444ec0898/large/mechanic-avatar-3d-icon-3d-model-f444ec0898.jpg"  }
+//                               alt={technician.username}
+//                               className="h-8 w-8 rounded-full object-cover inline-block mr-2"
+//                             />
+//                             {technician.username}
+//                           </div>
+//                         </td>
+//                         <td className="px-6 py-4 whitespace-nowrap">
+//                           <div className="text-sm text-gray-900">{technician.id}</div>
+//                         </td>
+//                         <td className="px-6 py-4 whitespace-nowrap">
+//                           <div className="text-sm text-gray-900">
+//                             <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+//                               {technician.categoryCount} services
+//                             </span>
+//                           </div>
+//                         </td>
+//                         <td className="px-6 py-4 whitespace-nowrap">
+//                           <div className="text-sm text-gray-900">{technician.phoneNumber}</div>
+//                         </td>
+//                         <td className="px-6 py-4 whitespace-nowrap">
+//                           <div className="text-sm text-gray-900">-</div>
+//                         </td>
+//                         <td className="px-6 py-4 whitespace-nowrap">
+//                           <div className="text-sm text-gray-900">-</div>
+//                         </td>
+//                         <td className="px-6 py-4">
+//                           <div className="text-sm text-gray-900 max-w-xs truncate" title={technician.fullAddress}>
+//                             {technician.fullAddress}
+//                           </div>
+//                         </td>
+//                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+//                           <button
+//                             onClick={() =>
+//                               navigate(`/management/technicians/view/${technician.id}`, { state: { technician } })
+//                             }
+//                             className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50"
+//                             title="View"
+//                             disabled={deleteLoading === technician.id}
+//                           >
+//                             <Eye className="h-5 w-5" />
+//                           </button>
+//                           <button
+//                             onClick={() =>
+//                               navigate(`/management/technicians/edit/${technician.id}`, { state: { technician } })
+//                             }
+//                             className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 ml-2"
+//                             title="Edit"
+//                             disabled={deleteLoading === technician.id}
+//                           >
+//                             <Edit className="h-5 w-5" />
+//                           </button>
+//                           <button
+//                             onClick={() => handleDeleteTechnician(technician.id)}
+//                             className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 ml-2"
+//                             title="Delete"
+//                             disabled={deleteLoading === technician.id}
+//                           >
+//                             {deleteLoading === technician.id ? (
+//                               <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-red-500"></div>
+//                             ) : (
+//                               <Trash2 className="h-5 w-5" />
+//                             )}
+//                           </button>
+//                         </td>
+//                       </tr>
+//                     ))
+//                   )}
+//                 </tbody>
+//               </table>
+//             </div>
+
+//             {/* Pagination */}
+//             {total > 0 && (
+//               <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+//                 <div className="text-sm text-gray-700">
+//                   Showing <span className="font-medium">{startItem}</span> to{" "}
+//                   <span className="font-medium">{endItem}</span> of{" "}
+//                   <span className="font-medium">{total}</span> results
+//                 </div>
+//                 <div className="flex items-center space-x-2">
+//                   <button
+//                     onClick={() => handlePageChange(1)}
+//                     disabled={currentPage === 1}
+//                     className={`px-3 py-2 rounded-md border font-medium ${
+//                       currentPage === 1
+//                         ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
+//                         : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+//                     }`}
+//                   >
+//                     First
+//                   </button>
+//                   <button
+//                     onClick={() => handlePageChange(currentPage - 1)}
+//                     disabled={currentPage === 1}
+//                     className={`px-3 py-2 rounded-md border font-medium ${
+//                       currentPage === 1
+//                         ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
+//                         : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+//                     }`}
+//                   >
+//                     Previous
+//                   </button>
+//                   {visiblePages.map((page) => (
+//                     <button
+//                       key={page}
+//                       onClick={() => handlePageChange(page)}
+//                       className={`px-3 py-2 rounded-md border font-medium ${
+//                         currentPage === page
+//                           ? 'bg-blue-600 text-white border-blue-600'
+//                           : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+//                       }`}
+//                     >
+//                       {page}
+//                     </button>
+//                   ))}
+//                   <button
+//                     onClick={() => handlePageChange(currentPage + 1)}
+//                     disabled={currentPage === totalPages}
+//                     className={`px-3 py-2 rounded-md border font-medium ${
+//                       currentPage === totalPages
+//                         ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
+//                         : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+//                     }`}
+//                   >
+//                     Next
+//                   </button>
+//                   <button
+//                     onClick={() => handlePageChange(totalPages)}
+//                     disabled={currentPage === totalPages}
+//                     className={`px-3 py-2 rounded-md border font-medium ${
+//                       currentPage === totalPages
+//                         ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
+//                         : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+//                     }`}
+//                   >
+//                     Last
+//                   </button>
+//                 </div>
+//               </div>
+//             )}
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Technicians;
 // import React, { useState, useEffect } from "react";
 // import { Users, Search, Eye, Plus, Edit, Trash2, ArrowLeft } from "lucide-react";
 // import { useNavigate } from "react-router-dom";

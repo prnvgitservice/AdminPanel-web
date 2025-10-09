@@ -71,6 +71,13 @@ const endpoints: any = {
     },
   },
 
+  updateUserByAdmin: {
+    method: "put",
+    url: () => {
+      return `/api/userAuth/editProfileByAdmin`;
+    },
+  },
+
   deleteUserByAdmin: {
     method: "delete",
     url: (userId: string) => {
@@ -97,6 +104,13 @@ const endpoints: any = {
     method: "post",
     url: () => {
       return `/api/techAuth/registerByAdmin`;
+    },
+  },
+
+  updateTechByAdmin: {
+    method: "put",
+    url: () => {
+      return `/api/techAuth/updateTechByAdmin`;
     },
   },
 
