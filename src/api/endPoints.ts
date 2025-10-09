@@ -177,6 +177,13 @@ const endpoints: any = {
     },
   },
 
+  updateGuestBookingStatus: {
+    method: "put",
+    url: ({ bookingId, status }: { bookingId: string; status: string }) => {
+      return `/api/guestBooking/updateStaus/${bookingId}/${status}`; // Note: bookingId and status should be passed as parameters when calling
+    },
+  },
+
   getAllFranchiseRequests: {
     method: "get",
     url: () => {
