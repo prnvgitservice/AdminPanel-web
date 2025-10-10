@@ -8,6 +8,7 @@ interface GuestBooking {
   name: string;
   phoneNumber: number;
   status: string;
+  categoryName?: string;
   message?: string;
   createdAt: string;
   updatedAt: string;
@@ -54,16 +55,14 @@ const AllGuestBookings: React.FC = () => {
       if(window.confirm("Are you sure you want to mark this booking as completed?")){
         if (currentStatus.toLowerCase() === 'pending') {
           const response = await updateGuestBookingStatus({ bookingId, status: 'completed' });
-          if (!response.success) {
-            throw new Error(response.message || "Failed to update booking status");
+          if (!response?.success) {
+            throw new Error(response?.message || "Failed to update booking status");
           }
-          setBookings(prevBookings =>
-            prevBookings.map(booking =>
-              booking._id === bookingId
-                ? { ...booking, status: 'completed' }
-                : booking
-            )
-          );
+          if(response?.success){ 
+            alert(response?.message || "Booking status updated to completed.");
+            // Refresh bookings to reflect the updated status
+            fetchBookings();
+          }
         }
       }
     }catch(err){
@@ -78,7 +77,7 @@ const AllGuestBookings: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        const response: ApiResponse = await getAllGuestBookings({ offset: 0, limit: 10000 });
+        const response = (await getAllGuestBookings({ offset: 0, limit: 10000 })) as ApiResponse;
 
         if (!response.success) {
           throw new Error(response.message || "Failed to fetch bookings");
@@ -276,7 +275,7 @@ const AllGuestBookings: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {booking.categoryId || '-'}
+                          {booking.categoryName || booking.categoryId || '-'}
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -463,7 +462,7 @@ const AllGuestBookings: React.FC = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-500 mb-1">Category</label>
-                    <p className="text-base text-gray-900 font-medium">{selectedBooking.categoryId || '-'}</p>
+                    <p className="text-base text-gray-900 font-medium">{selectedBooking.categoryName || selectedBooking.categoryId || '-'}</p>
                   </div>
 
                   <div>
