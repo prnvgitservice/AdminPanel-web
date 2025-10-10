@@ -81,6 +81,8 @@ export const deleteCategorySearchDetails = (id: string) => apiRequest("deleteCat
 
 export const getInTouch = (data: {offset: number, limit: number}) => apiRequest("getInTouch", null, data);
 
+export const updateGetInTouchStatus = (data: any) => apiRequest("updateGetInTouchStatus", null, data);
+
 export const getAllBlogs = (data: any) => apiRequest("getAllBlogs", data);
 
 export const createBlog = (data: any) => apiRequest("createBlog", data);

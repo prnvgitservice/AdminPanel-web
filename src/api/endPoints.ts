@@ -251,6 +251,13 @@ const endpoints: any = {
     },
   },
 
+   updateGetInTouchStatus: {
+    method: "put",
+    url: ({ bookingId, status }: { bookingId: string; status: string }) => {
+      return `/api/getInTouch/updateStaus/${bookingId}/${status}`; // Note: bookingId and status should be passed as parameters when calling
+    },
+  },
+
   getAllBlogs: {
     method: "get",
     url: () => `/api/blog/getAllBlogs`,

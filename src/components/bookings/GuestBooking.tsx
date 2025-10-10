@@ -66,7 +66,7 @@ const AllGuestBookings: React.FC = () => {
         }
       }
     }catch(err){
-      console.error("Error updating booking status:", err);
+      alert("Error updating booking status. Please try again.");
     }
   };
 
