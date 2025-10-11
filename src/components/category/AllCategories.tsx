@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Plus,
@@ -12,26 +12,19 @@ import {
 import { useCategoryContext } from "../Context/CategoryContext";
 import { deleteCategory } from "../../api/apiMethods";
 
-interface Category {
-  _id: string;
-  category_name: string;
-  category_image: string;
-  status: number;
-  meta_title: string;
-  meta_description: string;
-  servicesCount: number;
-  createdAt: string;
-  seo_content: string;
-}
 
 const AllCategories: React.FC = () => {
-  const { categories, setCategories, loading, error } = useCategoryContext();
+  const { categories, setCategories, loading, error, refresh } = useCategoryContext();
   const navigate = useNavigate();
   const [showFilter, setShowFilter] = useState(false);
   const [filters, setFilters] = useState({
     categoryName: "",
     status: "",
   });
+
+  useEffect(()=>{
+    refresh()
+  },[])
 
   const filteredCategories = useMemo(() => {
     return categories?.filter((category) => {
@@ -64,6 +57,7 @@ const AllCategories: React.FC = () => {
       categoryName: "",
       status: "",
     });
+    refresh()
   };
 
   const handleStatusToggle = async (id: string) => {
@@ -94,6 +88,7 @@ const AllCategories: React.FC = () => {
 
   const handleEdit = (category: Category) => {
     navigate(`/categories/edit/${category._id}`, { state: { category } });
+    refresh();
   };
 
   const handleView = (category: Category) => {

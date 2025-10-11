@@ -10,7 +10,8 @@ import {
   Cable,
   Mail,
   Briefcase,
-  UserPlus
+  UserPlus,
+  User
 } from 'lucide-react';
 
 interface MenuItem {
@@ -143,6 +144,8 @@ const menuItems: MenuItem[] = [
   { key: 'franchise-requests', label: 'Franchise Requests', icon: <Crown className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/franchise-requests' },
   // Sub-item: Get in Touch
   { key: 'get-in-touch', label: 'Get In Touch', icon: <Mail className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/get-in-touch' },
+
+  {key: 'technician-requests', label: 'Technician Requests', icon: <User className='h-4 w-4 sm:h-5 sm:h-5' /> ,path:'/technician-requests' },
   
   // Sitemap: Parent item for managing the sitemap
   { key: 'sitemap', label: 'Sitemap', icon: <Cable className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/sitemap' },
@@ -186,7 +189,7 @@ const menuHierarchy: MenuHierarchy[] = [
   { key: 'bookings', subItems: ['all-bookings', 'guest-bookings'] },
 
   // Enquiries: Parent with sub-items for enquiry-related actions
-  { key: 'enquiries', subItems: ['franchise-requests', 'get-in-touch'] },
+  { key: 'enquiries', subItems: ['franchise-requests', 'get-in-touch' ,'technician-requests'] },
 
   // Reviews: Parent with sub-item for managing reviews
   { key: 'reviews', subItems: ['all-reviews'] },

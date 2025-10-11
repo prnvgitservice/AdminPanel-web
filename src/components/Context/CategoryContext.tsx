@@ -12,11 +12,12 @@ interface Category {
   createdAt: string;
 }
 
-interface CategoryContextType {
+export interface CategoryContextType {
   categories: Category[];
   setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
   loading: boolean;
   error: string | null;
+  refresh?: () => void;
 }
 
 const CategoryContext = createContext<CategoryContextType | undefined>(undefined);
@@ -26,23 +27,28 @@ export const CategoryProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchCategories = async () => {
+    try {
+      const responce = await getAllCategories({});
+      setCategories(responce?.data);
+    } catch (error) {
+      console.error('Failed to fetch categories', error);
+      setError('Failed to load categories. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const responce = await getAllCategories();
-        setCategories(responce?.data);
-      } catch (error) {
-        console.error('Failed to fetch categories', error);
-        setError('Failed to load categories. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchCategories();
   }, []);
 
+  const handleRefresh = () => {
+    setLoading(true);
+    fetchCategories();
+  }
+
   return (
-    <CategoryContext.Provider value={{ categories, setCategories, loading, error }}>
+    <CategoryContext.Provider value={{ categories, setCategories, loading, error, refresh: handleRefresh }}>
       {children}
     </CategoryContext.Provider>
   );

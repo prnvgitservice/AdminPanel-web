@@ -50,6 +50,7 @@ import AllExecutives from "../components/manageExecutives/AllExecutives";
 import AddExecutive from "../components/manageExecutives/AddExecutive";
 import AllReferrals from "../components/manageReferrals/AllReferrals";
 import AddReferral from "../components/manageReferrals/AddReferral";
+import TechnicianRequest from "../components/enquiries/TechnicianRequest";
 // Placeholder component for routes not yet implemented
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
   <div className="p-8">
@@ -185,6 +186,7 @@ const AppRoutes: React.FC = () => {
         {/* Enquiries: Routes for managing enquiries */}
         <Route path="/franchise-requests" element={<FranchiseRequest />} />
         <Route path="/get-in-touch" element={<GetInTouch />} />
+        <Route path="/technician-requests" element={<TechnicianRequest />} />
 
         {/* Notifications: Routes for notification-related actions */}
         <Route
