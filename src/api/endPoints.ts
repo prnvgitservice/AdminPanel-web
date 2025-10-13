@@ -93,6 +93,20 @@ const endpoints: any = {
     },
   },
 
+  getAllTechRequest: {
+    method: "get",
+    url: ({offset, limit}: {offset: number, limit: number}) => {
+      return `/api/techAuth/getAllTechRequest?offset=${offset}&limit=${limit}`;
+    },
+  },
+
+  updateTechnicianStatus:{
+    method: "put",
+    url:({technicianId, status}: {technicianId: string; status: string}) =>  {
+      return `/api/techAuth/updateStaus/${technicianId}/${status}`
+    },
+  },
+
   deleteTechnicianByAdmin: {
     method: "delete",
     url: (techId: string) => {

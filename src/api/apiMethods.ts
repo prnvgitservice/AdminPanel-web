@@ -30,6 +30,10 @@ export const deleteUserByAdmin = (userId: string) => apiRequest("deleteUserByAdm
 
 export const getAllTechnicians = (data: any) => apiRequest("getAllTechnicians", null, data);
 
+export const getAllTechRequest = (data: any) => apiRequest("getAllTechRequest",null, data)
+
+export const updateTechnicianStatus = (data: any) => apiRequest("updateTechnicianStatus", null, data)
+
 export const deleteTechnicianByAdmin = (techId: string) => apiRequest("deleteTechnicianByAdmin", null, techId);
 
 export const registerTechByAdmin = (data: any) => apiRequest("registerTechByAdmin", data);

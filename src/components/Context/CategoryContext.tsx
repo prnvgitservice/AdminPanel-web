@@ -29,7 +29,7 @@ export const CategoryProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const fetchCategories = async () => {
     try {
-      const responce = await getAllCategories({});
+      const responce = await getAllCategories();
       setCategories(responce?.data);
     } catch (error) {
       console.error('Failed to fetch categories', error);
