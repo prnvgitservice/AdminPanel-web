@@ -51,6 +51,8 @@ import AddExecutive from "../components/manageExecutives/AddExecutive";
 import AllReferrals from "../components/manageReferrals/AllReferrals";
 import AddReferral from "../components/manageReferrals/AddReferral";
 import TechnicianRequest from "../components/enquiries/TechnicianRequest";
+import UpdateTechnician from "../components/manageTechnicians/UpdateTechnician";
+import AddTechnician from "../components/manageTechnicians/AddTechnician";
 // Placeholder component for routes not yet implemented
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
   <div className="p-8">
@@ -142,9 +144,9 @@ const AppRoutes: React.FC = () => {
         {/* Management - Technicians: Routes for technician management */}
         <Route path="/management/technicians" element={<Technicians />} />
         <Route path="/management/technicians/all" element={<Technicians />} />
-        <Route path="/management/technicians/add" element={<TechnicianForm />} />
+        <Route path="/management/technicians/add" element={<AddTechnician />} />
         <Route path="/management/technicians/view/:id" element={<ViewTechnician />} />
-        <Route path="/management/technicians/edit/:id" element={<TechnicianForm/>} />
+        <Route path="/management/technicians/edit/:id" element={<UpdateTechnician/>} />
         <Route
           path="/management/technicians/admin-created"
           element={<AdminCreatedTechnicians />}

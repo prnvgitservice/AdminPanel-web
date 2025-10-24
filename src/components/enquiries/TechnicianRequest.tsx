@@ -169,7 +169,7 @@ const TechnicianDetailsModal: React.FC<{
               </div>
               <div className="bg-blue-50 p-3 rounded-lg">
                 <p className="text-sm font-medium text-blue-800">
-                  Subscription: {planDetails.subscriptionName}
+                  Subscription: {planDetails?.subscriptionName || '-'}
                 </p>
                 <p className="text-sm text-blue-600">
                   Leads: {leads} | Orders: {planDetails.ordersCount}
@@ -624,7 +624,7 @@ Prnv Service`;
                         />
                       </svg>
                       <span className="text-gray-800">
-                        {planDetails.subscriptionName}
+                        {planDetails?.subscriptionName || '-'}
                       </span>
                     </div>
                     <div className="text-sm text-gray-600">

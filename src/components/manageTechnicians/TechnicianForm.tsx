@@ -496,7 +496,7 @@ const TechnicianForm: React.FC = () => {
     try {
       if (isEdit) {
         const updateFormData = new FormData();
-        updateFormData.append("technicianId", technician!.id);
+        updateFormData.append("technicianId", technician.id);
         updateFormData.append("username", formData.username);
         updateFormData.append("category", formData.category);
         updateFormData.append("phoneNumber", formData.phoneNumber);
