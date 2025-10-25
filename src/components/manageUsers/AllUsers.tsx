@@ -15,6 +15,7 @@ interface User {
   city: string;
   state: string;
   pincode: string;
+  profileImage: string;
   fullAddress: string;
 }
 
@@ -50,6 +51,7 @@ const AllUsers = () => {
     city: apiUser.city,
     state: apiUser.state,
     pincode: apiUser.pincode,
+    profileImage: apiUser.profileImage,
     fullAddress: `${apiUser.buildingName}, ${apiUser.subAreaName}, ${apiUser.areaName}, ${apiUser.city}, ${apiUser.state} - ${apiUser.pincode}`,
   });
 
@@ -60,7 +62,7 @@ const AllUsers = () => {
     const offset = (currentPage - 1) * limit;
     try {
       const data = { offset, limit };
-      const response: ApiResponse = await getAllUsers(data);
+      const response = (await getAllUsers(data)) as ApiResponse;
       if (!response.success) {
         throw new Error("Failed to fetch users");
       }
@@ -263,6 +265,12 @@ const AllUsers = () => {
                       <tr key={user.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
+                            <img
+                              src={
+                                user.profileImage ? user.profileImage  : "https://i.pinimg.com/736x/21/24/92/21249201424022cdd93cd144f099b056.jpg"  }
+                              alt={user.username}
+                              className="h-8 w-8 rounded-full object-cover inline-block mr-2"
+                            />
                             {user.username}
                           </div>
                         </td>

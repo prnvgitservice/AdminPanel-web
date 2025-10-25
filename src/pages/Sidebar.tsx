@@ -174,13 +174,23 @@ const menuHierarchy: MenuHierarchy[] = [
   { key: 'franchise-plans', subItems: ['all-franchise-plans', 'add-franchise-plan'] },
 
   // Management: Parent with nested sub-items for users, technicians, franchises, executives, and referrals
-  { key: 'management', subItems: [
-    'manage-users', 'all-users', 'add-user', // User management sub-items
-    'manage-technicians', 'all-technicians', 'add-technician', // Technician management sub-items
-    'manage-franchises', 'all-franchises', 'add-franchise', // Franchise management sub-items
-    'manage-executives', 'all-executives', 'add-executive', // Executive management sub-items
-    'manage-referrals', 'all-referrals', 'add-referral' // Referral management sub-items
-  ]},
+  // { key: 'management', subItems: [
+  //   'manage-users', 'all-users', 'add-user', // User management sub-items
+  //   'manage-technicians', 'all-technicians', 'add-technician', // Technician management sub-items
+  //   'manage-franchises', 'all-franchises', 'add-franchise', // Franchise management sub-items
+  //   'manage-executives', 'all-executives', 'add-executive', // Executive management sub-items
+  //   'manage-referrals', 'all-referrals', 'add-referral' // Referral management sub-items
+  // ]},
+
+  { key: 'manage-users', subItems: [ 'all-users', 'add-user']}, // User management sub-items
+
+   { key: 'manage-technicians', subItems: [ 'all-technicians', 'add-technician', ]},// technician management sub-items
+
+   { key: 'manage-franchises', subItems: [ 'all-franchises', 'add-franchise',]},// Franchise management sub-items
+
+   { key: 'manage-executives', subItems: [ 'all-executives', 'add-executive',]},// Executive management sub-items
+
+   { key: 'manage-referrals', subItems: [ 'all-referrals', 'add-referral',]},// Referral management sub-items
 
   // Areas: Parent with sub-items for managing service areas
   { key: 'areas', subItems: ['all-areas', 'add-area'] },
