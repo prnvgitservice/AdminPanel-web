@@ -61,7 +61,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
     features: initialSubscription?.features || [],
     fullFeatures: initialSubscription?.fullFeatures || [],
     isPopular: initialSubscription?.isPopular || false,
-    isActive: initialSubscription?.isActive || true,
+    isActive: initialSubscription?.isActive ,
     endUpPrice: initialSubscription?.endUpPrice || null,
     commisionAmount: initialSubscription?.commisionAmount || 0,
     executiveCommissionAmount: initialSubscription?.executiveCommissionAmount || 0,
@@ -246,10 +246,10 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
       gstPercentage: formData.gstPercentage >= 0 ? '' : 'GST percentage must be at least 0',
       gst: formData.gst >= 0 ? '' : 'GST must be at least 0',
       finalPrice: formData.finalPrice >= 0 ? '' : 'Final price must be at least 0',
-      commisionAmount: formData.commisionAmount > 0 ? '' : 'Commission amount must be greater than 0',
-      executiveCommissionAmount: formData.executiveCommissionAmount > 0 ? '' : 'Executive commission must be greater than 0',
-    //   refExecutiveCommisionAmount: formData.refExecutiveCommisionAmount > 0 ? '' : 'Ref executive commission must be greater than 0',
-    //   referalCommisionAmount: formData.referalCommisionAmount > 0 ? '' : 'Referral commission must be greater than 0',
+      commisionAmount: formData.commisionAmount >= 0 ? '' : 'Commission amount must be at least 0',
+      executiveCommissionAmount: formData.executiveCommissionAmount >= 0 ? '' : 'Executive commission must be at least 0',
+      refExecutiveCommisionAmount: formData.refExecutiveCommisionAmount >= 0 ? '' : 'Ref executive commission must be at least 0',
+      referalCommisionAmount: formData.referalCommisionAmount >= 0 ? '' : 'Referral commission must be at least 0',
       features: formData.features.length > 0 ? '' : 'At least one feature is required',
     };
     setFieldErrors(errors);
