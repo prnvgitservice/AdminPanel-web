@@ -10,9 +10,11 @@ export const deleteCategory = (categoryId: string) => apiRequest("deleteCategory
 
 export const getAllPincodes = () => apiRequest("getAllPincodes");
 
-export const updatePincode = (pincodeId: string, data: any) => apiRequest("updatePincode", data, pincodeId);
+export const createPincode = (data: any) => apiRequest("createPincode", data);
 
-export const deletePincode = (pincodeData: any) => apiRequest("deletePincode", pincodeData);
+export const updatePincode = ( data: any) => apiRequest("updatePincode", data);
+
+export const deletePincode = (pincodeId: any) => apiRequest("deletePincode", null, pincodeId);
 
 export const getPlans = (data: any) => apiRequest("getPlans", data);
 

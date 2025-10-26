@@ -1,3 +1,5 @@
+import { updatePincode } from "./apiMethods";
+
 const endpoints: any = {
   getAllCategories: {
     method: "get",
@@ -26,14 +28,19 @@ const endpoints: any = {
     url: () => `/api/pincodes/allAreas`,
   },
 
+  createPincode: {
+    method: "post",
+    url: () => `/api/pincodes/create`,
+  },
+
   updatePincode: {
     method: "put",
-    url: (pincodeId: string) => `/api/pincodes/${pincodeId}`,
+    url: () => `/api/pincodes/update`,
   },
 
   deletePincode: {
     method: "delete",
-    url: () => `/api/pincodes/delete`,
+    url: (pincode: string) => `/api/pincodes/delete/${pincode}`,
   },
 
   getPlans: {
