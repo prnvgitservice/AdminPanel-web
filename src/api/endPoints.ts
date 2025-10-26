@@ -317,6 +317,50 @@ const endpoints: any = {
       return `/api/bookingServices/getAllBookings?offset=${offset}&limit=${limit}`
     }
   }, 
+
+  getStatsDashboard: {
+    method: "get",
+    url: () => {
+      return `/api/adminDashboard/stats`
+    },
+  },
+
+  getRecentBookingsDashboard: {
+    method: "get",
+    url: () => {
+      return `/api/adminDashboard/recentBookings`
+    }
+  },
+
+    getCategorydetailsDashboard: {
+      method: "get",
+      url: () => {
+        return `/api/adminDashboard/categoriesDetails`
+      }
+    },
+
+    getMonthlyBookingsDashboard: {
+      method: "get",
+      url: (year: number) => {
+        return `/api/adminDashboard/monthRevenue/${year}`
+      }
+    },
+
+    getRecentGuestBookingDashboard: {
+      method: "get",
+      url: () => {
+        return `/api/adminDashboard/recentGuest`
+      }
+    },
+
+    getRecentGetInTouchDashboard: {
+      method: "get",
+      url: () =>{
+        return `/api/adminDashboard/recentGetInTouch`
+      }
+    }
+
+
 };
 
 export default endpoints;

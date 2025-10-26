@@ -105,6 +105,19 @@ export const deleteExecutiveProfile = (id: string) => apiRequest("deleteExecutiv
 
 export const getAllBookings = (data: {offset: number, limit: number}) => apiRequest("getAllBookings", null, data);
 
+export const getStatsDashboard = (data: any) => apiRequest("getStatsDashboard",data);
+
+export const getRecentBookingsDashboard = (data: any) => apiRequest("getRecentBookingsDashboard",data);
+
+export const getCategorydetailsDashboard = (data: any) => apiRequest("getCategorydetailsDashboard",data);
+
+export const getMonthlyBookingsDashboard = (year: number) => apiRequest("getMonthlyBookingsDashboard",null, year);
+
+export const getRecentGuestBookingDashboard = (data: any) => apiRequest("getRecentGuestBookingDashboard", data)
+
+export const getRecentGetInTouchDashboard = (data: any) => apiRequest("getRecentGetInTouchDashboard", data)
+
+
 
 
 // // API Methods file (unchanged, as no errors found here)
