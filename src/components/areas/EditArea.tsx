@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, MapPin, RefreshCw, Edit } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { debounce } from "lodash";
 import { updatePincode } from "../../api/apiMethods";
 
 interface SubArea {
@@ -102,29 +101,39 @@ const EditArea: React.FC = () => {
     }
   }, [formData.code, error]);
 
-  const debouncedHandleInputChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    if (name === "code") {
-      const val = value.replace(/\D/g, ""); // Restrict to digits
-      if (val.length <= 6) {
-        setFormData((prev) => ({
-          ...prev,
-          [name]: val,
-        }));
-      }
-    } else if (name === "areaName") {
-      setSelectedAreaName(value);
+  const handlePincodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/\D/g, ""); // Restrict to digits only
+    if (val.length <= 6) {
       setFormData((prev) => ({
         ...prev,
-        [name]: value,
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
+        code: val,
       }));
     }
-  }, 300);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    let filteredValue = value;
+
+    // For city, state, areaName: allow only alphabets and spaces
+    if (["city", "state", "areaName"].includes(name)) {
+      filteredValue = value.replace(/[^a-zA-Z\s]/g, "");
+    }
+
+    if (name === "areaName") {
+      setSelectedAreaName(filteredValue);
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: filteredValue,
+    }));
+  };
+
+  const handleSubAreaInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^a-zA-Z\s]/g, ""); // Allow only alphabets and spaces
+    setSelectedSubArea(value);
+  };
 
   const handleSubAreaAdd = () => {
     const trimmedSubArea = selectedSubArea.trim();
@@ -206,7 +215,7 @@ const EditArea: React.FC = () => {
 
       setIsLoading(true);
       console.log("Update payload:", JSON.stringify(payload, null, 2)); // Debug
-      const response = await updatePincode(pincodeData?._id, payload);
+      const response = await updatePincode(payload);
 
       if (!response.success) {
         throw new Error(response.message || "Failed to update area");
@@ -297,7 +306,7 @@ const EditArea: React.FC = () => {
                     type="text"
                     name="city"
                     value={formData.city}
-                    onChange={debouncedHandleInputChange}
+                    onChange={handleInputChange}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
                     placeholder="Enter city"
                     required
@@ -316,7 +325,7 @@ const EditArea: React.FC = () => {
                     type="text"
                     name="state"
                     value={formData.state}
-                    onChange={debouncedHandleInputChange}
+                    onChange={handleInputChange}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
                     placeholder="Enter state"
                     required
@@ -335,7 +344,7 @@ const EditArea: React.FC = () => {
                     type="text"
                     name="code"
                     value={formData.code}
-                    onChange={debouncedHandleInputChange}
+                    onChange={handlePincodeChange}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
                     placeholder="Enter pincode"
                     maxLength={6}
@@ -355,10 +364,7 @@ const EditArea: React.FC = () => {
                     type="text"
                     name="areaName"
                     value={formData.areaName}
-                    onChange={(e) => {
-                      debouncedHandleInputChange(e);
-                      handleAreaSelect(e.target.value);
-                    }}
+                    onChange={handleInputChange}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
                     placeholder="Enter area name"
                     required
@@ -383,7 +389,7 @@ const EditArea: React.FC = () => {
                     <input
                       type="text"
                       value={selectedSubArea}
-                      onChange={(e) => setSelectedSubArea(e.target.value)}
+                      onChange={handleSubAreaInputChange}
                       className="flex-1 pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
                       placeholder="Enter sub-area name"
                     />
@@ -391,7 +397,7 @@ const EditArea: React.FC = () => {
                       type="button"
                       onClick={handleSubAreaAdd}
                       className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200"
-                      disabled={!selectedSubArea || isLoading}
+                      disabled={!selectedSubArea.trim() || isLoading}
                     >
                       {editingSubAreaIndex !== null ? "Update" : "Add"}
                     </button>
@@ -477,6 +483,485 @@ const EditArea: React.FC = () => {
 };
 
 export default EditArea;
+// import React, { useState, useEffect } from "react";
+// import { ArrowLeft, MapPin, RefreshCw, Edit } from "lucide-react";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import { debounce } from "lodash";
+// import { updatePincode } from "../../api/apiMethods";
+
+// interface SubArea {
+//   _id: string;
+//   name: string;
+// }
+
+// interface Area {
+//   _id: string;
+//   name: string;
+//   subAreas: SubArea[] | null;
+// }
+
+// interface Pincode {
+//   _id: string;
+//   code: string;
+//   city: string;
+//   state: string;
+//   areas: Area[] | null;
+//   createdAt: string;
+//   updatedAt: string;
+// }
+
+// const EditArea: React.FC = () => {
+//   const [selectedSubArea, setSelectedSubArea] = useState("");
+//   const [selectedAreaName, setSelectedAreaName] = useState("");
+//   const [editingSubAreaIndex, setEditingSubAreaIndex] = useState<number | null>(null);
+//   const [formData, setFormData] = useState({
+//     code: "",
+//     city: "",
+//     state: "",
+//     areaName: "",
+//     subAreas: [] as string[],
+//   });
+//   const [error, setError] = useState<string | null>(null);
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [pincodeData, setPincodeData] = useState<Pincode | null>(null);
+//   const navigate = useNavigate();
+//   const location = useLocation();
+
+//   // Extract initial pincode object from navigation state
+//   const initialPincode = location.state?.pincode;
+
+//   // Initialize with pincode data and pre-select first area
+//   useEffect(() => {
+//     if (!initialPincode) {
+//       setError("No pincode data found. Please select a pincode to edit.");
+//       setTimeout(() => navigate("/areas"), 2000); // Redirect after 2 seconds
+//       return;
+//     }
+
+//     setPincodeData(initialPincode);
+//     setFormData({
+//       code: initialPincode.code || "",
+//       city: initialPincode.city || "",
+//       state: initialPincode.state || "",
+//       areaName: "",
+//       subAreas: [],
+//     });
+//     // Pre-select the first area if available
+//     if (initialPincode.areas?.length > 0) {
+//       const firstArea = initialPincode.areas[0];
+//       setSelectedAreaName(firstArea.name);
+//       setFormData((prev) => ({
+//         ...prev,
+//         areaName: firstArea.name,
+//         subAreas: firstArea.subAreas?.map((sa: SubArea) => sa.name) || [],
+//       }));
+//     }
+//   }, [initialPincode, navigate]);
+
+//   // Update form when an area is selected
+//   useEffect(() => {
+//     if (pincodeData && selectedAreaName) {
+//       const matchedArea = pincodeData.areas?.find((a: Area) => a.name === selectedAreaName);
+//       if (matchedArea) {
+//         setFormData((prev) => ({
+//           ...prev,
+//           areaName: matchedArea.name,
+//           subAreas: matchedArea.subAreas?.map((sa: SubArea) => sa.name) || [],
+//         }));
+//       } else {
+//         setFormData((prev) => ({
+//           ...prev,
+//           areaName: selectedAreaName,
+//           subAreas: [],
+//         }));
+//       }
+//     }
+//   }, [pincodeData, selectedAreaName]);
+
+//   // Real-time pincode validation
+//   useEffect(() => {
+//     if (formData.code && !/^\d{6}$/.test(formData.code)) {
+//       setError("Pincode must be a 6-digit number");
+//     } else if (error === "Pincode must be a 6-digit number") {
+//       setError(null);
+//     }
+//   }, [formData.code, error]);
+
+//   const debouncedHandleInputChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+//     const { name, value } = e.target;
+//     if (name === "code") {
+//       const val = value.replace(/\D/g, ""); // Restrict to digits
+//       if (val.length <= 6) {
+//         setFormData((prev) => ({
+//           ...prev,
+//           [name]: val,
+//         }));
+//       }
+//     } else if (name === "areaName") {
+//       setSelectedAreaName(value);
+//       setFormData((prev) => ({
+//         ...prev,
+//         [name]: value,
+//       }));
+//     } else {
+//       setFormData((prev) => ({
+//         ...prev,
+//         [name]: value,
+//       }));
+//     }
+//   }, 300);
+
+//   const handleSubAreaAdd = () => {
+//     const trimmedSubArea = selectedSubArea.trim();
+//     if (trimmedSubArea && !formData.subAreas.some((sa) => sa.toLowerCase() === trimmedSubArea.toLowerCase())) {
+//       if (editingSubAreaIndex !== null) {
+//         // Update existing sub-area
+//         const updatedSubAreas = [...formData.subAreas];
+//         updatedSubAreas[editingSubAreaIndex] = trimmedSubArea;
+//         setFormData((prev) => ({
+//           ...prev,
+//           subAreas: updatedSubAreas,
+//         }));
+//         setEditingSubAreaIndex(null);
+//       } else {
+//         // Add new sub-area
+//         setFormData((prev) => ({
+//           ...prev,
+//           subAreas: [...prev.subAreas, trimmedSubArea],
+//         }));
+//       }
+//       setSelectedSubArea("");
+//     }
+//   };
+
+//   const handleSubAreaEdit = (index: number, subArea: string) => {
+//     setSelectedSubArea(subArea);
+//     setEditingSubAreaIndex(index);
+//   };
+
+//   const handleAreaSelect = (areaName: string) => {
+//     setSelectedAreaName(areaName);
+//   };
+
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setError("");
+
+//     try {
+//       if (!formData.code || !formData.city || !formData.state || !formData.areaName) {
+//         setError("Please fill all required fields");
+//         return;
+//       }
+//       if (formData.code.length !== 6) {
+//         setError("Pincode must be 6 digits");
+//         return;
+//       }
+
+//       // Find the existing area to preserve its _id if it exists
+//       const matchedArea = pincodeData?.areas?.find((a: Area) => a.name === selectedAreaName);
+
+//       const payload = {
+//         _id: pincodeData?._id, // Include pincode _id
+//         code: formData.code,
+//         city: formData.city,
+//         state: formData.state,
+//         areas: (pincodeData?.areas || [])
+//           .filter((area: Area) => area.name !== selectedAreaName) // Remove the old version of the selected area
+//           .map((area: Area) => ({
+//             _id: area._id, // Preserve existing area _id
+//             name: area.name,
+//             subAreas: area.subAreas?.map((sa: SubArea) => ({
+//               _id: sa._id, // Preserve existing sub-area _id
+//               name: sa.name,
+//             })) || [],
+//           }))
+//           .concat({
+//             _id: matchedArea?._id || undefined, // Include area _id if editing an existing area
+//             name: formData.areaName.trim(),
+//             subAreas: formData.subAreas.map((name, index) => {
+//               // For existing sub-areas, try to preserve their _id
+//               const existingSubArea = matchedArea?.subAreas?.[index];
+//               return {
+//                 _id: existingSubArea?._id || undefined, // Preserve _id if it exists, otherwise undefined
+//                 name: name.trim(),
+//               };
+//             }),
+//           }),
+//       };
+
+//       setIsLoading(true);
+//       console.log("Update payload:", JSON.stringify(payload, null, 2)); // Debug
+//       const response = await updatePincode(pincodeData?._id, payload);
+
+//       if (!response.success) {
+//         throw new Error(response.message || "Failed to update area");
+//       }
+
+//       // Update local pincode data after successful update (assuming response includes updated data)
+//       // Note: Adjust if updatePincode returns the full updated pincode
+//       if (response.data) {
+//         setPincodeData(response.data);
+//       }
+
+//       alert("Area updated successfully!");
+//       setFormData((prev) => ({
+//         ...prev,
+//         areaName: "",
+//         subAreas: [],
+//       }));
+//       setSelectedAreaName("");
+//       setSelectedSubArea("");
+//       // Optionally navigate or stay
+//       navigate("/areas");
+//     } catch (error: any) {
+//       console.error("Update error:", error);
+//       const errorMessage = error?.message || "An error occurred. Please try again later.";
+//       setError(errorMessage);
+//       alert(errorMessage);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   const handleReset = () => {
+//     if (pincodeData) {
+//       setFormData({
+//         code: pincodeData.code || "",
+//         city: pincodeData.city || "",
+//         state: pincodeData.state || "",
+//         areaName: pincodeData.areas?.[0]?.name || "",
+//         subAreas: pincodeData.areas?.[0]?.subAreas?.map((sa: SubArea) => sa.name) || [],
+//       });
+//       setSelectedAreaName(pincodeData.areas?.[0]?.name || "");
+//       setSelectedSubArea("");
+//       setEditingSubAreaIndex(null);
+//       setError(null);
+//     }
+//   };
+
+//   if (!pincodeData) {
+//     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+//   }
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
+//       <div className="max-w-4xl mx-auto">
+//         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+//           <div className="flex items-center gap-3">
+//             <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
+//               <MapPin className="h-6 w-6 text-white" />
+//             </div>
+//             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+//               Edit Area
+//             </h1>
+//           </div>
+//           <button
+//             onClick={() => navigate("/areas")}
+//             className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+//           >
+//             <ArrowLeft className="h-4 w-4 mr-2" />
+//             Back
+//           </button>
+//         </div>
+
+//         <form onSubmit={handleSubmit} className="space-y-8">
+//           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+//             <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+//               <h2 className="text-lg font-semibold text-white">Area Details</h2>
+//             </div>
+
+//             <div className="p-6 space-y-6">
+//               {error && <div className="text-red-500 mb-4">{error}</div>}
+
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//                 <div className="relative">
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     City <span className="text-red-500">*</span>
+//                   </label>
+//                   <input
+//                     type="text"
+//                     name="city"
+//                     value={formData.city}
+//                     onChange={debouncedHandleInputChange}
+//                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+//                     placeholder="Enter city"
+//                     required
+//                   />
+//                   <MapPin
+//                     className="absolute left-3 top-[38px] text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+
+//                 <div className="relative">
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     State <span className="text-red-500">*</span>
+//                   </label>
+//                   <input
+//                     type="text"
+//                     name="state"
+//                     value={formData.state}
+//                     onChange={debouncedHandleInputChange}
+//                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+//                     placeholder="Enter state"
+//                     required
+//                   />
+//                   <MapPin
+//                     className="absolute left-3 top-[38px] text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+
+//                 <div className="relative">
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     Pincode <span className="text-red-500">*</span>
+//                   </label>
+//                   <input
+//                     type="text"
+//                     name="code"
+//                     value={formData.code}
+//                     onChange={debouncedHandleInputChange}
+//                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+//                     placeholder="Enter pincode"
+//                     maxLength={6}
+//                     required
+//                   />
+//                   <MapPin
+//                     className="absolute left-3 top-[38px] text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+
+//                 <div className="relative">
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     Area Name <span className="text-red-500">*</span>
+//                   </label>
+//                   <input
+//                     type="text"
+//                     name="areaName"
+//                     value={formData.areaName}
+//                     onChange={(e) => {
+//                       debouncedHandleInputChange(e);
+//                       handleAreaSelect(e.target.value);
+//                     }}
+//                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+//                     placeholder="Enter area name"
+//                     required
+//                     list="area-suggestions"
+//                   />
+//                   <datalist id="area-suggestions">
+//                     {pincodeData?.areas?.map((area: Area) => (
+//                       <option key={area._id} value={area.name} />
+//                     ))}
+//                   </datalist>
+//                   <MapPin
+//                     className="absolute left-3 top-[38px] text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+
+//                 <div className="relative">
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     Sub-Area
+//                   </label>
+//                   <div className="flex gap-2">
+//                     <input
+//                       type="text"
+//                       value={selectedSubArea}
+//                       onChange={(e) => setSelectedSubArea(e.target.value)}
+//                       className="flex-1 pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
+//                       placeholder="Enter sub-area name"
+//                     />
+//                     <button
+//                       type="button"
+//                       onClick={handleSubAreaAdd}
+//                       className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200"
+//                       disabled={!selectedSubArea || isLoading}
+//                     >
+//                       {editingSubAreaIndex !== null ? "Update" : "Add"}
+//                     </button>
+//                   </div>
+//                   <MapPin
+//                     className="absolute left-3 top-[38px] text-blue-400"
+//                     size={20}
+//                   />
+//                 </div>
+//               </div>
+
+//               {formData.subAreas.length > 0 && (
+//                 <div className="mt-4">
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     Added Sub-Areas
+//                   </label>
+//                   <div className="flex flex-wrap gap-2">
+//                     {formData.subAreas.map((subArea, idx) => (
+//                       <div
+//                         key={idx}
+//                         className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700"
+//                       >
+//                         {subArea}
+//                         <button
+//                           type="button"
+//                           onClick={() => handleSubAreaEdit(idx, subArea)}
+//                           className="text-blue-600 hover:text-blue-900"
+//                           title="Edit Sub-Area"
+//                           disabled={isLoading}
+//                         >
+//                           <Edit className="h-4 w-4" />
+//                         </button>
+//                       </div>
+//                     ))}
+//                   </div>
+//                 </div>
+//               )}
+
+//               {pincodeData?.areas?.length > 0 && (
+//                 <div className="mt-4">
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     Existing Areas
+//                   </label>
+//                   <div className="flex flex-wrap gap-2">
+//                     {pincodeData.areas.map((area: Area) => (
+//                       <div
+//                         key={area._id}
+//                         className="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-700"
+//                       >
+//                         {area.name}
+//                       </div>
+//                     ))}
+//                   </div>
+//                 </div>
+//               )}
+//             </div>
+//           </div>
+
+//           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+//             <div className="flex gap-3 w-full sm:w-auto">
+//               <button
+//                 type="button"
+//                 onClick={handleReset}
+//                 className="w-full sm:w-auto flex items-center gap-2 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+//                 disabled={isLoading}
+//               >
+//                 <RefreshCw className="h-5 w-5" />
+//                 Reset
+//               </button>
+//             </div>
+//             <button
+//               type="submit"
+//               className={`w-full sm:w-auto flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+//               disabled={isLoading}
+//             >
+//               {isLoading ? "Updating..." : "Update"}
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default EditArea;
 // import React, { useState, useEffect } from "react";
 // import { ArrowLeft, MapPin, RefreshCw, Edit, Trash2 } from "lucide-react";
 // import { useNavigate, useLocation } from "react-router-dom";

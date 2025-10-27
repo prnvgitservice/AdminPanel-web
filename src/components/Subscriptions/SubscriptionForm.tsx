@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, X, Loader2, CheckSquare, Square } from 'lucide-react';
-import { addPlans, updatePlans } from '../../api/apiMethods';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { ArrowLeft, X, Loader2, CheckSquare, Square } from "lucide-react";
+import { addPlans, updatePlans } from "../../api/apiMethods";
 
 interface Feature {
   name: string;
@@ -41,16 +41,18 @@ interface SubscriptionFormProps {
   isEdit?: boolean;
 }
 
-const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) => {
+const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
+  isEdit = false,
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   // Initialize form data
   const initialSubscription = isEdit ? (location.state as Subscription) : null;
   const [formData, setFormData] = useState({
-    name: initialSubscription?.name || '',
+    name: initialSubscription?.name || "",
     originalPrice: initialSubscription?.originalPrice || null,
-    discount: initialSubscription?.discount || '',
+    discount: initialSubscription?.discount || "",
     discountPercentage: initialSubscription?.discountPercentage || null,
     price: initialSubscription?.price || 0,
     gstPercentage: initialSubscription?.gstPercentage || 0,
@@ -61,30 +63,36 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
     features: initialSubscription?.features || [],
     fullFeatures: initialSubscription?.fullFeatures || [],
     isPopular: initialSubscription?.isPopular || false,
-    isActive: initialSubscription?.isActive || true,
+    isActive: initialSubscription?.isActive,
     endUpPrice: initialSubscription?.endUpPrice || null,
     commisionAmount: initialSubscription?.commisionAmount || 0,
-    executiveCommissionAmount: initialSubscription?.executiveCommissionAmount || 0,
-    refExecutiveCommisionAmount: initialSubscription?.refExecutiveCommisionAmount || 0,
+    executiveCommissionAmount:
+      initialSubscription?.executiveCommissionAmount || 0,
+    refExecutiveCommisionAmount:
+      initialSubscription?.refExecutiveCommisionAmount || 0,
     referalCommisionAmount: initialSubscription?.referalCommisionAmount || 0,
   });
   const [error, setError] = useState<string | null>(null);
-  const [featureInput, setFeatureInput] = useState('');
-  const [fullFeatureInput, setFullFeatureInput] = useState('');
-  const [editingFeatureIndex, setEditingFeatureIndex] = useState<number | null>(null);
-  const [editingFullFeatureIndex, setEditingFullFeatureIndex] = useState<number | null>(null);
+  const [featureInput, setFeatureInput] = useState("");
+  const [fullFeatureInput, setFullFeatureInput] = useState("");
+  const [editingFeatureIndex, setEditingFeatureIndex] = useState<number | null>(
+    null
+  );
+  const [editingFullFeatureIndex, setEditingFullFeatureIndex] = useState<
+    number | null
+  >(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({
-    name: '',
-    price: '',
-    gstPercentage: '',
-    gst: '',
-    finalPrice: '',
-    commisionAmount: '',
-    executiveCommissionAmount: '',
+    name: "",
+    price: "",
+    gstPercentage: "",
+    gst: "",
+    finalPrice: "",
+    commisionAmount: "",
+    executiveCommissionAmount: "",
     // refExecutiveCommisionAmount: '',
     // referalCommisionAmount: '',
-    features: '',
+    features: "",
   });
 
   // Auto-update discount percentage
@@ -98,8 +106,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
       const discount = (diff / formData.originalPrice) * 100;
 
       // Round to 2 decimal places, but remove trailing zeros if not needed
-      const formattedDiscount =
-        Math.round(discount * 100) / 100; // round to 2 decimals
+      const formattedDiscount = Math.round(discount * 100) / 100; // round to 2 decimals
 
       setFormData((prev) => ({
         ...prev,
@@ -114,7 +121,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
   useEffect(() => {
     if (formData.gstPercentage >= 0 && formData.price >= 0) {
       const gstRate = formData.gstPercentage / 100;
-      const gstAmt = Math.round((formData.price * gstRate) * 100) / 100;
+      const gstAmt = Math.round(formData.price * gstRate * 100) / 100;
       setFormData((prev) => ({
         ...prev,
         gst: gstAmt,
@@ -123,18 +130,26 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
     }
   }, [formData.gstPercentage, formData.price]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const parser = name === 'gstPercentage' ? parseFloat : parseInt;
-    setFormData((prev) => ({ ...prev, [name]: value === '' ? null : parser(value) || 0 }));
+    const parser = name === "gstPercentage" ? parseFloat : parseInt;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value === "" ? null : parser(value) || 0,
+    }));
   };
 
-  const handleBooleanChange = (field: keyof Pick<Subscription, 'isPopular' | 'isActive'>, value: boolean) => {
+  const handleBooleanChange = (
+    field: keyof Pick<Subscription, "isPopular" | "isActive">,
+    value: boolean
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -143,17 +158,22 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
   };
 
   const handleFeatureKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && featureInput.trim()) {
+    if (e.key === "Enter" && featureInput.trim()) {
       e.preventDefault();
       const trimmedName = featureInput.trim();
       if (trimmedName.length < 1 || trimmedName.length > 100) {
-        setFieldErrors((prev) => ({ ...prev, features: 'Feature name must be between 1 and 100 characters' }));
+        setFieldErrors((prev) => ({
+          ...prev,
+          features: "Feature name must be between 1 and 100 characters",
+        }));
         return;
       }
       if (editingFeatureIndex !== null) {
         setFormData((prev) => ({
           ...prev,
-          features: prev.features.map((feat, i) => (i === editingFeatureIndex ? { ...feat, name: trimmedName } : feat)),
+          features: prev.features.map((feat, i) =>
+            i === editingFeatureIndex ? { ...feat, name: trimmedName } : feat
+          ),
         }));
         setEditingFeatureIndex(null);
       } else {
@@ -163,15 +183,17 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
           features: [...prev.features, newFeature],
         }));
       }
-      setFeatureInput('');
-      setFieldErrors((prev) => ({ ...prev, features: '' }));
+      setFeatureInput("");
+      setFieldErrors((prev) => ({ ...prev, features: "" }));
     }
   };
 
   const toggleFeatureIncluded = (index: number) => {
     setFormData((prev) => ({
       ...prev,
-      features: prev.features.map((feat, i) => (i === index ? { ...feat, included: !feat.included } : feat)),
+      features: prev.features.map((feat, i) =>
+        i === index ? { ...feat, included: !feat.included } : feat
+      ),
     }));
   };
 
@@ -187,26 +209,32 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
     }));
     if (editingFeatureIndex === index) {
       setEditingFeatureIndex(null);
-      setFeatureInput('');
+      setFeatureInput("");
     }
   };
 
-  const handleFullFeatureInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFullFeatureInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setFullFeatureInput(e.target.value);
   };
 
-  const handleFullFeatureKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && fullFeatureInput.trim()) {
+  const handleFullFeatureKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === "Enter" && fullFeatureInput.trim()) {
       e.preventDefault();
       const trimmedText = fullFeatureInput.trim();
       if (trimmedText.length < 1 || trimmedText.length > 500) {
-        setError('Full feature text must be between 1 and 500 characters');
+        setError("Full feature text must be between 1 and 500 characters");
         return;
       }
       if (editingFullFeatureIndex !== null) {
         setFormData((prev) => ({
           ...prev,
-          fullFeatures: prev.fullFeatures.map((feat, i) => (i === editingFullFeatureIndex ? { text: trimmedText } : feat)),
+          fullFeatures: prev.fullFeatures.map((feat, i) =>
+            i === editingFullFeatureIndex ? { text: trimmedText } : feat
+          ),
         }));
         setEditingFullFeatureIndex(null);
       } else {
@@ -216,7 +244,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
           fullFeatures: [...prev.fullFeatures, newFullFeature],
         }));
       }
-      setFullFeatureInput('');
+      setFullFeatureInput("");
     }
   };
 
@@ -232,7 +260,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
     }));
     if (editingFullFeatureIndex === index) {
       setEditingFullFeatureIndex(null);
-      setFullFeatureInput('');
+      setFullFeatureInput("");
     }
   };
 
@@ -241,21 +269,39 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
 
     // Validate required fields
     const errors = {
-      name: formData.name.trim().length >= 3 ? '' : 'Name must be at least 3 characters',
-      price: formData.price >= 0 ? '' : 'Price must be at least 0',
-      gstPercentage: formData.gstPercentage >= 0 ? '' : 'GST percentage must be at least 0',
-      gst: formData.gst >= 0 ? '' : 'GST must be at least 0',
-      finalPrice: formData.finalPrice >= 0 ? '' : 'Final price must be at least 0',
-      commisionAmount: formData.commisionAmount > 0 ? '' : 'Commission amount must be greater than 0',
-      executiveCommissionAmount: formData.executiveCommissionAmount > 0 ? '' : 'Executive commission must be greater than 0',
-    //   refExecutiveCommisionAmount: formData.refExecutiveCommisionAmount > 0 ? '' : 'Ref executive commission must be greater than 0',
-    //   referalCommisionAmount: formData.referalCommisionAmount > 0 ? '' : 'Referral commission must be greater than 0',
-      features: formData.features.length > 0 ? '' : 'At least one feature is required',
+      name:
+        formData.name.trim().length >= 3
+          ? ""
+          : "Name must be at least 3 characters",
+      price: formData.price >= 0 ? "" : "Price must be at least 0",
+      gstPercentage:
+        formData.gstPercentage >= 0 ? "" : "GST percentage must be at least 0",
+      gst: formData.gst >= 0 ? "" : "GST must be at least 0",
+      finalPrice:
+        formData.finalPrice >= 0 ? "" : "Final price must be at least 0",
+      commisionAmount:
+        formData.commisionAmount >= 0
+          ? ""
+          : "Commission amount must be at least 0",
+      executiveCommissionAmount:
+        formData.executiveCommissionAmount >= 0
+          ? ""
+          : "Executive commission must be at least 0",
+      refExecutiveCommisionAmount:
+        formData.refExecutiveCommisionAmount >= 0
+          ? ""
+          : "Ref executive commission must be at least 0",
+      referalCommisionAmount:
+        formData.referalCommisionAmount >= 0
+          ? ""
+          : "Referral commission must be at least 0",
+      features:
+        formData.features.length > 0 ? "" : "At least one feature is required",
     };
     setFieldErrors(errors);
 
     if (Object.values(errors).some((error) => error)) {
-      setError('Please fill in all required fields');
+      setError("Please fill in all required fields");
       return;
     }
 
@@ -289,19 +335,35 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
     }
 
     try {
-      const response = isEdit && initialSubscription?._id
-        ? await updatePlans(payload)
-        : await addPlans(payload);
+      const response =
+        isEdit && initialSubscription?._id
+          ? await updatePlans(payload)
+          : await addPlans(payload);
 
       if (response.success) {
-        alert(isEdit ? 'Plan updated successfully!' : 'New plan added successfully!');
-        navigate('/subscription/all');
+        alert(
+          isEdit ? "Plan updated successfully!" : "New plan added successfully!"
+        );
+        navigate("/subscription/all");
       } else {
-        setError(response.message || (isEdit ? 'Failed to update subscription plan' : 'Failed to create subscription plan'));
+        setError(
+          response.message ||
+            (isEdit
+              ? "Failed to update subscription plan"
+              : "Failed to create subscription plan")
+        );
       }
     } catch (err: any) {
-      setError(err.message || (isEdit ? 'Error updating subscription plan. Please try again.' : 'Error creating subscription plan. Please try again.'));
-      console.error(`Error ${isEdit ? 'updating' : 'adding'} subscription:`, err);
+      setError(
+        err.message ||
+          (isEdit
+            ? "Error updating subscription plan. Please try again."
+            : "Error creating subscription plan. Please try again.")
+      );
+      console.error(
+        `Error ${isEdit ? "updating" : "adding"} subscription:`,
+        err
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -316,11 +378,11 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
             <CheckSquare className="h-5 w-5 text-white" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            {isEdit ? 'Edit Subscription Plan' : 'Add Subscription Plan'}
+            {isEdit ? "Edit Subscription Plan" : "Add Subscription Plan"}
           </h1>
         </div>
         <button
-          onClick={() => navigate('/subscription/all')}
+          onClick={() => navigate("/subscription/all")}
           className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
           disabled={isSubmitting}
           aria-label="Back to all subscriptions"
@@ -333,7 +395,10 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
       {/* Form */}
       <div className="bg-white rounded-xl shadow-lg p-8">
         {error && (
-          <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg animate-slide-in" role="alert">
+          <div
+            className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg animate-slide-in"
+            role="alert"
+          >
             {error}
           </div>
         )}
@@ -341,7 +406,10 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
           <div className="space-y-6">
             {/* Plan Name */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Plan Name *
               </label>
               <input
@@ -351,15 +419,18 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                 value={formData.name}
                 onChange={handleInputChange}
                 className={`w-full px-4 py-3 border ${
-                  fieldErrors.name ? 'border-red-500' : 'border-gray-300'
+                  fieldErrors.name ? "border-red-500" : "border-gray-300"
                 } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200`}
                 placeholder="Enter subscription plan name"
                 required
                 aria-invalid={!!fieldErrors.name}
-                aria-describedby={fieldErrors.name ? 'name-error' : undefined}
+                aria-describedby={fieldErrors.name ? "name-error" : undefined}
               />
               {fieldErrors.name && (
-                <p id="name-error" className="text-red-500 text-sm mt-1 animate-slide-in">
+                <p
+                  id="name-error"
+                  className="text-red-500 text-sm mt-1 animate-slide-in"
+                >
                   {fieldErrors.name}
                 </p>
               )}
@@ -368,14 +439,17 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
             {/* Pricing Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="originalPrice" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="originalPrice"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Original Price
                 </label>
                 <input
                   type="number"
                   id="originalPrice"
                   name="originalPrice"
-                  value={formData.originalPrice || ''}
+                  value={formData.originalPrice || ""}
                   onChange={handleNumberInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
                   placeholder="0"
@@ -384,7 +458,10 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                 />
               </div>
               <div>
-                <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="price"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Price *
                 </label>
                 <input
@@ -394,7 +471,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                   value={formData.price}
                   onChange={handleNumberInputChange}
                   className={`w-full px-4 py-3 border ${
-                    fieldErrors.price ? 'border-red-500' : 'border-gray-300'
+                    fieldErrors.price ? "border-red-500" : "border-gray-300"
                   } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200`}
                   placeholder="0"
                   min="0"
@@ -402,11 +479,16 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                   required
                 />
                 {fieldErrors.price && (
-                  <p className="text-red-500 text-sm mt-1 animate-slide-in">{fieldErrors.price}</p>
+                  <p className="text-red-500 text-sm mt-1 animate-slide-in">
+                    {fieldErrors.price}
+                  </p>
                 )}
               </div>
               <div>
-                <label htmlFor="discount" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="discount"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Discount
                 </label>
                 <input
@@ -420,14 +502,17 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                 />
               </div>
               <div>
-                <label htmlFor="discountPercentage" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="discountPercentage"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Discount Percentage
                 </label>
                 <input
                   type="number"
                   id="discountPercentage"
                   name="discountPercentage"
-                  value={formData.discountPercentage || ''}
+                  value={formData.discountPercentage || ""}
                   disabled
                   className="w-full px-4 py-3 border border-gray-300 bg-gray-100 rounded-lg cursor-not-allowed"
                   placeholder="Auto-calculated"
@@ -439,7 +524,10 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
             {/* Tax Section */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label htmlFor="gstPercentage" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="gstPercentage"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   GST Percentage *
                 </label>
                 <input
@@ -449,7 +537,9 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                   value={formData.gstPercentage}
                   onChange={handleNumberInputChange}
                   className={`w-full px-4 py-3 border ${
-                    fieldErrors.gstPercentage ? 'border-red-500' : 'border-gray-300'
+                    fieldErrors.gstPercentage
+                      ? "border-red-500"
+                      : "border-gray-300"
                   } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200`}
                   placeholder="0"
                   min="0"
@@ -457,11 +547,16 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                   required
                 />
                 {fieldErrors.gstPercentage && (
-                  <p className="text-red-500 text-sm mt-1 animate-slide-in">{fieldErrors.gstPercentage}</p>
+                  <p className="text-red-500 text-sm mt-1 animate-slide-in">
+                    {fieldErrors.gstPercentage}
+                  </p>
                 )}
               </div>
               <div>
-                <label htmlFor="gst" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="gst"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   GST Amount *
                 </label>
                 <input
@@ -471,7 +566,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                   value={formData.gst}
                   disabled
                   className={`w-full px-4 py-3 border ${
-                    fieldErrors.gst ? 'border-red-500' : 'border-gray-300'
+                    fieldErrors.gst ? "border-red-500" : "border-gray-300"
                   } bg-gray-100 rounded-lg cursor-not-allowed`}
                   placeholder="Auto-calculated"
                   min="0"
@@ -479,11 +574,16 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                   required
                 />
                 {fieldErrors.gst && (
-                  <p className="text-red-500 text-sm mt-1 animate-slide-in">{fieldErrors.gst}</p>
+                  <p className="text-red-500 text-sm mt-1 animate-slide-in">
+                    {fieldErrors.gst}
+                  </p>
                 )}
               </div>
               <div>
-                <label htmlFor="finalPrice" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="finalPrice"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Final Price *
                 </label>
                 <input
@@ -493,7 +593,9 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                   value={formData.finalPrice}
                   disabled
                   className={`w-full px-4 py-3 border ${
-                    fieldErrors.finalPrice ? 'border-red-500' : 'border-gray-300'
+                    fieldErrors.finalPrice
+                      ? "border-red-500"
+                      : "border-gray-300"
                   } bg-gray-100 rounded-lg cursor-not-allowed`}
                   placeholder="Auto-calculated"
                   min="0"
@@ -501,7 +603,9 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                   required
                 />
                 {fieldErrors.finalPrice && (
-                  <p className="text-red-500 text-sm mt-1 animate-slide-in">{fieldErrors.finalPrice}</p>
+                  <p className="text-red-500 text-sm mt-1 animate-slide-in">
+                    {fieldErrors.finalPrice}
+                  </p>
                 )}
               </div>
             </div>
@@ -509,14 +613,17 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
             {/* Additional Info */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label htmlFor="validity" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="validity"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Validity (days)
                 </label>
                 <input
                   type="number"
                   id="validity"
                   name="validity"
-                  value={formData.validity || ''}
+                  value={formData.validity || ""}
                   onChange={handleNumberInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
                   placeholder="0"
@@ -525,14 +632,17 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                 />
               </div>
               <div>
-                <label htmlFor="leads" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="leads"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Leads
                 </label>
                 <input
                   type="number"
                   id="leads"
                   name="leads"
-                  value={formData.leads || ''}
+                  value={formData.leads || ""}
                   onChange={handleNumberInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
                   placeholder="0"
@@ -541,14 +651,17 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                 />
               </div>
               <div>
-                <label htmlFor="endUpPrice" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="endUpPrice"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   End Up Price
                 </label>
                 <input
                   type="number"
                   id="endUpPrice"
                   name="endUpPrice"
-                  value={formData.endUpPrice || ''}
+                  value={formData.endUpPrice || ""}
                   onChange={handleNumberInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
                   placeholder="0"
@@ -561,7 +674,10 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
             {/* Commission Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="commisionAmount" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="commisionAmount"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Commission Amount *
                 </label>
                 <input
@@ -571,7 +687,9 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                   value={formData.commisionAmount}
                   onChange={handleNumberInputChange}
                   className={`w-full px-4 py-3 border ${
-                    fieldErrors.commisionAmount ? 'border-red-500' : 'border-gray-300'
+                    fieldErrors.commisionAmount
+                      ? "border-red-500"
+                      : "border-gray-300"
                   } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200`}
                   placeholder="0"
                   min="0"
@@ -579,11 +697,16 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                   required
                 />
                 {fieldErrors.commisionAmount && (
-                  <p className="text-red-500 text-sm mt-1 animate-slide-in">{fieldErrors.commisionAmount}</p>
+                  <p className="text-red-500 text-sm mt-1 animate-slide-in">
+                    {fieldErrors.commisionAmount}
+                  </p>
                 )}
               </div>
               <div>
-                <label htmlFor="executiveCommissionAmount" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="executiveCommissionAmount"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Executive Commission Amount *
                 </label>
                 <input
@@ -593,18 +716,25 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                   value={formData.executiveCommissionAmount}
                   onChange={handleNumberInputChange}
                   className={`w-full px-4 py-3 border ${
-                    fieldErrors.executiveCommissionAmount ? 'border-red-500' : 'border-gray-300'
+                    fieldErrors.executiveCommissionAmount
+                      ? "border-red-500"
+                      : "border-gray-300"
                   } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200`}
                   placeholder="0"
                   min="0"
                   required
                 />
                 {fieldErrors.executiveCommissionAmount && (
-                  <p className="text-red-500 text-sm mt-1 animate-slide-in">{fieldErrors.executiveCommissionAmount}</p>
+                  <p className="text-red-500 text-sm mt-1 animate-slide-in">
+                    {fieldErrors.executiveCommissionAmount}
+                  </p>
                 )}
               </div>
               <div>
-                <label htmlFor="refExecutiveCommisionAmount" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="refExecutiveCommisionAmount"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Ref Executive Commission Amount *
                 </label>
                 <input
@@ -614,7 +744,9 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                   value={formData.refExecutiveCommisionAmount}
                   onChange={handleNumberInputChange}
                   className={`w-full px-4 py-3 border ${
-                    fieldErrors.refExecutiveCommisionAmount ? 'border-red-500' : 'border-gray-300'
+                    fieldErrors.refExecutiveCommisionAmount
+                      ? "border-red-500"
+                      : "border-gray-300"
                   } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200`}
                   placeholder="0"
                   min="0"
@@ -626,7 +758,10 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                 )} */}
               </div>
               <div>
-                <label htmlFor="referalCommisionAmount" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="referalCommisionAmount"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Referral Commission Amount *
                 </label>
                 <input
@@ -636,7 +771,9 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                   value={formData.referalCommisionAmount}
                   onChange={handleNumberInputChange}
                   className={`w-full px-4 py-3 border ${
-                    fieldErrors.referalCommisionAmount ? 'border-red-500' : 'border-gray-300'
+                    fieldErrors.referalCommisionAmount
+                      ? "border-red-500"
+                      : "border-gray-300"
                   } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200`}
                   placeholder="0"
                   min="0"
@@ -655,19 +792,27 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                 <input
                   type="checkbox"
                   checked={formData.isPopular}
-                  onChange={(e) => handleBooleanChange('isPopular', e.target.checked)}
+                  onChange={(e) =>
+                    handleBooleanChange("isPopular", e.target.checked)
+                  }
                   className="rounded"
                 />
-                <span className="text-sm font-medium text-gray-700">Popular Plan</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Popular Plan
+                </span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={formData.isActive}
-                  onChange={(e) => handleBooleanChange('isActive', e.target.checked)}
+                  onChange={(e) =>
+                    handleBooleanChange("isActive", e.target.checked)
+                  }
                   className="rounded"
                 />
-                <span className="text-sm font-medium text-gray-700">Active</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Active
+                </span>
               </label>
             </div>
 
@@ -686,9 +831,15 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                       type="button"
                       onClick={() => toggleFeatureIncluded(index)}
                       className="p-1"
-                      aria-label={feature.included ? 'Exclude feature' : 'Include feature'}
+                      aria-label={
+                        feature.included ? "Exclude feature" : "Include feature"
+                      }
                     >
-                      {feature.included ? <CheckSquare className="w-4 h-4 text-green-600" /> : <Square className="w-4 h-4 text-gray-400" />}
+                      {feature.included ? (
+                        <CheckSquare className="w-4 h-4 text-green-600" />
+                      ) : (
+                        <Square className="w-4 h-4 text-gray-400" />
+                      )}
                     </button>
                     <span
                       className="cursor-pointer"
@@ -713,14 +864,23 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                 onChange={handleFeatureInputChange}
                 onKeyDown={handleFeatureKeyDown}
                 className={`w-full px-4 py-3 border ${
-                  fieldErrors.features ? 'border-red-500' : 'border-gray-300'
+                  fieldErrors.features ? "border-red-500" : "border-gray-300"
                 } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200`}
-                placeholder={editingFeatureIndex !== null ? 'Edit feature name and press Enter' : 'Type feature name and press Enter to add'}
+                placeholder={
+                  editingFeatureIndex !== null
+                    ? "Edit feature name and press Enter"
+                    : "Type feature name and press Enter to add"
+                }
                 aria-invalid={!!fieldErrors.features}
-                aria-describedby={fieldErrors.features ? 'features-error' : undefined}
+                aria-describedby={
+                  fieldErrors.features ? "features-error" : undefined
+                }
               />
               {fieldErrors.features && (
-                <p id="features-error" className="text-red-500 text-sm mt-1 animate-slide-in">
+                <p
+                  id="features-error"
+                  className="text-red-500 text-sm mt-1 animate-slide-in"
+                >
                   {fieldErrors.features}
                 </p>
               )}
@@ -736,14 +896,19 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                   <span
                     key={index}
                     className={`inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full cursor-pointer transition-transform duration-200 hover:scale-105 ${
-                      editingFullFeatureIndex === index ? 'ring-2 ring-blue-500' : ''
+                      editingFullFeatureIndex === index
+                        ? "ring-2 ring-blue-500"
+                        : ""
                     }`}
                     onClick={() => editFullFeature(index)}
                     role="button"
                     tabIndex={0}
-                    onKeyDown={(e) => e.key === 'Enter' && editFullFeature(index)}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && editFullFeature(index)
+                    }
                   >
-                    {fullFeat.text.substring(0, 20)}{fullFeat.text.length > 20 ? '...' : ''}
+                    {fullFeat.text.substring(0, 20)}
+                    {fullFeat.text.length > 20 ? "..." : ""}
                     <button
                       type="button"
                       onClick={(e) => {
@@ -764,7 +929,11 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
                 onChange={handleFullFeatureInputChange}
                 onKeyDown={handleFullFeatureKeyDown}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                placeholder={editingFullFeatureIndex !== null ? 'Edit full feature text and press Enter' : 'Type full feature text and press Enter to add'}
+                placeholder={
+                  editingFullFeatureIndex !== null
+                    ? "Edit full feature text and press Enter"
+                    : "Type full feature text and press Enter to add"
+                }
               />
             </div>
           </div>
@@ -773,7 +942,11 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
           <div className="flex items-center justify-between space-x-4 pt-8 border-gray-200">
             <button
               type="button"
-              onClick={() => navigate('/subscription/all')}
+              onClick={() => {
+                if (window.confirm("Are sure want to discard")) {
+                  navigate("/subscription/all");
+                }
+              }}
               className="px-6 py-3 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-semibold"
               disabled={isSubmitting}
               aria-label="Cancel and return to subscriptions"
@@ -784,15 +957,17 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ isEdit = false }) =
               type="submit"
               className="px-8 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-lg font-semibold hover:from-green-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
-              aria-label={isEdit ? 'Update subscription' : 'Create subscription'}
+              aria-label={
+                isEdit ? "Update subscription" : "Create subscription"
+              }
             >
               {isSubmitting ? (
                 <span className="flex items-center">
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  {isEdit ? 'Updating...' : 'Creating...'}
+                  {isEdit ? "Updating..." : "Creating..."}
                 </span>
               ) : (
-                <>{isEdit ? 'Update Plan' : 'Create Plan'}</>
+                <>{isEdit ? "Update Plan" : "Create Plan"}</>
               )}
             </button>
           </div>
@@ -914,7 +1089,6 @@ export default SubscriptionForm;
 //     setFormData((prev) => ({ ...prev, discountPercentage: null }));
 //   }
 // }, [formData.originalPrice, formData.price]);
-
 
 //   // Auto-update GST and final price
 //   useEffect(() => {

@@ -1,3 +1,4 @@
+
 const endpoints: any = {
   getAllCategories: {
     method: "get",
@@ -26,14 +27,19 @@ const endpoints: any = {
     url: () => `/api/pincodes/allAreas`,
   },
 
+  createPincode: {
+    method: "post",
+    url: () => `/api/pincodes/create`,
+  },
+
   updatePincode: {
     method: "put",
-    url: (pincodeId: string) => `/api/pincodes/${pincodeId}`,
+    url: () => `/api/pincodes/update`,
   },
 
   deletePincode: {
     method: "delete",
-    url: () => `/api/pincodes/delete`,
+    url: (pincode: string) => `/api/pincodes/delete/${pincode}`,
   },
 
   getPlans: {
@@ -310,6 +316,57 @@ const endpoints: any = {
       return `/api/bookingServices/getAllBookings?offset=${offset}&limit=${limit}`
     }
   }, 
+
+  getStatsDashboard: {
+    method: "get",
+    url: () => {
+      return `/api/adminDashboard/stats`
+    },
+  },
+
+  getRecentBookingsDashboard: {
+    method: "get",
+    url: () => {
+      return `/api/adminDashboard/recentBookings`
+    }
+  },
+
+    getCategorydetailsDashboard: {
+      method: "get",
+      url: () => {
+        return `/api/adminDashboard/categoriesDetails`
+      }
+    },
+
+    getMonthlyBookingsDashboard: {
+      method: "get",
+      url: (year: number) => {
+        return `/api/adminDashboard/monthRevenue/${year}`
+      }
+    },
+
+    getRecentGuestBookingDashboard: {
+      method: "get",
+      url: () => {
+        return `/api/adminDashboard/recentGuest`
+      }
+    },
+
+    getRecentGetInTouchDashboard: {
+      method: "get",
+      url: () =>{
+        return `/api/adminDashboard/recentGetInTouch`
+      }
+    },
+
+    getRecentTechnicianDashboard: {
+      method: "get",
+      url: () => {
+        return `/api/adminDashboard/recentTechnicians`
+      }
+    }
+
+
 };
 
 export default endpoints;

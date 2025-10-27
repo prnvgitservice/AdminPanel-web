@@ -10,9 +10,11 @@ export const deleteCategory = (categoryId: string) => apiRequest("deleteCategory
 
 export const getAllPincodes = () => apiRequest("getAllPincodes");
 
-export const updatePincode = (pincodeId: string, data: any) => apiRequest("updatePincode", data, pincodeId);
+export const createPincode = (data: any) => apiRequest("createPincode", data);
 
-export const deletePincode = (pincodeData: any) => apiRequest("deletePincode", pincodeData);
+export const updatePincode = ( data: any) => apiRequest("updatePincode", data);
+
+export const deletePincode = (pincodeId: any) => apiRequest("deletePincode", null, pincodeId);
 
 export const getPlans = (data: any) => apiRequest("getPlans", data);
 
@@ -22,7 +24,7 @@ export const updatePlans = (data: any) => apiRequest("updatePlans", data);
 
 export const deletePlan = (planId: string) => apiRequest("deletePlan", null, planId);
 
-export const getAllUsers = (data: { offset?: number; limit?: number }) => apiRequest("getAllUsers", null, data);
+export const getAllUsers = (data: { offset?: number | undefined; limit?: number | undefined }) => apiRequest("getAllUsers", null, data);
 
 export const updateUserByAdmin = (data: any) => apiRequest("updateUserByAdmin", data);
 
@@ -83,7 +85,7 @@ export const getAllSearchContents = (data: any) => apiRequest("getAllSearchConte
 
 export const deleteCategorySearchDetails = (id: string) => apiRequest("deleteCategorySearchDetails", null, id);
 
-export const getInTouch = (data: {offset: number, limit: number}) => apiRequest("getInTouch", null, data);
+export const getInTouch = (data: {offset: number | undefined, limit: number | undefined}) => apiRequest("getInTouch", null, data);
 
 export const updateGetInTouchStatus = (data: any) => apiRequest("updateGetInTouchStatus", null, data);
 
@@ -102,6 +104,21 @@ export const getAllExecutives = (data: {offset: number, limit: number}) => apiRe
 export const deleteExecutiveProfile = (id: string) => apiRequest("deleteExecutiveProfile", null, id);
 
 export const getAllBookings = (data: {offset: number, limit: number}) => apiRequest("getAllBookings", null, data);
+
+export const getStatsDashboard = (data: any) => apiRequest("getStatsDashboard",data);
+
+export const getRecentBookingsDashboard = (data: any) => apiRequest("getRecentBookingsDashboard",data);
+
+export const getCategorydetailsDashboard = (data: any) => apiRequest("getCategorydetailsDashboard",data);
+
+export const getMonthlyBookingsDashboard = (year: number) => apiRequest("getMonthlyBookingsDashboard",null, year);
+
+export const getRecentGuestBookingDashboard = (data: any) => apiRequest("getRecentGuestBookingDashboard", data)
+
+export const getRecentGetInTouchDashboard = (data: any) => apiRequest("getRecentGetInTouchDashboard", data)
+
+export const getRecentTechnicianDashboard = (data: any) => apiRequest("getRecentTechnicianDashboard", data)
+
 
 
 

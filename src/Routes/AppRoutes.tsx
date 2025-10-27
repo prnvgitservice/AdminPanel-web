@@ -13,7 +13,6 @@ import SubscriptionPage from "../components/Subscriptions/SubscriptionPage";
 import PlanDetailsPage from "../components/Subscriptions/PlanDetailsPage";
 import AllFranchisePlansPage from "../components/FranchisePlansPage/AllFranchisePlansPage";
 import AdminUsers from "../components/manageUsers/AdminUsers";
-import AddAdminUser from "../pages/AddAdminUser";
 import Technicians from "../components/manageTechnicians/Technicians";
 import AdminCreatedTechnicians from "../components/manageTechnicians/AdminCreatedTechnicians";
 import Franchise from "../components/manageFranchise/Franchises";
@@ -44,7 +43,6 @@ import AllUsers from "../components/manageUsers/AllUsers";
 import ViewUser from "../components/manageUsers/ViewUser";
 import UserForm from "../components/manageUsers/UserFrom";
 import ViewTechnician from "../components/manageTechnicians/ViewTechnician";
-import TechnicianForm from "../components/manageTechnicians/TechnicianForm";
 // import ManageExecutives from "../components/manageExecutives/ManageExecutives";
 import AllExecutives from "../components/manageExecutives/AllExecutives";
 import AddExecutive from "../components/manageExecutives/AddExecutive";
@@ -139,7 +137,7 @@ const AppRoutes: React.FC = () => {
           path="/management/users/admin-created"
           element={<AdminUsers />}
         />
-        <Route path="/management/users/add-admin" element={<AddAdminUser />} />
+        {/* <Route path="/management/users/add-admin" element={<AddAdminUser />} /> */}
 
         {/* Management - Technicians: Routes for technician management */}
         <Route path="/management/technicians" element={<Technicians />} />
@@ -147,6 +145,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/management/technicians/add" element={<AddTechnician />} />
         <Route path="/management/technicians/view/:id" element={<ViewTechnician />} />
         <Route path="/management/technicians/edit/:id" element={<UpdateTechnician/>} />
+        <Route path="/management/technicians/technician-requests" element={<TechnicianRequest />} />
         <Route
           path="/management/technicians/admin-created"
           element={<AdminCreatedTechnicians />}
@@ -188,7 +187,6 @@ const AppRoutes: React.FC = () => {
         {/* Enquiries: Routes for managing enquiries */}
         <Route path="/franchise-requests" element={<FranchiseRequest />} />
         <Route path="/get-in-touch" element={<GetInTouch />} />
-        <Route path="/technician-requests" element={<TechnicianRequest />} />
 
         {/* Notifications: Routes for notification-related actions */}
         <Route
