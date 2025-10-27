@@ -1,4 +1,3 @@
-import { updatePincode } from "./apiMethods";
 
 const endpoints: any = {
   getAllCategories: {
@@ -357,6 +356,13 @@ const endpoints: any = {
       method: "get",
       url: () =>{
         return `/api/adminDashboard/recentGetInTouch`
+      }
+    },
+
+    getRecentTechnicianDashboard: {
+      method: "get",
+      url: () => {
+        return `/api/adminDashboard/recentTechnicians`
       }
     }
 

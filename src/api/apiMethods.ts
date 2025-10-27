@@ -24,7 +24,7 @@ export const updatePlans = (data: any) => apiRequest("updatePlans", data);
 
 export const deletePlan = (planId: string) => apiRequest("deletePlan", null, planId);
 
-export const getAllUsers = (data: { offset?: number; limit?: number }) => apiRequest("getAllUsers", null, data);
+export const getAllUsers = (data: { offset?: number | undefined; limit?: number | undefined }) => apiRequest("getAllUsers", null, data);
 
 export const updateUserByAdmin = (data: any) => apiRequest("updateUserByAdmin", data);
 
@@ -85,7 +85,7 @@ export const getAllSearchContents = (data: any) => apiRequest("getAllSearchConte
 
 export const deleteCategorySearchDetails = (id: string) => apiRequest("deleteCategorySearchDetails", null, id);
 
-export const getInTouch = (data: {offset: number, limit: number}) => apiRequest("getInTouch", null, data);
+export const getInTouch = (data: {offset: number | undefined, limit: number | undefined}) => apiRequest("getInTouch", null, data);
 
 export const updateGetInTouchStatus = (data: any) => apiRequest("updateGetInTouchStatus", null, data);
 
@@ -116,6 +116,8 @@ export const getMonthlyBookingsDashboard = (year: number) => apiRequest("getMont
 export const getRecentGuestBookingDashboard = (data: any) => apiRequest("getRecentGuestBookingDashboard", data)
 
 export const getRecentGetInTouchDashboard = (data: any) => apiRequest("getRecentGetInTouchDashboard", data)
+
+export const getRecentTechnicianDashboard = (data: any) => apiRequest("getRecentTechnicianDashboard", data)
 
 
 

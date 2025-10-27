@@ -5,3 +5,7 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+.leaflet-container {
+  @apply w-full h-full;
+}
