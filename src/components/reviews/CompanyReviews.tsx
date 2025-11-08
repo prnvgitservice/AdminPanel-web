@@ -3,22 +3,85 @@ import { Star, Plus, User, Calendar, MessageSquare, Filter, Search, RefreshCw } 
 import { getCompanyReviews } from '../../api/apiMethods';
 import CompanyReviewModal from './CompanyReviewModal';
 
+interface AuthorizedPerson {
+  phone: string;
+  photo: string;
+  _id: string;
+}
+
+interface CategoryService {
+  categoryServiceId: string;
+  status: boolean;
+  _id: string;
+}
+
+interface ReviewerTechnician {
+  _id: string;
+  franchiseId: string | null;
+  userId: string;
+  username: string;
+  role: 'technician';
+  phoneNumber: string;
+  password: string;
+  category: string;
+  description: string;
+  service: string;
+  buildingName: string;
+  areaName: string;
+  subAreaName: string;
+  city: string;
+  state: string;
+  pincode: string;
+  admin: boolean;
+  status: 'registered';
+  authorizedPersons: AuthorizedPerson[];
+  categoryServices: CategoryService[];
+  profileImage: string;
+  aadharFront: string;
+  aadharBack: string;
+  panCard: string;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+  __v: number;
+}
+
+interface ReviewerUser {
+  _id: string;
+  username: string;
+  phoneNumber: string;
+  role: 'user';
+  buildingName: string;
+  areaName: string;
+  subAreaName: string;
+  city: string;
+  state: string;
+  pincode: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  profileImage: string;
+}
+
+type Reviewer = ReviewerTechnician | ReviewerUser;
+
 interface Review {
   _id: string;
-  userId?: string;
-  technicianId?: string;
-  role: 'user' | 'technician';
+  technicianId?: string;     // Only present when role is 'technician'
+  userId?: string;           // Only present when role is 'user'
+  role: 'technician' | 'user';
   rating: number;
   comment: string;
   createdAt: string;
-  user?: {
-    username: string;
-  };
-  technician?: {
-    username: string;
-  };
+  updatedAt: string;
+  __v: number;
+  reviewer: Reviewer;
 }
 
+interface ApiResponse {
+  success: boolean;
+  message: string;
+  result: Review[];
+}
 const CompanyReviews: React.FC = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +102,7 @@ const CompanyReviews: React.FC = () => {
       setLoading(true);
       setError(null);
       
-      const response = await getCompanyReviews();
+      const response = await getCompanyReviews({}) as ApiResponse;
       
       if (response?.success && Array.isArray(response.result)) {
         const currentDate = new Date();
@@ -107,8 +170,8 @@ const CompanyReviews: React.FC = () => {
     const matchesRating = filterRating ? review.rating === filterRating : true;
     const matchesSearch = searchTerm ? 
       review.comment.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (review.user?.username?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (review.technician?.username?.toLowerCase().includes(searchTerm.toLowerCase()))
+      (review.reviewer?.username?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (review.reviewer?.username?.toLowerCase().includes(searchTerm.toLowerCase()))
       : true;
     return matchesRating && matchesSearch;
   });
@@ -305,9 +368,17 @@ const CompanyReviews: React.FC = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-4">
                       <div className="flex-shrink-0">
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
-                          <User className="w-6 h-6 text-white" />
-                        </div>
+                        {review.reviewer?.profileImage ? (
+                          <img
+                            src={review.reviewer.profileImage}
+                            alt={review.reviewer.username}
+                            className="w-12 h-12 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                            <User className="w-6 h-6 text-white" />
+                          </div>
+                        )}
                       </div>
                       
                       <div className="flex-1 min-w-0">
