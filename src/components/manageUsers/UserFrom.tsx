@@ -661,7 +661,7 @@ const UserForm: React.FC = () => {
                     value={formData.subAreaName}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 disabled:bg-gray-100"
-                    required
+                    // required
                     disabled={!selectedArea}
                     aria-describedby={errors.subAreaName ? "subAreaName-error" : undefined}
                   >
