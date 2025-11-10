@@ -39,9 +39,32 @@ interface PincodeData {
 interface SubscriptionPlan {
   _id: string;
   name: string;
+  originalPrice: number | null;
+  discount: string;
+  discountPercentage: number | null;
   price: number;
-  finalPrice: number;
+  gstPercentage: number;
   gst: number;
+  finalPrice: number;
+  validity: number | null;
+  leads: number | null;
+  features: {
+    name: string;
+    included: boolean;
+  }[];
+  fullFeatures: {
+    text: string;
+  }[];
+  isPopular: boolean;
+  isActive: boolean;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+  __v: number;
+  commisionAmount: number;
+  endUpPrice: number | null;
+  executiveCommissionAmount: number;
+  refExecutiveCommisionAmount: number;
+  referalCommisionAmount: number;
 }
 
 interface Technician {
@@ -857,7 +880,7 @@ const UpdateTechnician: React.FC = () => {
                       Select Subscription Plan
                     </option>
                     {subscriptionPlans
-                      .filter((plan) => ['Economy Plan', 'Free Plan'].includes(plan.name))
+                      .filter((plan) => plan.isActive)
                       .map((plan) => (
                         <option key={plan._id} value={plan._id}>
                           {plan.name} - ₹{plan.finalPrice} ({plan.price} + {plan.gst} GST)

@@ -1,7 +1,12 @@
 // AddTechnician.tsx
 import React, { useState, useCallback, useEffect } from "react";
 import { ArrowLeft, Eye, EyeOff, Plus } from "lucide-react";
-import { getAllCategories, getAllPincodes, getPlans, registerTechByAdmin } from "../../api/apiMethods";
+import {
+  getAllCategories,
+  getAllPincodes,
+  getPlans,
+  registerTechByAdmin,
+} from "../../api/apiMethods";
 import { useNavigate } from "react-router-dom";
 
 interface TechnicianData {
@@ -33,15 +38,42 @@ interface PincodeData {
   code: string;
   city: string;
   state: string;
-  areas: { _id: string; name: string; subAreas: { _id: string; name: string }[] }[];
+  areas: {
+    _id: string;
+    name: string;
+    subAreas: { _id: string; name: string }[];
+  }[];
 }
 
 interface SubscriptionPlan {
   _id: string;
   name: string;
+  originalPrice: number | null;
+  discount: string;
+  discountPercentage: number | null;
   price: number;
-  finalPrice: number;
+  gstPercentage: number;
   gst: number;
+  finalPrice: number;
+  validity: number | null;
+  leads: number | null;
+  features: {
+    name: string;
+    included: boolean;
+  }[];
+  fullFeatures: {
+    text: string;
+  }[];
+  isPopular: boolean;
+  isActive: boolean;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+  __v: number;
+  commisionAmount: number;
+  endUpPrice: number | null;
+  executiveCommissionAmount: number;
+  refExecutiveCommisionAmount: number;
+  referalCommisionAmount: number;
 }
 
 interface FormErrors {
@@ -81,16 +113,34 @@ const allowNameKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
   const k = e.key;
   const allowed =
     /^[A-Za-z ]$/.test(k) ||
-    ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Home", "End"].includes(k);
+    [
+      "Backspace",
+      "Delete",
+      "ArrowLeft",
+      "ArrowRight",
+      "Tab",
+      "Home",
+      "End",
+    ].includes(k);
   if (!allowed) e.preventDefault();
 };
 
-const allowDigitKey = (e: React.KeyboardEvent<HTMLInputElement>, maxLen = 10) => {
+const allowDigitKey = (
+  e: React.KeyboardEvent<HTMLInputElement>,
+  maxLen = 10
+) => {
   if (isCtrlCombo(e)) return;
   const k = e.key;
   const target = e.target as HTMLInputElement;
-  const isNav =
-    ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Home", "End"].includes(k);
+  const isNav = [
+    "Backspace",
+    "Delete",
+    "ArrowLeft",
+    "ArrowRight",
+    "Tab",
+    "Home",
+    "End",
+  ].includes(k);
   if (isNav) return;
   if (!/^[0-9]$/.test(k)) {
     e.preventDefault();
@@ -100,12 +150,22 @@ const allowDigitKey = (e: React.KeyboardEvent<HTMLInputElement>, maxLen = 10) =>
   if (target.value.length - selection >= maxLen) e.preventDefault();
 };
 
-const allowPasswordKey = (e: React.KeyboardEvent<HTMLInputElement>, maxLen = 10) => {
+const allowPasswordKey = (
+  e: React.KeyboardEvent<HTMLInputElement>,
+  maxLen = 10
+) => {
   if (isCtrlCombo(e)) return;
   const k = e.key;
   const target = e.target as HTMLInputElement;
-  const isNav =
-    ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Home", "End"].includes(k);
+  const isNav = [
+    "Backspace",
+    "Delete",
+    "ArrowLeft",
+    "ArrowRight",
+    "Tab",
+    "Home",
+    "End",
+  ].includes(k);
   if (isNav) return;
   if (!/^[A-Za-z0-9@_#]$/.test(k)) {
     e.preventDefault();
@@ -117,7 +177,8 @@ const allowPasswordKey = (e: React.KeyboardEvent<HTMLInputElement>, maxLen = 10)
 
 const sanitizeName = (v: string) => v.replace(/[^A-Za-z ]+/g, "");
 const sanitizePhone = (v: string) => v.replace(/[^0-9]+/g, "").slice(0, 10);
-const sanitizePassword = (v: string) => v.replace(/[^A-Za-z0-9@_#]+/g, "").slice(0, 10);
+const sanitizePassword = (v: string) =>
+  v.replace(/[^A-Za-z0-9@_#]+/g, "").slice(0, 10);
 
 const initialFormState: TechnicianData = {
   username: "",
@@ -187,21 +248,28 @@ const AddTechnician: React.FC = () => {
     { _id: string; name: string }[]
   >([]);
   const [showPassword, setShowPassword] = useState(false);
-  const [subscriptionPlans, setSubscriptionPlans] = useState<SubscriptionPlan[]>([]);
+  const [subscriptionPlans, setSubscriptionPlans] = useState<
+    SubscriptionPlan[]
+  >([]);
   const [planLoading, setPlanLoading] = useState<boolean>(false);
   const [planError, setPlanError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [previews, setPreviews] = useState({
-    profileImage: '',
-    aadharFront: '',
-    aadharBack: '',
-    panCard: '',
-    voterCard: '',
-    auth1Photo: '',
-    auth2Photo: '',
+    profileImage: "",
+    aadharFront: "",
+    aadharBack: "",
+    panCard: "",
+    voterCard: "",
+    auth1Photo: "",
+    auth2Photo: "",
   });
 
-  const steps = ["Personal Information", "Address Details", "Service & Subscription", "Documents"];
+  const steps = [
+    "Personal Information",
+    "Address Details",
+    "Service & Subscription",
+    "Documents",
+  ];
 
   useEffect(() => {
     getAllPincodes()
@@ -287,7 +355,11 @@ const AddTechnician: React.FC = () => {
         (a) => a.name === formData.areaName
       );
       if (selectedArea && selectedArea.subAreas) {
-        setSubAreaOptions(selectedArea.subAreas.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())));
+        setSubAreaOptions(
+          selectedArea.subAreas.sort((a, b) =>
+            a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+          )
+        );
       } else {
         setSubAreaOptions([]);
       }
@@ -312,7 +384,11 @@ const AddTechnician: React.FC = () => {
       let value: string = (e.target as HTMLInputElement).value;
 
       if (name === "username") value = sanitizeName(value);
-      if (name === "phoneNumber" || name === "authorizedPerson1Phone" || name === "authorizedPerson2Phone")
+      if (
+        name === "phoneNumber" ||
+        name === "authorizedPerson1Phone" ||
+        name === "authorizedPerson2Phone"
+      )
         value = sanitizePhone(value);
       if (name === "password") value = sanitizePassword(value);
 
@@ -323,41 +399,58 @@ const AddTechnician: React.FC = () => {
     []
   );
 
-  const handlePaste = useCallback((e: React.ClipboardEvent<HTMLInputElement>) => {
-    const input = e.target as HTMLInputElement;
-    const name = input.name as keyof TechnicianData;
-    const pasted = e.clipboardData.getData("text");
-    let clean = pasted;
-    if (name === "username") clean = sanitizeName(pasted);
-    if (name === "phoneNumber" || name === "authorizedPerson1Phone" || name === "authorizedPerson2Phone")
-      clean = sanitizePhone(pasted);
-    if (name === "password") clean = sanitizePassword(pasted);
-    e.preventDefault();
-    setFormData((prev) => ({ ...prev, [name]: clean as any }));
-  }, []);
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent<HTMLInputElement>) => {
+      const input = e.target as HTMLInputElement;
+      const name = input.name as keyof TechnicianData;
+      const pasted = e.clipboardData.getData("text");
+      let clean = pasted;
+      if (name === "username") clean = sanitizeName(pasted);
+      if (
+        name === "phoneNumber" ||
+        name === "authorizedPerson1Phone" ||
+        name === "authorizedPerson2Phone"
+      )
+        clean = sanitizePhone(pasted);
+      if (name === "password") clean = sanitizePassword(pasted);
+      e.preventDefault();
+      setFormData((prev) => ({ ...prev, [name]: clean as any }));
+    },
+    []
+  );
 
-  const handleFileChange = useCallback((name: keyof TechnicianData, file: File | null) => {
-    setFormData((prev) => ({ ...prev, [name]: file }));
-    setErrors((prev) => ({ ...prev, [name]: undefined }));
+  const handleFileChange = useCallback(
+    (name: keyof TechnicianData, file: File | null) => {
+      setFormData((prev) => ({ ...prev, [name]: file }));
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
 
-    const prevUrl = previews[name as keyof typeof previews];
-    if (prevUrl) {
-      URL.revokeObjectURL(prevUrl);
-    }
+      const prevUrl = previews[name as keyof typeof previews];
+      if (prevUrl) {
+        URL.revokeObjectURL(prevUrl);
+      }
 
-    if (file) {
-      const previewUrl = URL.createObjectURL(file);
-      setPreviews((prev) => ({ ...prev, [name as keyof typeof previews]: previewUrl }));
-    } else {
-      setPreviews((prev) => ({ ...prev, [name as keyof typeof previews]: '' }));
-    }
-  }, [previews]);
+      if (file) {
+        const previewUrl = URL.createObjectURL(file);
+        setPreviews((prev) => ({
+          ...prev,
+          [name as keyof typeof previews]: previewUrl,
+        }));
+      } else {
+        setPreviews((prev) => ({
+          ...prev,
+          [name as keyof typeof previews]: "",
+        }));
+      }
+    },
+    [previews]
+  );
 
   const scrollToFirstError = useCallback((err: FormErrors) => {
     const firstKey = fieldOrder.find((k) => err[k]);
     if (!firstKey) return;
     const el = document.getElementById(firstKey);
-    if (el && el.scrollIntoView) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (el && el.scrollIntoView)
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
   }, []);
 
   const validateCurrentStep = useCallback((): FormErrors => {
@@ -365,12 +458,16 @@ const AddTechnician: React.FC = () => {
     const e: FormErrors = {};
     switch (currentStep) {
       case 1:
-        if (!f.username.trim() || !NAME_REGEX.test(f.username.trim())) e.username = "Only alphabets allowed";
-        if (!PHONE_REGEX.test(f.phoneNumber)) e.phoneNumber = "Enter 10-digit number";
-        if (!PASS_REGEX.test(f.password)) e.password = "6–10 chars: A–Z, 0–9, @ _ #";
+        if (!f.username.trim() || !NAME_REGEX.test(f.username.trim()))
+          e.username = "Only alphabets allowed";
+        if (!PHONE_REGEX.test(f.phoneNumber))
+          e.phoneNumber = "Enter 10-digit number";
+        if (!PASS_REGEX.test(f.password))
+          e.password = "6–10 chars: A–Z, 0–9, @ _ #";
         break;
       case 2:
-        if (!f.buildingName.trim()) e.buildingName = "Building name is required";
+        if (!f.buildingName.trim())
+          e.buildingName = "Building name is required";
         if (!f.pincode) e.pincode = "Pincode is required";
         if (!f.areaName) e.areaName = "Area is required";
         if (!f.subAreaName) e.subAreaName = "Sub Area is required";
@@ -379,16 +476,19 @@ const AddTechnician: React.FC = () => {
         break;
       case 3:
         if (!f.category) e.category = "Service category is required";
-        if (!f.subscriptionId) e.subscriptionId = "Subscription plan is required";
+        if (!f.subscriptionId)
+          e.subscriptionId = "Subscription plan is required";
         break;
       case 4:
         if (!f.profileImage) e.profileImage = "Profile image is required";
         if (!f.aadharFront) e.aadharFront = "Aadhar front image is required";
         if (!f.aadharBack) e.aadharBack = "Aadhar back image is required";
         if (!f.panCard && !f.voterCard) e.panCard = "Provide Pan or Voter card";
-        if (!PHONE_REGEX.test(f.authorizedPerson1Phone)) e.authorizedPerson1Phone = "Enter 10-digit number";
+        if (!PHONE_REGEX.test(f.authorizedPerson1Phone))
+          e.authorizedPerson1Phone = "Enter 10-digit number";
         if (!f.auth1Photo) e.auth1Photo = "Photo is required";
-        if (!PHONE_REGEX.test(f.authorizedPerson2Phone)) e.authorizedPerson2Phone = "Enter 10-digit number";
+        if (!PHONE_REGEX.test(f.authorizedPerson2Phone))
+          e.authorizedPerson2Phone = "Enter 10-digit number";
         if (!f.auth2Photo) e.auth2Photo = "Photo is required";
         break;
     }
@@ -412,10 +512,13 @@ const AddTechnician: React.FC = () => {
   const validateForm = useCallback((): FormErrors => {
     const f = formData;
     const e: FormErrors = {};
-    if (!f.username.trim() || !NAME_REGEX.test(f.username.trim())) e.username = "Only alphabets allowed";
+    if (!f.username.trim() || !NAME_REGEX.test(f.username.trim()))
+      e.username = "Only alphabets allowed";
     if (!f.category) e.category = "Service category is required";
-    if (!PHONE_REGEX.test(f.phoneNumber)) e.phoneNumber = "Enter 10-digit number";
-    if (!PASS_REGEX.test(f.password)) e.password = "6–10 chars: A–Z, 0–9, @ _ #";
+    if (!PHONE_REGEX.test(f.phoneNumber))
+      e.phoneNumber = "Enter 10-digit number";
+    if (!PASS_REGEX.test(f.password))
+      e.password = "6–10 chars: A–Z, 0–9, @ _ #";
     if (!f.buildingName.trim()) e.buildingName = "Building name is required";
     if (!f.pincode || f.pincode.length !== 6) e.pincode = "Pincode is required";
     if (!f.areaName) e.areaName = "Area is required";
@@ -423,9 +526,17 @@ const AddTechnician: React.FC = () => {
     if (!f.city) e.city = "City is required";
     if (!f.state) e.state = "State is required";
     if (!f.subscriptionId) e.subscriptionId = "Subscription plan is required";
-    if (!f.authorizedPerson1Phone || !PHONE_REGEX.test(f.authorizedPerson1Phone)) e.authorizedPerson1Phone = "Enter 10-digit number";
+    if (
+      !f.authorizedPerson1Phone ||
+      !PHONE_REGEX.test(f.authorizedPerson1Phone)
+    )
+      e.authorizedPerson1Phone = "Enter 10-digit number";
     if (!f.auth1Photo) e.auth1Photo = "Photo is required";
-    if (!f.authorizedPerson2Phone || !PHONE_REGEX.test(f.authorizedPerson2Phone)) e.authorizedPerson2Phone = "Enter 10-digit number";
+    if (
+      !f.authorizedPerson2Phone ||
+      !PHONE_REGEX.test(f.authorizedPerson2Phone)
+    )
+      e.authorizedPerson2Phone = "Enter 10-digit number";
     if (!f.auth2Photo) e.auth2Photo = "Photo is required";
     if (!f.aadharFront) e.aadharFront = "Aadhar front image is required";
     if (!f.aadharBack) e.aadharBack = "Aadhar back image is required";
@@ -440,9 +551,20 @@ const AddTechnician: React.FC = () => {
     if (Object.keys(validationErrors).length > 0) {
       scrollToFirstError(validationErrors);
       // Jump to step with errors if any
-      if (validationErrors.username || validationErrors.phoneNumber || validationErrors.password) {
+      if (
+        validationErrors.username ||
+        validationErrors.phoneNumber ||
+        validationErrors.password
+      ) {
         setCurrentStep(1);
-      } else if (validationErrors.buildingName || validationErrors.pincode || validationErrors.areaName || validationErrors.subAreaName || validationErrors.city || validationErrors.state) {
+      } else if (
+        validationErrors.buildingName ||
+        validationErrors.pincode ||
+        validationErrors.areaName ||
+        validationErrors.subAreaName ||
+        validationErrors.city ||
+        validationErrors.state
+      ) {
         setCurrentStep(2);
       } else if (validationErrors.category || validationErrors.subscriptionId) {
         setCurrentStep(3);
@@ -467,11 +589,17 @@ const AddTechnician: React.FC = () => {
       createFormData.append("pincode", formData.pincode);
       createFormData.append("subscriptionId", formData.subscriptionId);
       createFormData.append("description", formData.description);
-      createFormData.append("authorizedPersons[0][phone]", formData.authorizedPerson1Phone);
+      createFormData.append(
+        "authorizedPersons[0][phone]",
+        formData.authorizedPerson1Phone
+      );
       if (formData.auth1Photo) {
         createFormData.append("auth1Photo", formData.auth1Photo);
       }
-      createFormData.append("authorizedPersons[1][phone]", formData.authorizedPerson2Phone);
+      createFormData.append(
+        "authorizedPersons[1][phone]",
+        formData.authorizedPerson2Phone
+      );
       if (formData.auth2Photo) {
         createFormData.append("auth2Photo", formData.auth2Photo);
       }
@@ -524,7 +652,8 @@ const AddTechnician: React.FC = () => {
     inputMode: "numeric" as const,
     pattern: "[0-9]{10}",
     maxLength: 10,
-    onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => allowDigitKey(e, 10),
+    onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) =>
+      allowDigitKey(e, 10),
     onPaste: handlePaste,
     placeholder: "Enter 10-digit mobile number",
   };
@@ -533,7 +662,8 @@ const AddTechnician: React.FC = () => {
     pattern: "[A-Za-z0-9@_#]{6,10}",
     minLength: 6,
     maxLength: 10,
-    onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => allowPasswordKey(e, 10),
+    onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) =>
+      allowPasswordKey(e, 10),
     onPaste: handlePaste,
     placeholder: "6–10 (A–Z, 0–9, @ _ #)",
   };
@@ -586,7 +716,10 @@ const AddTechnician: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="p-6 space-y-6" noValidate>
             {errors.general && (
-              <div id="general" className="text-red-600 text-sm text-center bg-red-50 p-2 rounded">
+              <div
+                id="general"
+                className="text-red-600 text-sm text-center bg-red-50 p-2 rounded"
+              >
                 {errors.general}
               </div>
             )}
@@ -612,7 +745,10 @@ const AddTechnician: React.FC = () => {
                       }
                     />
                     {errors.username && (
-                      <div id="username-error" className="text-red-500 text-xs mt-1">
+                      <div
+                        id="username-error"
+                        className="text-red-500 text-xs mt-1"
+                      >
                         {errors.username}
                       </div>
                     )}
@@ -641,7 +777,10 @@ const AddTechnician: React.FC = () => {
                       />
                     </div>
                     {errors.phoneNumber && (
-                      <div id="phoneNumber-error" className="text-red-500 text-xs mt-1">
+                      <div
+                        id="phoneNumber-error"
+                        className="text-red-500 text-xs mt-1"
+                      >
                         {errors.phoneNumber}
                       </div>
                     )}
@@ -678,7 +817,10 @@ const AddTechnician: React.FC = () => {
                     </span>
                   </div>
                   {errors.password && (
-                    <div id="password-error" className="text-red-500 text-xs mt-1">
+                    <div
+                      id="password-error"
+                      className="text-red-500 text-xs mt-1"
+                    >
                       {errors.password}
                     </div>
                   )}
@@ -707,7 +849,10 @@ const AddTechnician: React.FC = () => {
                       }
                     />
                     {errors.buildingName && (
-                      <div id="buildingName-error" className="text-red-500 text-xs mt-1">
+                      <div
+                        id="buildingName-error"
+                        className="text-red-500 text-xs mt-1"
+                      >
                         {errors.buildingName}
                       </div>
                     )}
@@ -757,7 +902,10 @@ const AddTechnician: React.FC = () => {
                         ))}
                     </select>
                     {errors.pincode && (
-                      <div id="pincode-error" className="text-red-500 text-xs mt-1">
+                      <div
+                        id="pincode-error"
+                        className="text-red-500 text-xs mt-1"
+                      >
                         {errors.pincode}
                       </div>
                     )}
@@ -789,7 +937,10 @@ const AddTechnician: React.FC = () => {
                       ))}
                     </select>
                     {errors.areaName && (
-                      <div id="areaName-error" className="text-red-500 text-xs mt-1">
+                      <div
+                        id="areaName-error"
+                        className="text-red-500 text-xs mt-1"
+                      >
                         {errors.areaName}
                       </div>
                     )}
@@ -811,15 +962,17 @@ const AddTechnician: React.FC = () => {
                       disabled={!formData.areaName}
                     >
                       <option value="">Select Sub Area</option>
-                      {subAreaOptions
-                        .map((a) => (
-                          <option key={a._id} value={a.name}>
-                            {a.name}
-                          </option>
-                        ))}
+                      {subAreaOptions.map((a) => (
+                        <option key={a._id} value={a.name}>
+                          {a.name}
+                        </option>
+                      ))}
                     </select>
                     {errors.subAreaName && (
-                      <div id="subAreaName-error" className="text-red-500 text-xs mt-1">
+                      <div
+                        id="subAreaName-error"
+                        className="text-red-500 text-xs mt-1"
+                      >
                         {errors.subAreaName}
                       </div>
                     )}
@@ -846,19 +999,24 @@ const AddTechnician: React.FC = () => {
                         pincodeData.find((p) => p.code === selectedPincode) && (
                           <option
                             value={
-                              pincodeData.find((p) => p.code === selectedPincode)
-                                ?.city
+                              pincodeData.find(
+                                (p) => p.code === selectedPincode
+                              )?.city
                             }
                           >
                             {
-                              pincodeData.find((p) => p.code === selectedPincode)
-                                ?.city
+                              pincodeData.find(
+                                (p) => p.code === selectedPincode
+                              )?.city
                             }
                           </option>
                         )}
                     </select>
                     {errors.city && (
-                      <div id="city-error" className="text-red-500 text-xs mt-1">
+                      <div
+                        id="city-error"
+                        className="text-red-500 text-xs mt-1"
+                      >
                         {errors.city}
                       </div>
                     )}
@@ -878,7 +1036,9 @@ const AddTechnician: React.FC = () => {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 disabled:bg-gray-100"
                       required
                       disabled={!selectedPincode}
-                      aria-describedby={errors.state ? "state-error" : undefined}
+                      aria-describedby={
+                        errors.state ? "state-error" : undefined
+                      }
                     >
                       <option value="" disabled>
                         Select State
@@ -887,19 +1047,24 @@ const AddTechnician: React.FC = () => {
                         pincodeData.find((p) => p.code === selectedPincode) && (
                           <option
                             value={
-                              pincodeData.find((p) => p.code === selectedPincode)
-                                ?.state
+                              pincodeData.find(
+                                (p) => p.code === selectedPincode
+                              )?.state
                             }
                           >
                             {
-                              pincodeData.find((p) => p.code === selectedPincode)
-                                ?.state
+                              pincodeData.find(
+                                (p) => p.code === selectedPincode
+                              )?.state
                             }
                           </option>
                         )}
                     </select>
                     {errors.state && (
-                      <div id="state-error" className="text-red-500 text-xs mt-1">
+                      <div
+                        id="state-error"
+                        className="text-red-500 text-xs mt-1"
+                      >
                         {errors.state}
                       </div>
                     )}
@@ -927,10 +1092,16 @@ const AddTechnician: React.FC = () => {
                     }
                   >
                     <option value="" disabled>
-                      {catLoading ? "Loading categories..." : "Select a category"}
+                      {catLoading
+                        ? "Loading categories..."
+                        : "Select a category"}
                     </option>
                     {apiCategories
-                      .sort((a, b) => a.category_name.toLowerCase().localeCompare(b.category_name.toLowerCase()))
+                      .sort((a, b) =>
+                        a.category_name
+                          .toLowerCase()
+                          .localeCompare(b.category_name.toLowerCase())
+                      )
                       .map((item) => (
                         <option key={item._id} value={item._id}>
                           {item.category_name}
@@ -938,12 +1109,13 @@ const AddTechnician: React.FC = () => {
                       ))}
                   </select>
                   {catError && (
-                    <div className="text-red-500 text-xs mt-1">
-                      {catError}
-                    </div>
+                    <div className="text-red-500 text-xs mt-1">{catError}</div>
                   )}
                   {errors.category && (
-                    <div id="category-error" className="text-red-500 text-xs mt-1">
+                    <div
+                      id="category-error"
+                      className="text-red-500 text-xs mt-1"
+                    >
                       {errors.category}
                     </div>
                   )}
@@ -973,20 +1145,22 @@ const AddTechnician: React.FC = () => {
                         : "Select Subscription Plan"}
                     </option>
                     {subscriptionPlans
-                      .filter((plan) => ['Economy Plan', 'Free Plan'].includes(plan.name))
+                      .filter((plan) => plan.isActive)
                       .map((plan) => (
                         <option key={plan._id} value={plan._id}>
-                          {plan.name} - ₹{plan.finalPrice} ({plan.price} + {plan.gst} GST)
+                          {plan.name} - ₹{plan.finalPrice} ({plan.price} +{" "}
+                          {plan.gst} GST)
                         </option>
                       ))}
                   </select>
                   {planError && (
-                    <div className="text-red-500 text-xs mt-1">
-                      {planError}
-                    </div>
+                    <div className="text-red-500 text-xs mt-1">{planError}</div>
                   )}
                   {errors.subscriptionId && (
-                    <div id="subscriptionId-error" className="text-red-500 text-xs mt-1">
+                    <div
+                      id="subscriptionId-error"
+                      className="text-red-500 text-xs mt-1"
+                    >
                       {errors.subscriptionId}
                     </div>
                   )}
@@ -1004,12 +1178,19 @@ const AddTechnician: React.FC = () => {
                     id="profileImage"
                     type="file"
                     accept="image/*"
-                    onChange={(e) => handleFileChange("profileImage", e.target.files?.[0] || null)}
+                    onChange={(e) =>
+                      handleFileChange(
+                        "profileImage",
+                        e.target.files?.[0] || null
+                      )
+                    }
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     required
                   />
                   {formData.profileImage && (
-                    <p className="text-sm text-gray-600">Selected: {formData.profileImage.name}</p>
+                    <p className="text-sm text-gray-600">
+                      Selected: {formData.profileImage.name}
+                    </p>
                   )}
                   {previews.profileImage && (
                     <img
@@ -1019,7 +1200,10 @@ const AddTechnician: React.FC = () => {
                     />
                   )}
                   {errors.profileImage && (
-                    <div id="profileImage-error" className="text-red-500 text-xs mt-1">
+                    <div
+                      id="profileImage-error"
+                      className="text-red-500 text-xs mt-1"
+                    >
                       {errors.profileImage}
                     </div>
                   )}
@@ -1034,12 +1218,19 @@ const AddTechnician: React.FC = () => {
                       id="aadharFront"
                       type="file"
                       accept="image/*"
-                      onChange={(e) => handleFileChange("aadharFront", e.target.files?.[0] || null)}
+                      onChange={(e) =>
+                        handleFileChange(
+                          "aadharFront",
+                          e.target.files?.[0] || null
+                        )
+                      }
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                       required
                     />
                     {formData.aadharFront && (
-                      <p className="text-sm text-gray-600">Selected: {formData.aadharFront.name}</p>
+                      <p className="text-sm text-gray-600">
+                        Selected: {formData.aadharFront.name}
+                      </p>
                     )}
                     {previews.aadharFront && (
                       <img
@@ -1049,7 +1240,10 @@ const AddTechnician: React.FC = () => {
                       />
                     )}
                     {errors.aadharFront && (
-                      <div id="aadharFront-error" className="text-red-500 text-xs mt-1">
+                      <div
+                        id="aadharFront-error"
+                        className="text-red-500 text-xs mt-1"
+                      >
                         {errors.aadharFront}
                       </div>
                     )}
@@ -1063,12 +1257,19 @@ const AddTechnician: React.FC = () => {
                       id="aadharBack"
                       type="file"
                       accept="image/*"
-                      onChange={(e) => handleFileChange("aadharBack", e.target.files?.[0] || null)}
+                      onChange={(e) =>
+                        handleFileChange(
+                          "aadharBack",
+                          e.target.files?.[0] || null
+                        )
+                      }
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                       required
                     />
                     {formData.aadharBack && (
-                      <p className="text-sm text-gray-600">Selected: {formData.aadharBack.name}</p>
+                      <p className="text-sm text-gray-600">
+                        Selected: {formData.aadharBack.name}
+                      </p>
                     )}
                     {previews.aadharBack && (
                       <img
@@ -1078,7 +1279,10 @@ const AddTechnician: React.FC = () => {
                       />
                     )}
                     {errors.aadharBack && (
-                      <div id="aadharBack-error" className="text-red-500 text-xs mt-1">
+                      <div
+                        id="aadharBack-error"
+                        className="text-red-500 text-xs mt-1"
+                      >
                         {errors.aadharBack}
                       </div>
                     )}
@@ -1088,17 +1292,22 @@ const AddTechnician: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">
-                      Pan Card (At least one of Pan or Voter Card required) <span className="text-red-500">*</span>
+                      Pan Card (At least one of Pan or Voter Card required){" "}
+                      <span className="text-red-500">*</span>
                     </label>
                     <input
                       id="panCard"
                       type="file"
                       accept="image/*"
-                      onChange={(e) => handleFileChange("panCard", e.target.files?.[0] || null)}
+                      onChange={(e) =>
+                        handleFileChange("panCard", e.target.files?.[0] || null)
+                      }
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     />
                     {formData.panCard && (
-                      <p className="text-sm text-gray-600">Selected: {formData.panCard.name}</p>
+                      <p className="text-sm text-gray-600">
+                        Selected: {formData.panCard.name}
+                      </p>
                     )}
                     {previews.panCard && (
                       <img
@@ -1108,7 +1317,10 @@ const AddTechnician: React.FC = () => {
                       />
                     )}
                     {errors.panCard && (
-                      <div id="panCard-error" className="text-red-500 text-xs mt-1">
+                      <div
+                        id="panCard-error"
+                        className="text-red-500 text-xs mt-1"
+                      >
                         {errors.panCard}
                       </div>
                     )}
@@ -1122,11 +1334,18 @@ const AddTechnician: React.FC = () => {
                       id="voterCard"
                       type="file"
                       accept="image/*"
-                      onChange={(e) => handleFileChange("voterCard", e.target.files?.[0] || null)}
+                      onChange={(e) =>
+                        handleFileChange(
+                          "voterCard",
+                          e.target.files?.[0] || null
+                        )
+                      }
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     />
                     {formData.voterCard && (
-                      <p className="text-sm text-gray-600">Selected: {formData.voterCard.name}</p>
+                      <p className="text-sm text-gray-600">
+                        Selected: {formData.voterCard.name}
+                      </p>
                     )}
                     {previews.voterCard && (
                       <img
@@ -1141,7 +1360,8 @@ const AddTechnician: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">
-                      Authorized Person 1 Phone <span className="text-red-500">*</span>
+                      Authorized Person 1 Phone{" "}
+                      <span className="text-red-500">*</span>
                     </label>
                     <div className="flex">
                       <span className="inline-flex items-center px-3 py-3 border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm rounded-l-lg">
@@ -1157,12 +1377,17 @@ const AddTechnician: React.FC = () => {
                         className="flex-1 px-4 py-3 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                         required
                         aria-describedby={
-                          errors.authorizedPerson1Phone ? "authorizedPerson1Phone-error" : undefined
+                          errors.authorizedPerson1Phone
+                            ? "authorizedPerson1Phone-error"
+                            : undefined
                         }
                       />
                     </div>
                     {errors.authorizedPerson1Phone && (
-                      <div id="authorizedPerson1Phone-error" className="text-red-500 text-xs mt-1">
+                      <div
+                        id="authorizedPerson1Phone-error"
+                        className="text-red-500 text-xs mt-1"
+                      >
                         {errors.authorizedPerson1Phone}
                       </div>
                     )}
@@ -1170,18 +1395,26 @@ const AddTechnician: React.FC = () => {
 
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">
-                      Authorized Person 1 Photo <span className="text-red-500">*</span>
+                      Authorized Person 1 Photo{" "}
+                      <span className="text-red-500">*</span>
                     </label>
                     <input
                       id="auth1Photo"
                       type="file"
                       accept="image/*"
-                      onChange={(e) => handleFileChange("auth1Photo", e.target.files?.[0] || null)}
+                      onChange={(e) =>
+                        handleFileChange(
+                          "auth1Photo",
+                          e.target.files?.[0] || null
+                        )
+                      }
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                       required
                     />
                     {formData.auth1Photo && (
-                      <p className="text-sm text-gray-600">Selected: {formData.auth1Photo.name}</p>
+                      <p className="text-sm text-gray-600">
+                        Selected: {formData.auth1Photo.name}
+                      </p>
                     )}
                     {previews.auth1Photo && (
                       <img
@@ -1191,7 +1424,10 @@ const AddTechnician: React.FC = () => {
                       />
                     )}
                     {errors.auth1Photo && (
-                      <div id="auth1Photo-error" className="text-red-500 text-xs mt-1">
+                      <div
+                        id="auth1Photo-error"
+                        className="text-red-500 text-xs mt-1"
+                      >
                         {errors.auth1Photo}
                       </div>
                     )}
@@ -1201,7 +1437,8 @@ const AddTechnician: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">
-                      Authorized Person 2 Phone <span className="text-red-500">*</span>
+                      Authorized Person 2 Phone{" "}
+                      <span className="text-red-500">*</span>
                     </label>
                     <div className="flex">
                       <span className="inline-flex items-center px-3 py-3 border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm rounded-l-lg">
@@ -1217,12 +1454,17 @@ const AddTechnician: React.FC = () => {
                         className="flex-1 px-4 py-3 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                         required
                         aria-describedby={
-                          errors.authorizedPerson2Phone ? "authorizedPerson2Phone-error" : undefined
+                          errors.authorizedPerson2Phone
+                            ? "authorizedPerson2Phone-error"
+                            : undefined
                         }
                       />
                     </div>
                     {errors.authorizedPerson2Phone && (
-                      <div id="authorizedPerson2Phone-error" className="text-red-500 text-xs mt-1">
+                      <div
+                        id="authorizedPerson2Phone-error"
+                        className="text-red-500 text-xs mt-1"
+                      >
                         {errors.authorizedPerson2Phone}
                       </div>
                     )}
@@ -1230,18 +1472,26 @@ const AddTechnician: React.FC = () => {
 
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">
-                      Authorized Person 2 Photo <span className="text-red-500">*</span>
+                      Authorized Person 2 Photo{" "}
+                      <span className="text-red-500">*</span>
                     </label>
                     <input
                       id="auth2Photo"
                       type="file"
                       accept="image/*"
-                      onChange={(e) => handleFileChange("auth2Photo", e.target.files?.[0] || null)}
+                      onChange={(e) =>
+                        handleFileChange(
+                          "auth2Photo",
+                          e.target.files?.[0] || null
+                        )
+                      }
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                       required
                     />
                     {formData.auth2Photo && (
-                      <p className="text-sm text-gray-600">Selected: {formData.auth2Photo.name}</p>
+                      <p className="text-sm text-gray-600">
+                        Selected: {formData.auth2Photo.name}
+                      </p>
                     )}
                     {previews.auth2Photo && (
                       <img
@@ -1251,7 +1501,10 @@ const AddTechnician: React.FC = () => {
                       />
                     )}
                     {errors.auth2Photo && (
-                      <div id="auth2Photo-error" className="text-red-500 text-xs mt-1">
+                      <div
+                        id="auth2Photo-error"
+                        className="text-red-500 text-xs mt-1"
+                      >
                         {errors.auth2Photo}
                       </div>
                     )}
@@ -1265,7 +1518,11 @@ const AddTechnician: React.FC = () => {
               <button
                 type="button"
                 onClick={() => {
-                  if (window.confirm("Are you sure you want to cancel? Unsaved changes will be lost.")) {
+                  if (
+                    window.confirm(
+                      "Are you sure you want to cancel? Unsaved changes will be lost."
+                    )
+                  ) {
                     navigate("/management/technicians");
                   }
                 }}
