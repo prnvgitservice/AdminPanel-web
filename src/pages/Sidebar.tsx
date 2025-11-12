@@ -11,7 +11,9 @@ import {
   Mail,
   Briefcase,
   UserPlus,
-  User
+  User,
+  AppWindow,
+  TabletSmartphone
 } from 'lucide-react';
 
 interface MenuItem {
@@ -149,6 +151,9 @@ const menuItems: MenuItem[] = [
   
   // Sitemap: Parent item for managing the sitemap
   { key: 'sitemap', label: 'Sitemap', icon: <Cable className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/sitemap' },
+
+  //app mangement: Parent item for managing app
+  { key: 'appmangement', label: 'App Mangament', icon: <TabletSmartphone className="h-4 w-4 sm:h-5 sm:w-5" />, path: '/appmangement' },
 ];
 
 const menuHierarchy: MenuHierarchy[] = [
@@ -195,6 +200,9 @@ const menuHierarchy: MenuHierarchy[] = [
 
   // Sitemap: Parent item for managing the sitemap
   { key: 'sitemap', subItems: [] },
+
+  // APP: Parent item for managing the sitemap
+  {key: 'appmangement', subItems: []}
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {

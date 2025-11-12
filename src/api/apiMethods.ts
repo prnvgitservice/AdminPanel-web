@@ -119,6 +119,14 @@ export const getRecentGetInTouchDashboard = (data: any) => apiRequest("getRecent
 
 export const getRecentTechnicianDashboard = (data: any) => apiRequest("getRecentTechnicianDashboard", data)
 
+export const getAllAppVersions = () => apiRequest("getAllAppVersions",);
+
+export const updateAppVersion = (data: any) => apiRequest("updateAppVersion", data);
+
+export const createAppVersion = (data: any) => apiRequest("createAppVersion", data);
+
+export const deleteAppVersion = (id: string) => apiRequest("deleteAppVersion", null, id)
+
 
 
 

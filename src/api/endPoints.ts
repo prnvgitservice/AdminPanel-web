@@ -364,8 +364,35 @@ const endpoints: any = {
       url: () => {
         return `/api/adminDashboard/recentTechnicians`
       }
-    }
+    },
 
+    getAllAppVersions: {
+      method: "get", 
+      url: () => {
+        return `/api/appVersion/getAll`
+      }
+    },
+
+    updateAppVersion: {
+      method: "put",
+      url: () =>{
+        return `/api/appVersion/update`
+      }
+    },
+
+    createAppVersion:{
+      method: "post",
+      url: () =>{
+        return `/api/appVersion/create`
+      }
+    },
+
+    deleteAppVersion: {
+      method: "delete",
+      url: (id: string) => {
+        return `/api/appVersion/delete/${id}`
+      }
+    }
 
 };
 

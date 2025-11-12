@@ -51,6 +51,8 @@ import AddReferral from "../components/manageReferrals/AddReferral";
 import TechnicianRequest from "../components/enquiries/TechnicianRequest";
 import UpdateTechnician from "../components/manageTechnicians/UpdateTechnician";
 import AddTechnician from "../components/manageTechnicians/AddTechnician";
+import AppMangement from "../components/appMangement/AppMangement";
+import AppMangeAdd from "../components/appMangement/AppMangeAdd";
 // Placeholder component for routes not yet implemented
 const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
   <div className="p-8">
@@ -214,6 +216,11 @@ const AppRoutes: React.FC = () => {
 
         {/* Sitemap: Routes for managing the sitemap */}
         <Route path="/sitemap" element={<Sitemap />} />
+
+         {/* appMangement: Routes for managing the appMangement */}
+        <Route path="/appmangement" element={<AppMangement />} />
+        <Route path="/appmanagement/add" element={<AppMangeAdd />} />
+
 
         {/* Legacy Routes: Older service-related routes for backward compatibility */}
         <Route path="/services" element={<AllCategories />} />
