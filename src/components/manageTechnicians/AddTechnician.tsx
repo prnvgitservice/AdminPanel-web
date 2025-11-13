@@ -470,7 +470,7 @@ const AddTechnician: React.FC = () => {
           e.buildingName = "Building name is required";
         if (!f.pincode) e.pincode = "Pincode is required";
         if (!f.areaName) e.areaName = "Area is required";
-        if (!f.subAreaName) e.subAreaName = "Sub Area is required";
+        // if (!f.subAreaName) e.subAreaName = "Sub Area is required";
         if (!f.city) e.city = "City is required";
         if (!f.state) e.state = "State is required";
         break;
@@ -522,7 +522,7 @@ const AddTechnician: React.FC = () => {
     if (!f.buildingName.trim()) e.buildingName = "Building name is required";
     if (!f.pincode || f.pincode.length !== 6) e.pincode = "Pincode is required";
     if (!f.areaName) e.areaName = "Area is required";
-    if (!f.subAreaName) e.subAreaName = "Sub Area is required";
+    // if (!f.subAreaName) e.subAreaName = "Sub Area is required";
     if (!f.city) e.city = "City is required";
     if (!f.state) e.state = "State is required";
     if (!f.subscriptionId) e.subscriptionId = "Subscription plan is required";
@@ -958,7 +958,7 @@ const AddTechnician: React.FC = () => {
                       value={formData.subAreaName}
                       onChange={handleChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 disabled:bg-gray-100"
-                      required
+                      // required
                       disabled={!formData.areaName}
                     >
                       <option value="">Select Sub Area</option>
